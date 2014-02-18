@@ -19,7 +19,6 @@ module Alephant
         @content = STATUS_CODE_MAPPING[code]
       end
 
-      #[@status, {"Content-Type" => @content_type}, [body.to_s]]
     end
   end
 end
