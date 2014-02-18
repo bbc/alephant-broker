@@ -1,9 +1,5 @@
-$: << File.join(File.dirname(__FILE__),"..", "app")
+$: << File.join(File.dirname(__FILE__),"..", "lib")
 
-ENV['RACK_ENV'] = 'test'
-
-require 'app'
-require 'pry'
-require 'rack/test'
+require 'alephant/broker'
 
 
