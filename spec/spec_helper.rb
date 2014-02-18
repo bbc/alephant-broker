@@ -1,3 +1,9 @@
+$: << File.join(File.dirname(__FILE__),"..", "app")
+
+ENV['RACK_ENV'] = 'test'
+
+require 'app'
 require 'pry'
-require 'alephant/lookup'
-require 'alephant/cache'
+require 'rack/test'
+
+
