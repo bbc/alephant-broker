@@ -5,19 +5,23 @@ module Alephant
       attr_reader :status
 
       STATUS_CODE_MAPPING = {
+        200 => 'ok',
         404 => 'Not found',
         500 => 'Error retrieving content'
       }
 
-      def initialize
+      def initialize(status = 200)
         @content_type = "text/html"
-        @status = 200
+        @status = status
+        setup
       end
 
       def status=(code)
         @status = code
         @content = STATUS_CODE_MAPPING[code]
       end
+
+      def setup; end
 
     end
   end

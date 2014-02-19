@@ -26,6 +26,8 @@ module Alephant
           @content_type = @@extension_mapping[@extension.to_sym] || @@extension_mapping[DEFAULT_EXTENSION]
         when "status"
           @type = :status
+        else
+          @type = :notfound
         end
       end
 

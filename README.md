@@ -80,8 +80,8 @@ end
 If you're using Pry to debug this gem...
 
 ```ruby
-export AWS_ACCESS_KEY_ID=xxxx
-export AWS_SECRET_ACCESS_KEY_ID=xxxx
+export AWS_ACCESS_KEY_ID='xxxx'
+export AWS_SECRET_ACCESS_KEY='xxxx'
 export AWS_REGION='eu-west-1'
 
 config = {
