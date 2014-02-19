@@ -1,6 +1,10 @@
 # Alephant::Broker
 
-Brokers requests for alephant components
+Brokers requests for rendered templates stored in S3
+
+[![Build Status](https://travis-ci.org/BBC-News/alephant-broker.png?branch=master)](https://travis-ci.org/BBC-News/alephant-broker)
+
+[![Gem Version](https://badge.fury.io/rb/alephant-broker.png)](http://badge.fury.io/rb/alephant-broker)
 
 ## Installation
 
