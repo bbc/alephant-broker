@@ -12,7 +12,7 @@ module Alephant
       def process(request)
         begin
           @response_factory.response_from(request)
-        rescue
+        rescue Exception => e
           @response_factory.response(500)
         end
       end

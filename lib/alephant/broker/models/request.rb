@@ -3,7 +3,7 @@ require 'cgi'
 module Alephant
   module Broker
     class Request
-      attr_reader :type, :component_id, :variant, :extension, :content_type
+      attr_reader :type, :component_id, :options, :extension, :content_type
 
       DEFAULT_EXTENSION = :html
 
@@ -21,7 +21,7 @@ module Alephant
           @component_id = request[:component_id]
           raise Errors::InvalidAssetId.new("No Asset ID specified") if @component_id.nil?
 
-          @variant = request[:options]['variant'] || false
+          @options = request[:options]
           @extension = request[:extension] || DEFAULT_EXTENSION
           @content_type = @@extension_mapping[@extension.to_sym] || @@extension_mapping[DEFAULT_EXTENSION]
         when "status"
@@ -29,10 +29,6 @@ module Alephant
         else
           @type = :notfound
         end
-      end
-
-      def variant?
-        @variant
       end
 
       def request_components(path, query_string)
@@ -46,8 +42,10 @@ module Alephant
       end
 
       def options_from(query_string)
-        qs = CGI::parse(query_string) unless query_string.empty?
-        qs ||= {}
+        query_string.split('&').reduce({}) do |object, key_pair|
+          key, value = key_pair.split('=')
+          object.tap { |o| o.store(key, value) }
+        end
       end
     end
   end

@@ -12,7 +12,7 @@ module Alephant
 
       def initialize(status = 200)
         @content_type = "text/html"
-        @status = status
+        self.status = status
         setup
       end
 
