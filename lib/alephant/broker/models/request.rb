@@ -12,8 +12,8 @@ module Alephant
         :json => 'application/json'
       }
 
-      def initialize(env)
-        request = request_components(env['PATH_INFO'], env['QUERY_STRING'])
+      def initialize(path, querystring)
+        request = request_components(path, querystring)
         case request[:type]
         when "component"
           @type = :asset

@@ -12,9 +12,8 @@ module Alephant
         @cache = Cache.new(config[:bucket_id], config[:path])
       end
 
-      def process(env)
+      def process(request)
         begin
-          request = Request.new(env)
           response = Response.new
 
           case request.type
