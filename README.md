@@ -1,6 +1,6 @@
 # Alephant::Broker
 
-TODO: Write a gem description
+Brokers requests for alephant components
 
 ## Installation
 
@@ -18,7 +18,88 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Barebones
+
+```ruby
+require 'alephant/broker'
+
+request = Alephant::Broker::Request.new('/component/id', 'variant=hello')
+config  = {
+  :bucket_id         => "s3-render-example",
+  :path              => "foo",
+  :lookup_table_name => "example_lookup"
+}
+
+broker = Alephant::Broker.handle(request, config)
+
+# => #<Alephant::Broker::Response:0x5215005d
+# @content="<p>some HTML response</p>",
+# @content_type="text/html",
+# @status=200>
+```
+
+### Simple App
+
+```ruby
+require 'alephant/broker/app'
+
+config  = {
+  :bucket_id         => "s3-render-example",
+  :path              => "foo",
+  :lookup_table_name => "example_lookup"
+}
+
+app = Alephant::Broker::Application.new(config)
+request = app.request_from('/component/id', 'variant=hello')
+
+app.handle(request)
+
+# => #<Alephant::Broker::Response:0x5215005d
+# @content="<p>some HTML response</p>",
+# @content_type="text/html",
+# @status=200>
+```
+
+### Rack
+
+```ruby
+require 'alephant/broker/app/rack'
+require 'configuration'
+
+module Foo
+  class Bar < Alephant::Broker::RackApplication
+    def initialize
+      super(Configuration.new)
+    end
+  end
+end
+```
+
+## Pry'ing
+
+If you're using Pry to debug this gem...
+
+```ruby
+export AWS_ACCESS_KEY_ID=xxxx
+export AWS_SECRET_ACCESS_KEY_ID=xxxx
+export AWS_REGION='eu-west-1'
+
+config = {
+  :bucket_id         => "s3-render-example",
+  :path              => "foo",
+  :lookup_table_name => "example_lookup"
+}
+ 
+env = {
+  "PATH_INFO"    => "/component/england_council_header",
+  "QUERY_STRING" => ""
+}
+ 
+require 'alephant/broker/app/rack'
+ 
+app = Alephant::Broker::RackApplication.new(config)
+app.call(env)
+```
 
 ## Contributing
 
