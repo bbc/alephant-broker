@@ -4,4 +4,4 @@ Gemfile.lock
 *.gem
 
 /pkg
-
+.ruby-version
