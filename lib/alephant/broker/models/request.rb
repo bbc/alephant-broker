@@ -31,6 +31,8 @@ module Alephant
         end
       end
 
+      private
+
       def request_components(path, query_string)
         request_parts = path.split('/')
         {
