@@ -44,7 +44,7 @@ module Alephant
       def options_from(query_string)
         query_string.split('&').reduce({}) do |object, key_pair|
           key, value = key_pair.split('=')
-          object.tap { |o| o.store(key, value) }
+          object.tap { |o| o.store(key.to_sym, value) }
         end
       end
     end
