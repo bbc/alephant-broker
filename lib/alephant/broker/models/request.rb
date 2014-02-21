@@ -1,8 +1,11 @@
 require 'cgi'
+require 'alephant/logger'
 
 module Alephant
   module Broker
     class Request
+      include Logger
+
       attr_reader :type, :component_id, :options, :extension, :content_type
 
       DEFAULT_EXTENSION = :html
@@ -16,6 +19,7 @@ module Alephant
         request = request_components(path, querystring)
         case request[:type]
         when "component"
+          logger.info("Broker.request: Type: component, Asset ID: #{request[:component_id]}, Options: #{request[:options].inspect}")
           @type = :asset
 
           @component_id = request[:component_id]
@@ -25,8 +29,10 @@ module Alephant
           @extension = request[:extension] || DEFAULT_EXTENSION
           @content_type = @@extension_mapping[@extension.to_sym] || @@extension_mapping[DEFAULT_EXTENSION]
         when "status"
+          logger.info("Broker.request: Type: status")
           @type = :status
         else
+          logger.info("Broker.request: Type: notfound")
           @type = :notfound
         end
       end
