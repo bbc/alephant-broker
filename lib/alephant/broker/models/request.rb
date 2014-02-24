@@ -1,4 +1,3 @@
-require 'cgi'
 require 'alephant/logger'
 
 module Alephant
@@ -26,7 +25,7 @@ module Alephant
           raise Errors::InvalidAssetId.new("No Asset ID specified") if @component_id.nil?
 
           @options = request[:options]
-          @extension = request[:extension] || DEFAULT_EXTENSION
+          @extension = request[:extension]
           @content_type = @@extension_mapping[@extension.to_sym] || @@extension_mapping[DEFAULT_EXTENSION]
         when "status"
           logger.info("Broker.request: Type: status")
@@ -41,10 +40,11 @@ module Alephant
 
       def request_components(path, query_string)
         request_parts = path.split('/')
+        extension = path.split('.')[1] ? path.split('.')[1].to_sym : DEFAULT_EXTENSION
         {
           :type         => request_parts[1],
           :component_id => (request_parts[2] || '').split('.')[0],
-          :extension    => path.split('.')[1],
+          :extension    => extension,
           :options      => options_from(query_string)
         }
       end
