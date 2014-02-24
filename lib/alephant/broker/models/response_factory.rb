@@ -5,12 +5,11 @@ module Alephant
   module Broker
     class ResponseFactory
 
-      def initialize(config)
+      def initialize(config = nil)
         @config = config
       end
 
       def response_from(request)
-
           case request.type
           when :asset
             AssetResponse.new(request, @config)
@@ -21,7 +20,6 @@ module Alephant
           when :error
             response(500)
           end
-
       end
 
       def response(status)
