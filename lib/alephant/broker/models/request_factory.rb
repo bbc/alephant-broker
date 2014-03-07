@@ -10,15 +10,15 @@ module Alephant
       def process(env, type)
         case type
         when :component
-          ::Alephant::Broker::GetRequest.new(env)
+          GetRequest.new(env)
         when :component_batch
-          ::Alephant::Broker::PostRequest.new(env)
+          PostRequest.new(env)
         when :status
-          ::Alephant::Broker::StatusRequest.new
+          StatusRequest.new
         when :notfound
-          ::Alephant::Broker::NotFoundRequest.new
+          NotFoundRequest.new
         when :error
-          ::Alephant::Broker::ErrorRequest.new
+          ErrorRequest.new
         end
       end
     end
