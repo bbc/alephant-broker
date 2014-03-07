@@ -1,15 +1,14 @@
 $: << File.dirname(__FILE__)
 
 require 'alephant/broker/app'
+require 'alephant/broker/environment'
 
 module Alephant
   module Broker
     class RackApplication < Application
 
       def call(env)
-        response = handle(
-          request_from(env['PATH_INFO'], env['QUERY_STRING'])
-        )
+        environment = Environment.new(env)
         send response
       end
 
