@@ -1,7 +1,6 @@
 $: << File.dirname(__FILE__)
 
 require 'alephant/broker'
-require 'alephant/broker/models/request'
 require 'alephant/logger'
 
 module Alephant
