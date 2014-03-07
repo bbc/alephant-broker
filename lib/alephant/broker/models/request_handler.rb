@@ -9,7 +9,7 @@ module Alephant
       def initialize(env, config)
         @env = env
         @request = RequestFactory.new.process(env, request_type)
-        @response_factory = ResponseFactory.new(config)
+        @response_factory = ResponseFactory.new(env, config)
       end
 
       def process
