@@ -6,7 +6,7 @@ end
 
 module Alephant
   module Broker
-    class Environment
+    class CallEnvironment
       include Logger
       attr_reader :settings
 
