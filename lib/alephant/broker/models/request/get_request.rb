@@ -13,7 +13,8 @@ module Alephant
         :json => 'application/json'
       }
 
-      def initialize(env)
+      def initialize
+        env = RequestStore.store[:env]
         parse requested_components(env.path, env.query)
       end
 

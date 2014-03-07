@@ -6,10 +6,9 @@ module Alephant
       include Logger
       attr_reader :status, :content_type, :content
 
-      def initialize(request, config, env)
+      def initialize(request, config)
         @request      = request
         @config       = config
-        @env          = env
         @status       = 200
         @content_type = request.content_type
       end

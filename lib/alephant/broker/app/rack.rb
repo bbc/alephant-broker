@@ -8,8 +8,8 @@ module Alephant
     class RackApplication < Application
 
       def call(env)
-        environment = CallEnvironment.new(env)
-        response    = handle(environment)
+        RequestStore.store[:env] ||= CallEnvironment.new(env)
+        response = handle
         send response
       end
 

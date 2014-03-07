@@ -12,8 +12,8 @@ module Alephant
         @config = config
       end
 
-      def handle(env)
-        Alephant::Broker.handle(env, @config)
+      def handle
+        Alephant::Broker.handle(@config)
       end
     end
   end

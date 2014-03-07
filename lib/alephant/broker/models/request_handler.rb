@@ -6,10 +6,10 @@ module Alephant
     class RequestHandler
       include Logger
 
-      def initialize(env, config)
-        @env = env
-        @request = RequestFactory.new.process(env, request_type)
-        @response_factory = ResponseFactory.new(env, config)
+      def initialize(config)
+        @env = RequestStore.store[:env]
+        @request = RequestFactory.new.process(request_type)
+        @response_factory = ResponseFactory.new(config)
       end
 
       def process

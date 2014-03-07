@@ -6,8 +6,7 @@ module Alephant
   module Broker
     class ResponseFactory
 
-      def initialize(env, config = nil)
-        @env = env
+      def initialize(config = nil)
         @config = config
       end
 
@@ -16,7 +15,7 @@ module Alephant
           when :asset
             AssetResponse.new(request, @config)
           when :batch
-            BatchResponse.new(request, @config, @env).process
+            BatchResponse.new(request, @config).process
           when :status
             response(200)
           when :notfound

@@ -4,8 +4,8 @@ require "alephant/broker/models/request_handler"
 module Alephant
   module Broker
 
-    def self.handle(env, config = {})
-      RequestHandler.new(env, config).process
+    def self.handle(config = {})
+      RequestHandler.new(config).process
     end
   end
 

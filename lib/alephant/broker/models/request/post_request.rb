@@ -4,8 +4,8 @@ module Alephant
       include ::Alephant::Broker::Helpers
       attr_reader :type, :component_id, :options, :content_type
 
-      def initialize(env)
-        @env = env
+      def initialize
+        @env = RequestStore.store[:env]
         @type = :batch
         @content_type = 'application/json'
       end

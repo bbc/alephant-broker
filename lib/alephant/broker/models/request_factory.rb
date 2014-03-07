@@ -7,12 +7,12 @@ require 'alephant/broker/models/request/status_request.rb'
 module Alephant
   module Broker
     class RequestFactory
-      def process(env, type)
+      def process(type)
         case type
         when :component
-          GetRequest.new(env)
+          GetRequest.new
         when :component_batch
-          PostRequest.new(env)
+          PostRequest.new
         when :status
           StatusRequest.new
         when :notfound
