@@ -1,14 +1,10 @@
-require 'alephant/logger'
+require 'alephant/broker/models/request'
 
 module Alephant
   module Broker
-    class StatusRequest
-      include Logger
-      attr_reader :type
-
+    class StatusRequest < Request
       def initialize
-        logger.info("Broker.request: Type: status")
-        @type = :status
+        super(:status)
       end
     end
   end

@@ -1,11 +1,10 @@
+require 'alephant/broker/models/request'
 require 'alephant/broker/helpers'
-require 'alephant/logger'
 
 module Alephant
   module Broker
-    class GetRequest
+    class GetRequest < Request
       include ::Alephant::Broker::Helpers
-      include Logger
       attr_reader :type, :component_id, :extension, :options, :content_type
 
       @@extension_mapping = {
@@ -16,6 +15,7 @@ module Alephant
       def initialize
         env = RequestStore.store[:env]
         parse requested_components(env.path, env.query)
+        super(:asset)
       end
 
       def requested_components(path, query_string)
@@ -32,7 +32,6 @@ module Alephant
       end
 
       def parse(request)
-        @type         = :asset
         @component_id = request[:component_id]
         @extension    = request[:extension]
         @options      = request[:options]
@@ -45,5 +44,3 @@ module Alephant
     end
   end
 end
-
-

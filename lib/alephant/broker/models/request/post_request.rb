@@ -1,13 +1,15 @@
+require 'alephant/broker/models/request'
+
 module Alephant
   module Broker
-    class PostRequest
+    class PostRequest < Request
       include ::Alephant::Broker::Helpers
       attr_reader :type, :component_id, :options, :content_type
 
       def initialize
         @env = RequestStore.store[:env]
-        @type = :batch
         @content_type = 'application/json'
+        super(:batch)
       end
 
       def requested_components

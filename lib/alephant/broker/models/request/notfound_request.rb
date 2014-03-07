@@ -1,14 +1,10 @@
-require 'alephant/logger'
+require 'alephant/broker/models/request'
 
 module Alephant
   module Broker
-    class NotFoundRequest
-      include Logger
-      attr_reader :type
-
+    class NotFoundRequest < Request
       def initialize
-        logger.info("Broker.request: Type: notfound")
-        @type = :notfound
+        super(:notfound)
       end
     end
   end
