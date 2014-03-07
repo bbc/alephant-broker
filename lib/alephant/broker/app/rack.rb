@@ -16,8 +16,8 @@ module Alephant
       def send(response)
         [
           response.status,
-          {"Content-Type" => response.content_type},
-          [response.content.to_s]
+          { "Content-Type" => response.content_type },
+          [ response.content.to_s ]
         ]
       end
     end
