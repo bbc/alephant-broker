@@ -29,7 +29,8 @@ module Alephant
           component_type
         when 'status'
           :status
-        # how do we determine notfound or error status?
+        else
+          :notfound
         end
       end
 
