@@ -1,9 +1,3 @@
-module JSON
-  def self.parse_nil(data)
-    JSON.parse(data) if data && data.length >= 2
-  end
-end
-
 module Alephant
   module Broker
     class CallEnvironment
@@ -36,13 +30,17 @@ module Alephant
 
       def data
         begin
-          JSON.parse_nil(@settings['rack.input'].read).tap { |o| rewind_rack_input_io } if post?
+          parse_nil(@settings['rack.input'].read).tap { |o| rewind_rack_input_io } if post?
         rescue Exception => e
           logger.info("Broker.environment.data: Exception raised (#{e.message})")
         end
       end
 
       private
+
+      def parse_nil(data)
+        JSON.parse(data) if data && data.length >= 2
+      end
 
       def rewind_rack_input_io
         @settings['rack.input'].rewind # http://rack.rubyforge.org/doc/SPEC.html
