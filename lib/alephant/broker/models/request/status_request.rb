@@ -6,7 +6,7 @@ module Alephant
       include Logger
       attr_reader :type
 
-      def initialize(env)
+      def initialize
         logger.info("Broker.request: Type: status")
         @type = :status
       end
