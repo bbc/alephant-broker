@@ -12,14 +12,9 @@ module Alephant
         @config = config
       end
 
-      def handle(request)
-        Alephant::Broker.handle(request, @config)
+      def handle(env)
+        Alephant::Broker.handle(env, @config)
       end
-
-      def request_from(path, querystring)
-        Request.new(path, querystring)
-      end
-
     end
   end
 end

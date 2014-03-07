@@ -9,6 +9,7 @@ module Alephant
 
       def call(env)
         environment = Environment.new(env)
+        response    = handle(environment)
         send response
       end
 
