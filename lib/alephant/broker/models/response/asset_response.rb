@@ -25,7 +25,6 @@ module Alephant
         rescue Exception => e
           set_error_for(e, 500)
         end
-
       end
 
       private
@@ -39,7 +38,6 @@ module Alephant
       def cache_id
         @lookup.read(request.options).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
       end
-
     end
   end
 end
