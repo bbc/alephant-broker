@@ -2,20 +2,22 @@ ENV['RACK_ENV'] = 'test'
 
 require 'rack/test'
 require 'alephant/broker/app/rack'
+require 'request_store'
 
 RSpec.configure do |conf|
   conf.include Rack::Test::Methods
 end
 
-describe 'Broker rack app tests' do
+describe 'Broker Rack Application' do
+  before do
+    RequestStore.store[:env] = nil
 
-  before {
     @lookup_table = double('Alephant::Lookup::LookupTable')
     Alephant::Lookup.stub(:create).and_return(@lookup_table)
 
     Alephant::Cache.any_instance.stub(:initialize)
     Alephant::Cache.any_instance.stub(:get).and_return('Test response')
-  }
+  end
 
   def app
     Alephant::Broker::RackApplication.new({
@@ -25,7 +27,7 @@ describe 'Broker rack app tests' do
     })
   end
 
-  it "Tests status page" do
+  it 'Tests status page' do
     get '/status'
     expect(last_response).to be_ok
     expect(last_response.body).to eq('ok')
@@ -40,7 +42,7 @@ describe 'Broker rack app tests' do
   it "Test asset data is returned" do
     allow(@lookup_table).to receive(:read).and_return('some_location')
 
-    get '/component/test_component'
+    get '/components/test_component'
     expect(last_response).to be_ok
     expect(last_response.body).to eq('Test response')
   end
@@ -49,7 +51,7 @@ describe 'Broker rack app tests' do
     variant = {:variant => 'test_variant'}
     allow(@lookup_table).to receive(:read).with(variant).and_return('some_location')
 
-    get '/component/test_component?variant=test_variant'
+    get '/components/test_component?variant=test_variant'
     expect(last_response).to be_ok
     expect(last_response.body).to eq('Test response')
   end
@@ -57,16 +59,25 @@ describe 'Broker rack app tests' do
   it "Tests 404 when lookup doesn't return a valid location" do
     allow(@lookup_table).to receive(:read).and_return(nil)
 
-    get '/component/test_component'
+    get '/components/test_component'
     expect(last_response.status).to eq(404)
-
   end
 
   it "Tests 500 when exception is raised in application" do
     allow(@lookup_table).to receive(:read).and_raise(Exception)
 
-    get '/component/test_component'
+    get '/components/test_component'
     expect(last_response.status).to eq(500)
   end
 
+  it "Test batch asset data is returned" do
+    allow(@lookup_table).to receive(:read).and_return('some_location')
+
+    json = '{"components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
+
+    post '/components/batch', json, "CONTENT_TYPE" => "application/json"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq('{"components":[{"component":"ni_council_results_table","body":"Test response"},{"component":"ni_council_results_table","body":"Test response"}]}')
+  end
 end
