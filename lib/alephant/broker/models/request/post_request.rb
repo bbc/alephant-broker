@@ -12,8 +12,8 @@ module Alephant
         super(:batch)
       end
 
-      def requested_components
-        requested_components_for @env.path
+      def components
+        @requested_components ||= components_for @env.path
       end
 
       def set_component(id, options)
@@ -23,14 +23,19 @@ module Alephant
 
       private
 
-      def requested_components_for(path)
+      def components_for(path)
         # http://localhost:9292/components/batch (default to JSON)
         request_parts = path.split('/')
 
         {
+          :batch_id     => batch_id,
           :type         => get_type_from(request_parts),
           :component_id => get_component_id_from(request_parts)
         }.merge! batched
+      end
+
+      def batch_id
+        @env.data['batch_id']
       end
 
       def batched

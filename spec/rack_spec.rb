@@ -73,11 +73,11 @@ describe 'Broker Rack Application' do
   it "Test batch asset data is returned" do
     allow(@lookup_table).to receive(:read).and_return('some_location')
 
-    json = '{"components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
+    json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
 
     post '/components/batch', json, "CONTENT_TYPE" => "application/json"
 
     expect(last_response).to be_ok
-    expect(last_response.body).to eq('{"components":[{"component":"ni_council_results_table","body":"Test response"},{"component":"ni_council_results_table","body":"Test response"}]}')
+    expect(last_response.body).to eq('{"batch_id":"baz","components":[{"component":"ni_council_results_table","body":"Test response"},{"component":"ni_council_results_table","body":"Test response"}]}')
   end
 end

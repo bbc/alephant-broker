@@ -10,12 +10,13 @@ describe Alephant::Broker::BatchResponse do
   let (:post_request) {
     double(
       'Alephant::Broker::PostRequest',
-      :options              => {},
-      :type                 => :batch,
-      :content_type         => 'application/json',
-      :set_component        => nil,
-      :component_id         => nil,
-      :requested_components => {
+      :options       => {},
+      :type          => :batch,
+      :content_type  => 'application/json',
+      :set_component => nil,
+      :component_id  => nil,
+      :components    => {
+        :batch_id   => :baz,
         :components => [
           { 'component' => 'foo1', 'options' => { 'variant' => 'bar1' } },
           { 'component' => 'foo2', 'options' => { 'variant' => 'bar2' } }
@@ -33,8 +34,8 @@ describe Alephant::Broker::BatchResponse do
   describe "#process" do
     it 'sets @content to be JSON string containing retrieved components' do
       instance = Alephant::Broker::BatchResponse.new(post_request, config)
-      expected = '{"components":[{"component":"foo1","body":"Test response"},{"component":"foo2","body":"Test response"}]}'
-      expect(instance.process.content).to eq(expected)
+      compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","body":"Test response"},{"component":"foo2","body":"Test response"}]}'
+      expect(instance.process.content).to eq(compiled_json)
     end
   end
 end

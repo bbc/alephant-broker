@@ -14,7 +14,7 @@ module Alephant
       end
 
       def process
-        @content = JSON.generate({ "components" => json })
+        @content = JSON.generate({ "batch_id" => batch_id, "components" => json })
         self
       end
 
@@ -32,8 +32,12 @@ module Alephant
         end
       end
 
+      def batch_id
+        @request.components.fetch(:batch_id)
+      end
+
       def get_components
-        @request.requested_components.fetch(:components) do |key|
+        @request.components.fetch(:components) do |key|
           logger.info("Broker::BatchResponse.process: Received request object but no valid key was found")
           []
         end

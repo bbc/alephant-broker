@@ -23,16 +23,11 @@ describe Alephant::Broker::ResponseFactory do
       allow(post_request).to receive(:type).and_return(:batch)
       allow(post_request).to receive(:content_type).and_return('application/json')
       allow(post_request).to receive(:set_component)
-      allow(post_request).to receive(:requested_components).and_return({
+      allow(post_request).to receive(:components).and_return({
+        :batch_id   => 'baz',
         :components => [
-          {
-            'component' => 'foo1',
-            'variant'   => 'bar1'
-          },
-          {
-            'component' => 'foo2',
-            'variant'   => 'bar2'
-          }
+          { 'component' => 'foo1', 'variant'   => 'bar1' },
+          { 'component' => 'foo2', 'variant'   => 'bar2' }
         ]
       })
 
