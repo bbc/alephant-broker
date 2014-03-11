@@ -23,12 +23,12 @@ module Alephant
       def json
         get_components.each do |component|
           id      = component['component']
-          options = component['variant'] ? { :variant => component['variant'] } : {}
+          options = component.fetch(:options, {})
 
           @request.set_component(id, options)
 
           component.store('body', AssetResponse.new(@request, @config).content)
-          component.delete('variant')
+          component.delete('options')
         end
       end
 

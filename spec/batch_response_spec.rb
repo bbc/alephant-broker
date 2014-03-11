@@ -17,8 +17,8 @@ describe Alephant::Broker::BatchResponse do
       :component_id         => nil,
       :requested_components => {
         :components => [
-          { 'component' => 'foo1', 'variant'   => 'bar1' },
-          { 'component' => 'foo2', 'variant'   => 'bar2' }
+          { 'component' => 'foo1', 'options' => { 'variant' => 'bar1' } },
+          { 'component' => 'foo2', 'options' => { 'variant' => 'bar2' } }
         ]}
     )
   }
