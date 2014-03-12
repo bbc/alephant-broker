@@ -1,3 +1,4 @@
+require 'alephant/broker/errors/invalid_asset_id'
 require 'alephant/broker/models/request'
 require 'alephant/broker/helpers'
 
@@ -39,7 +40,7 @@ module Alephant
 
         logger.info("Broker.request: Type: #{@type}, Asset ID: #{@component_id}, Options: #{@options.inspect}")
 
-        raise Errors::InvalidAssetId.new("No Asset ID specified") if @component_id.nil?
+        raise InvalidAssetId.new("No Asset ID specified") if @component_id.nil?
       end
     end
   end
