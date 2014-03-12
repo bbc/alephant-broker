@@ -34,7 +34,7 @@ describe Alephant::Broker::BatchResponse do
   describe "#process" do
     it 'sets @content to be JSON string containing retrieved components' do
       instance = Alephant::Broker::BatchResponse.new(post_request, config)
-      compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","body":"Test response"},{"component":"foo2","body":"Test response"}]}'
+      compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","options":{"variant":"bar1"},"body":"Test response"},{"component":"foo2","options":{"variant":"bar2"},"body":"Test response"}]}'
       expect(instance.process.content).to eq(compiled_json)
     end
   end
