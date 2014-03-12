@@ -23,13 +23,17 @@ module Alephant
       def json
         get_components.each do |component|
           id      = component['component']
-          options = component.fetch(:options, {})
+          options = set_keys_to_symbols component.fetch('options', {})
 
           @request.set_component(id, options)
 
           component.store('body', AssetResponse.new(@request, @config).content)
           component.delete('options')
         end
+      end
+
+      def set_keys_to_symbols(hash)
+        Hash[hash.map { |k,v| [k.to_sym, v] }]
       end
 
       def batch_id
