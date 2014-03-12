@@ -21,14 +21,16 @@ module Alephant
       private
 
       def json
-        get_components.each do |component|
+        get_components.select do |component|
           id      = component['component']
           options = set_keys_to_symbols component.fetch('options', {})
 
           @request.set_component(id, options)
 
-          component.store('body', AssetResponse.new(@request, @config).content)
-          component.delete('options')
+          asset = AssetResponse.new(@request, @config)
+          component.store('body', asset.content)
+
+          asset.status == 200
         end
       end
 
