@@ -5,6 +5,7 @@ module Alephant
     class PostRequest < Request
       include ::Alephant::Broker::Helpers
       attr_reader :type, :component_id, :options, :content_type
+      attr_writer :env
 
       def initialize
         @env = RequestStore.store[:env]
