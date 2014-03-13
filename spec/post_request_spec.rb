@@ -3,10 +3,6 @@ require 'spec_helper'
 describe Alephant::Broker::PostRequest do
   subject { Alephant::Broker::PostRequest }
 
-  before(:each) do
-    subject.any_instance.stub(:initialize)
-  end
-
   describe "#components" do
     it "returns hash of component parts + sub components" do
       components = [{
@@ -26,14 +22,23 @@ describe Alephant::Broker::PostRequest do
         :components   => components
       }
 
+      RequestStore
+        .stub(:store)
+        .and_return({
+          :env => env
+        })
+
       instance = subject.new
-      instance.env = env
       expect(instance.components).to eq(hash)
     end
   end
 
   describe "#set_component(id, options)" do
     it "sets instance attribute values" do
+      subject
+        .any_instance
+        .stub(:initialize)
+
       instance = subject.new
       instance.set_component(:foo, :bar)
 
