@@ -29,21 +29,22 @@ module Alephant
       end
 
       def data
-        begin
-          parse_nil(@settings['rack.input'].read).tap { |o| rewind_rack_input_io } if post?
-        rescue Exception => e
-          logger.info("Broker.environment.data: Exception raised (#{e.message})")
-        end
+        parse(rack_input) if post?
       end
 
       private
 
-      def parse_nil(data)
-        JSON.parse(data) if data && data.length >= 2
+      def rack_input
+          (@settings['rack.input'].read).tap { @settings['rack.input'].rewind } # http://rack.rubyforge.org/doc/SPEC.html
       end
 
-      def rewind_rack_input_io
-        @settings['rack.input'].rewind # http://rack.rubyforge.org/doc/SPEC.html
+      def parse(json)
+        begin
+          JSON.parse(json)
+        rescue JSON::ParserError => e
+          logger.info("Broker.environment#data: ParserError")
+          nil
+        end
       end
     end
   end
