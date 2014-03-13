@@ -5,13 +5,7 @@ require 'alephant/broker/helpers'
 module Alephant
   module Broker
     class GetRequest < Request
-      include ::Alephant::Broker::Helpers
       attr_reader :type, :component_id, :extension, :options, :content_type
-
-      @@extension_mapping = {
-        :html => 'text/html',
-        :json => 'application/json'
-      }
 
       def initialize
         env = RequestStore.store[:env]
