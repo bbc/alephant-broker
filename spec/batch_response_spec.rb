@@ -32,10 +32,44 @@ describe Alephant::Broker::BatchResponse do
   end
 
   describe "#process" do
-    it 'sets @content to be JSON string containing retrieved components' do
-      instance = Alephant::Broker::BatchResponse.new(post_request, config)
-      compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","options":{"variant":"bar1"},"body":"Test response"},{"component":"foo2","options":{"variant":"bar2"},"body":"Test response"}]}'
-      expect(instance.process.content).to eq(compiled_json)
+    context "if a component is unrecognised" do
+      before(:each) do
+        Alephant::Cache
+          .any_instance
+          .stub(:get)
+          .and_raise(Alephant::Broker::InvalidCacheKey)
+
+        instance       = Alephant::Broker::BatchResponse.new(post_request, config)
+        json           = JSON.parse(instance.process.content)
+        @bad_component = json.fetch('components')[1]
+      end
+
+      it "set status to 404" do
+        expect(@bad_component['status']).to eq(404)
+      end
+
+      it "remove 'body' key" do
+        expect(@bad_component['body']).to eq(nil)
+      end
+    end
+
+    context "if a component is recognised" do
+      before(:each) do
+        @instance = Alephant::Broker::BatchResponse.new(post_request, config)
+        @content  = @instance.process.content
+        @json     = JSON.parse(@content)
+      end
+
+      it "set status to 200" do
+        @json.fetch('components').each do |component|
+          expect(component['status']).to eq(200)
+        end
+      end
+
+      it "set @content to be JSON string containing retrieved components" do
+        compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","options":{"variant":"bar1"},"status":200,"body":"Test response"},{"component":"foo2","options":{"variant":"bar2"},"status":200,"body":"Test response"}]}'
+        expect(@content).to eq(compiled_json)
+      end
     end
   end
 end

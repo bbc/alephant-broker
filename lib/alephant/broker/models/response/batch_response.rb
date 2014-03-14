@@ -21,16 +21,15 @@ module Alephant
       private
 
       def json
-        get_components.select do |component|
+        get_components.each do |component|
           id      = component['component']
           options = set_keys_to_symbols component.fetch('options', {})
 
           @request.set_component(id, options)
 
           asset = AssetResponse.new(@request, @config)
-          component.store('body', asset.content)
-
-          asset.status == 200
+          component.store('status', asset.status)
+          component.store('body', asset.content) if valid_status_for asset
         end
       end
 
@@ -47,6 +46,10 @@ module Alephant
           logger.info("Broker::BatchResponse.process: Received request object but no valid key was found")
           []
         end
+      end
+
+      def valid_status_for(asset)
+        asset.status == 200
       end
     end
   end

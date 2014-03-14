@@ -78,6 +78,6 @@ describe 'Broker Rack Application' do
     post '/components/batch', json, "CONTENT_TYPE" => "application/json"
 
     expect(last_response).to be_ok
-    expect(last_response.body).to eq('{"batch_id":"baz","components":[{"component":"ni_council_results_table","body":"Test response"},{"component":"ni_council_results_table","body":"Test response"}]}')
+    expect(last_response.body).to eq('{"batch_id":"baz","components":[{"component":"ni_council_results_table","status":200,"body":"Test response"},{"component":"ni_council_results_table","status":200,"body":"Test response"}]}')
   end
 end
