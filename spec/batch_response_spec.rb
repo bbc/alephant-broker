@@ -26,9 +26,19 @@ describe Alephant::Broker::BatchResponse do
 
   before do
     @lookup_table = double('Alephant::Lookup::LookupTable', :read => 'test_location')
-    Alephant::Lookup.stub(:create).and_return(@lookup_table)
-    Alephant::Cache.any_instance.stub(:initialize)
-    Alephant::Cache.any_instance.stub(:get).and_return('Test response')
+
+    Alephant::Lookup
+      .stub(:create)
+      .and_return(@lookup_table)
+
+    Alephant::Cache
+      .any_instance
+      .stub(:initialize)
+
+    Alephant::Cache
+      .any_instance
+      .stub(:get)
+      .and_return('Test response')
   end
 
   describe "#process" do
