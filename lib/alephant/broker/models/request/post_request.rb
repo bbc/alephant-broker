@@ -23,7 +23,6 @@ module Alephant
       private
 
       def components_for(path)
-        # http://localhost:9292/components/batch (default to JSON)
         request_parts = path.split('/')
 
         {

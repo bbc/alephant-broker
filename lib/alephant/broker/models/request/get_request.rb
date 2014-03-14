@@ -13,8 +13,6 @@ module Alephant
       end
 
       def requested_components(path, query_string)
-        # http://localhost:9292/components/england_council_results
-        # http://localhost:9292/components/england_council_results.json
         request_parts = path.split('/')
 
         {
