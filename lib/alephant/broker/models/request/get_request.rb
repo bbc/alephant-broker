@@ -1,6 +1,5 @@
 require 'alephant/broker/errors/invalid_asset_id'
 require 'alephant/broker/models/request'
-require 'alephant/broker/helpers'
 
 module Alephant
   module Broker
