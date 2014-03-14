@@ -4,8 +4,7 @@ module Alephant
   module Broker
     class Request
       include Logger
-
-      attr_reader :type, :component_id, :options, :extension, :content_type
+      attr_reader :type
 
       DEFAULT_EXTENSION = :html
 
@@ -14,39 +13,9 @@ module Alephant
         :json => 'application/json'
       }
 
-      def initialize(path, querystring)
-        request = request_components(path, querystring)
-        case request[:type]
-        when "component"
-          logger.info("Broker.request: Type: component, Asset ID: #{request[:component_id]}, Options: #{request[:options].inspect}")
-          @type = :asset
-
-          @component_id = request[:component_id]
-          raise Errors::InvalidAssetId.new("No Asset ID specified") if @component_id.nil?
-
-          @options = request[:options]
-          @extension = request[:extension]
-          @content_type = @@extension_mapping[@extension.to_sym] || @@extension_mapping[DEFAULT_EXTENSION]
-        when "status"
-          logger.info("Broker.request: Type: status")
-          @type = :status
-        else
-          logger.info("Broker.request: Type: notfound")
-          @type = :notfound
-        end
-      end
-
-      private
-
-      def request_components(path, query_string)
-        request_parts = path.split('/')
-        extension = path.split('.')[1] ? path.split('.')[1].to_sym : DEFAULT_EXTENSION
-        {
-          :type         => request_parts[1],
-          :component_id => (request_parts[2] || '').split('.')[0],
-          :extension    => extension,
-          :options      => options_from(query_string)
-        }
+      def initialize(request_type)
+        logger.info("Broker.request: Type: #{request_type}")
+        @type = request_type
       end
 
       def options_from(query_string)
@@ -54,6 +23,18 @@ module Alephant
           key, value = key_pair.split('=')
           object.tap { |o| o.store(key.to_sym, value) }
         end
+      end
+
+      def get_type_from(request_parts)
+        request_parts[1]
+      end
+
+      def get_extension_for(path)
+        path.split('.')[1] ? path.split('.')[1].to_sym : DEFAULT_EXTENSION
+      end
+
+      def get_component_id_from(request_parts)
+        (request_parts[2] || '').split('.')[0]
       end
     end
   end

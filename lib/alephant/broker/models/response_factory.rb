@@ -1,5 +1,6 @@
 require 'alephant/broker/models/response'
 require 'alephant/broker/models/response/asset_response'
+require 'alephant/broker/models/response/batch_response'
 
 module Alephant
   module Broker
@@ -13,6 +14,8 @@ module Alephant
           case request.type
           when :asset
             AssetResponse.new(request, @config)
+          when :batch
+            BatchResponse.new(request, @config).process
           when :status
             response(200)
           when :notfound
