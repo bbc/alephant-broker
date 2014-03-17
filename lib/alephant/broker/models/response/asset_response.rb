@@ -1,18 +1,23 @@
+require 'crimp'
 require 'alephant/cache'
 require 'alephant/lookup'
 require 'alephant/broker/errors/invalid_cache_key'
+require 'alephant/sequencer'
 
 module Alephant
   module Broker
     class AssetResponse < Response
       include Logger
 
-      attr_reader :request
+      attr_reader :request, :opts_hash, :version
 
       def initialize(request, config)
-        @request = request
-        @lookup = Alephant::Lookup.create(config[:lookup_table_name], request.component_id)
-        @cache = Cache.new(config[:bucket_id], config[:path])
+        @request   = request
+        @opts_hash = Crimp.signature request.options
+        @lookup    = Alephant::Lookup.create(config[:lookup_table_name])
+        @cache     = Cache.new(config[:bucket_id], config[:path])
+        @sequencer = Alephant::Sequencer.create(config[:sequencer_table_name, component_key, config[:sequence_id_path])
+        @version   = nil # ???
         super()
       end
 
@@ -36,7 +41,11 @@ module Alephant
       end
 
       def cache_id
-        @lookup.read(request.options).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
+        @lookup.read(request.component_id, request.options, version).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
+      end
+
+      def component_key
+        "#{request.component_id}/#{opts_hash}"
       end
     end
   end
