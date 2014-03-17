@@ -47,6 +47,10 @@ module Alephant
       def component_key
         "#{request.component_id}/#{opts_hash}"
       end
+
+      def renderer_key
+        "#{request.renderer_id}/#{opts_hash}"
+      end
     end
   end
 end
