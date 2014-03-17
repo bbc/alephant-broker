@@ -16,7 +16,7 @@ module Alephant
         @opts_hash = Crimp.signature request.options
         @lookup    = Alephant::Lookup.create(config[:lookup_table_name])
         @cache     = Cache.new(config[:bucket_id], config[:path])
-        @sequencer = Alephant::Sequencer.create(config[:sequencer_table_name, component_key, config[:sequence_id_path])
+        @sequencer = Alephant::Sequencer.create(config[:sequencer_table_name], key)
         @version   = nil # ???
         super()
       end
@@ -42,6 +42,10 @@ module Alephant
 
       def cache_id
         @lookup.read(request.component_id, request.options, version).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
+      end
+
+      def key
+        request.type == :asset ? component_key : renderer_key
       end
 
       def component_key
