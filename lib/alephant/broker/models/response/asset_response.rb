@@ -9,22 +9,18 @@ module Alephant
     class AssetResponse < Response
       include Logger
 
-      attr_reader :request, :opts_hash, :version
+      attr_reader :request
 
       def initialize(request, config)
-        @request   = request
-        @opts_hash = Crimp.signature request.options
-        @lookup    = Alephant::Lookup.create(config[:lookup_table_name])
-        @cache     = Cache.new(config[:bucket_id], config[:path])
-        @sequencer = Alephant::Sequencer.create(config[:sequencer_table_name], key)
-        @version   = nil # ???
+        @request = request
+        @config  = config
         super()
       end
 
       def setup
         begin
           self.content_type = request.content_type
-          self.content = @cache.get cache_id
+          self.content = cache.get s3_path
         rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
           set_error_for(e, 404)
         rescue Exception => e
@@ -34,14 +30,22 @@ module Alephant
 
       private
 
+      def cache
+        @cache ||= Cache.new(config[:bucket_id], config[:path])
+      end
+
       def set_error_for(exception, status)
         logger.info("Broker.assetResponse.set_error_for: #{status} exception raised (#{exception.message})")
         self.status = status
         self.content = exception.message
       end
 
-      def cache_id
-        @lookup.read(request.component_id, request.options, version).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
+      def s3_path
+        lookup.read(request.component_id, request.options, version).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
+      end
+
+      def lookup
+        @lookup ||= Alephant::Lookup.create(config[:lookup_table_name])
       end
 
       def key
@@ -54,6 +58,22 @@ module Alephant
 
       def renderer_key
         "#{request.renderer_id}/#{opts_hash}"
+      end
+
+      def opts_hash
+        @opts_hash ||= Crimp.signature(request.options)
+      end
+
+      def version
+        @version ||= sequencer.get_last_seen
+      end
+
+      def sequencer
+        @sequencer ||= Alephant::Sequencer.create(config[:sequencer_table_name], key)
+      end
+
+      def config
+        @config
       end
     end
   end
