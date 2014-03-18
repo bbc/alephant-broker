@@ -1,73 +1,75 @@
 require 'spec_helper'
 
 describe Alephant::Broker::AssetResponse do
+  subject { Alephant::Broker::AssetResponse }
+
   describe "#initialize(request, config)" do
     let(:location) { 'test_location' }
+
     let(:config) {{
       :lookup_table_name => 'test_table',
       :bucket_id => 'test_bucket',
       :path => 'test_path'
     }}
+
     let(:request) { double(
                       "Alephant::Broker::Request",
                       :component_id => 'test',
                       :content_type => 'text/html',
+                      :type         => :asset,
                       :options      => { :variant => 'test_variant' }
                     )
                   }
 
     before do
-      @lookup_table = double('Alephant::Lookup::LookupTable')
-      Alephant::Lookup.stub(:create).and_return(@lookup_table)
+      subject
+        .any_instance
+        .stub(:s3_path)
+        .and_return(:foo)
     end
 
-    it "Should return the content from a successful cache lookup" do
-      allow(@lookup_table)
-        .to receive(:read)
-        .with(request.options)
-        .and_return(location)
+    context "successful" do
+      before(:each) do
+        subject
+          .any_instance
+          .stub(:cache)
+          .and_return(double(:get => 'Test'))
+      end
 
-      Alephant::Cache
-        .any_instance
-        .stub(:initialize)
+      it "Should return the content from a successful cache lookup" do
+        instance = subject.new(request, config)
 
-      Alephant::Cache
-        .any_instance
-        .stub(:get)
-        .with(location)
-        .and_return('Test cache content')
-
-      instance = Alephant::Broker::AssetResponse.new(request, config)
-
-      expect(instance.content).to eq('Test cache content')
-      expect(instance.status).to eq(200)
+        expect(instance.content).to eq('Test')
+        expect(instance.status).to eq(200)
+      end
     end
 
-    it "should return a 404 if lookup can't find a valid location" do
-      allow(@lookup_table)
-        .to receive(:read)
-        .with(request.options)
-        .and_return(nil)
+    context "client failure" do
+      before(:each) do
+        subject
+          .any_instance
+          .stub(:cache)
+          .and_raise(Alephant::Broker::InvalidCacheKey)
+      end
 
-      Alephant::Cache
-        .any_instance
-        .stub(:initialize)
-
-      instance = Alephant::Broker::AssetResponse.new(request, config)
-
-      expect(instance.content).to eq('Cache key not found based on component_id and options combination')
-      expect(instance.status).to eq(404)
+      it "should return a 404 if lookup can't find a valid location" do
+        instance = subject.new(request, config)
+        expect(instance.status).to eq(404)
+      end
     end
 
-    it "should return a 500 for any other exceptions" do
-      allow(@lookup_table)
-        .to receive(:read)
-        .with(request.options)
-        .and_raise(Exception)
+    context "server failure" do
+      before(:each) do
+        subject
+          .any_instance
+          .stub(:cache)
+          .and_raise(Exception)
+      end
 
-      instance = Alephant::Broker::AssetResponse.new(request, config)
-
-      expect(instance.status).to eq(500)
+      it "should return a 500 for any other exceptions" do
+        instance = subject.new(request, config)
+        expect(instance.status).to eq(500)
+      end
     end
   end
 end
