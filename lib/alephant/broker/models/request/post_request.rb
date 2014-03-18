@@ -3,7 +3,7 @@ require 'alephant/broker/models/request'
 module Alephant
   module Broker
     class PostRequest < Request
-      attr_reader :type, :renderer_id :component_id, :options, :content_type
+      attr_reader :type, :renderer_id, :component_id, :options, :content_type
 
       def initialize
         @env          = RequestStore.store[:env]
