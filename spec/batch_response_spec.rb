@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Alephant::Broker::BatchResponse do
+  subject { Alephant::Broker::BatchResponse }
+
   let (:config) {{
     :lookup_table_name => 'test_table',
     :bucket_id => 'test_bucket',
@@ -15,6 +17,7 @@ describe Alephant::Broker::BatchResponse do
       :content_type  => 'application/json',
       :set_component => nil,
       :component_id  => nil,
+      :renderer_id   => nil,
       :components    => {
         :batch_id   => :baz,
         :components => [
@@ -25,31 +28,20 @@ describe Alephant::Broker::BatchResponse do
   }
 
   before do
-    @lookup_table = double('Alephant::Lookup::LookupTable', :read => 'test_location')
-
-    Alephant::Lookup
-      .stub(:create)
-      .and_return(@lookup_table)
-
-    Alephant::Cache
+    Alephant::Broker::AssetResponse
       .any_instance
       .stub(:initialize)
-
-    Alephant::Cache
-      .any_instance
-      .stub(:get)
-      .and_return('Test response')
   end
 
   describe "#process" do
     context "if a component is unrecognised" do
       before(:each) do
-        Alephant::Cache
+        Alephant::Broker::AssetResponse
           .any_instance
-          .stub(:get)
-          .and_raise(Alephant::Broker::InvalidCacheKey)
+          .stub(:status)
+          .and_return(404)
 
-        instance       = Alephant::Broker::BatchResponse.new(post_request, config)
+        instance       = subject.new(post_request, config)
         json           = JSON.parse(instance.process.content)
         @bad_component = json.fetch('components')[1]
       end
@@ -65,7 +57,17 @@ describe Alephant::Broker::BatchResponse do
 
     context "if a component is recognised" do
       before(:each) do
-        @instance = Alephant::Broker::BatchResponse.new(post_request, config)
+        Alephant::Broker::AssetResponse
+          .any_instance
+          .stub(:status)
+          .and_return(200)
+
+        Alephant::Broker::AssetResponse
+          .any_instance
+          .stub(:content)
+          .and_return('Test')
+
+        @instance = subject.new(post_request, config)
         @content  = @instance.process.content
         @json     = JSON.parse(@content)
       end
@@ -77,7 +79,7 @@ describe Alephant::Broker::BatchResponse do
       end
 
       it "set @content to be JSON string containing retrieved components" do
-        compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","options":{"variant":"bar1"},"status":200,"body":"Test response"},{"component":"foo2","options":{"variant":"bar2"},"status":200,"body":"Test response"}]}'
+        compiled_json = '{"batch_id":"baz","components":[{"component":"foo1","options":{"variant":"bar1"},"status":200,"body":"Test"},{"component":"foo2","options":{"variant":"bar2"},"status":200,"body":"Test"}]}'
         expect(@content).to eq(compiled_json)
       end
     end
