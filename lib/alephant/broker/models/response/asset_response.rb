@@ -57,11 +57,11 @@ module Alephant
       end
 
       def component_key
-        "#{request.component_id}/#{opts_hash}"
+        "#{component_id}/#{opts_hash}"
       end
 
       def renderer_key
-        "#{request.renderer_id}/#{opts_hash}"
+        "#{renderer_id}/#{opts_hash}"
       end
 
       def id
