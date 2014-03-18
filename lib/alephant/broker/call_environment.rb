@@ -11,23 +11,27 @@ module Alephant
       end
 
       def method
-        @settings['REQUEST_METHOD']
+        settings['REQUEST_METHOD']
       end
 
       def post?
-        @settings['REQUEST_METHOD'] == 'POST'
+        settings['REQUEST_METHOD'] == 'POST'
       end
 
       def get?
-        @settings['REQUEST_METHOD'] == 'GET'
+        settings['REQUEST_METHOD'] == 'GET'
       end
 
       def query
-        @settings['QUERY_STRING']
+        settings['QUERY_STRING']
       end
 
       def path
-        @settings['PATH_INFO']
+        settings['PATH_INFO']
+      end
+
+      def request_type
+        path.split('/')[1]
       end
 
       def data
@@ -37,7 +41,7 @@ module Alephant
       private
 
       def rack_input
-          (@settings['rack.input'].read).tap { @settings['rack.input'].rewind } # http://rack.rubyforge.org/doc/SPEC.html
+          (settings['rack.input'].read).tap { settings['rack.input'].rewind } # http://rack.rubyforge.org/doc/SPEC.html
       end
 
       def parse(json)

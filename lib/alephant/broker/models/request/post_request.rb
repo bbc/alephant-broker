@@ -6,14 +6,13 @@ module Alephant
       attr_reader :type, :renderer_id, :component_id, :options, :content_type
 
       def initialize
-        @env          = RequestStore.store[:env]
         @renderer_id  = batch_id
         @content_type = 'application/json'
         super(:batch)
       end
 
       def components
-        @requested_components ||= components_for @env.path
+        @requested_components ||= components_for env.path
       end
 
       def set_component(id, options)
@@ -22,6 +21,10 @@ module Alephant
       end
 
       private
+
+      def env
+        @env ||= RequestStore.store[:env]
+      end
 
       def components_for(path)
         request_parts = path.split('/')
@@ -34,11 +37,11 @@ module Alephant
       end
 
       def batch_id
-        @env.data['batch_id']
+        env.data['batch_id']
       end
 
       def batched
-        @env.data['components'].reduce({ :components => [] }) do |obj, component|
+        env.data['components'].reduce({ :components => [] }) do |obj, component|
           obj.tap { |o| o[:components].push(component) }
         end
       end

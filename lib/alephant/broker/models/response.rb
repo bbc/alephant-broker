@@ -22,7 +22,6 @@ module Alephant
       end
 
       def setup; end
-
     end
   end
 end

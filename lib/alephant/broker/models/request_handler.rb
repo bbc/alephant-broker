@@ -7,24 +7,30 @@ module Alephant
       include Logger
 
       def initialize(config)
-        @env = RequestStore.store[:env]
-        @request = RequestFactory.process(request_type)
-        @response_factory = ResponseFactory.new(config)
+        @config = config
       end
 
       def process
         begin
-          @response_factory.response_from(@request)
+          response_factory.response_from(request)
         rescue Exception => e
           logger.info("Broker.requestHandler.process: Exception raised (#{e.message})")
-          @response_factory.response(500)
+          response_factory.response(500)
         end
       end
 
       private
 
+      def request
+        @request ||= RequestFactory.process(request_type)
+      end
+
+      def response_factory
+        @response_factory ||= ResponseFactory.new(@config)
+      end
+
       def request_type
-        case @env.path.split('/')[1]
+        case env.request_type
         when 'components'
           component_type
         when 'status'
@@ -35,12 +41,16 @@ module Alephant
       end
 
       def component_type
-        case @env.method
+        case env.method
         when 'POST'
           :component_batch
         when 'GET'
           :component
         end
+      end
+
+      def env
+        @env ||= RequestStore.store[:env]
       end
     end
   end
