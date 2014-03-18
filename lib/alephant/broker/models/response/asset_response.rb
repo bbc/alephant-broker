@@ -20,7 +20,7 @@ module Alephant
       def setup
         begin
           self.content_type = request.content_type
-          self.content = cache.get s3_path
+          self.content = cache.get(s3_path)
         rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
           set_error_for(e, 404)
         rescue Exception => e
