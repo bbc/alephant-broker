@@ -1,3 +1,5 @@
+require 'json'
+
 module Alephant
   module Broker
     class CallEnvironment

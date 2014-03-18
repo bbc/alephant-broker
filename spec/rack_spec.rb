@@ -12,11 +12,19 @@ describe 'Broker Rack Application' do
   before do
     RequestStore.store[:env] = nil
 
-    @lookup_table = double('Alephant::Lookup::LookupTable')
-    Alephant::Lookup.stub(:create).and_return(@lookup_table)
+    Alephant::Broker::AssetResponse
+      .any_instance
+      .stub(:initialize)
 
-    Alephant::Cache.any_instance.stub(:initialize)
-    Alephant::Cache.any_instance.stub(:get).and_return('Test response')
+    Alephant::Broker::AssetResponse
+      .any_instance
+      .stub(:status)
+      .and_return(200)
+
+    Alephant::Broker::AssetResponse
+      .any_instance
+      .stub(:content)
+      .and_return('Test')
   end
 
   def app
@@ -40,41 +48,44 @@ describe 'Broker Rack Application' do
   end
 
   it "Test asset data is returned" do
-    allow(@lookup_table).to receive(:read).and_return('some_location')
-
     get '/components/test_component'
+
     expect(last_response).to be_ok
-    expect(last_response.body).to eq('Test response')
+    expect(last_response.body).to eq('Test')
   end
 
   it "Tests query string parameters are passed correctly to lookup" do
-    variant = {:variant => 'test_variant'}
-    allow(@lookup_table).to receive(:read).with(variant).and_return('some_location')
-
     get '/components/test_component?variant=test_variant'
+
     expect(last_response).to be_ok
-    expect(last_response.body).to eq('Test response')
+    expect(last_response.body).to eq('Test')
   end
 
   it "Tests 404 when lookup doesn't return a valid location" do
-    allow(@lookup_table).to receive(:read).and_return(nil)
+    Alephant::Broker::AssetResponse
+      .any_instance
+      .stub(:status)
+      .and_return(404)
 
     get '/components/test_component'
+
     expect(last_response.status).to eq(404)
   end
 
   it "Tests 500 when exception is raised in application" do
-    allow(@lookup_table).to receive(:read).and_raise(Exception)
+    Alephant::Broker::AssetResponse
+      .any_instance
+      .stub(:status)
+      .and_return(500)
 
     get '/components/test_component'
+
     expect(last_response.status).to eq(500)
   end
 
   it "Test batch asset data is returned" do
-    allow(@lookup_table).to receive(:read).and_return('some_location')
-
     json          = '{"batch_id":"baz","components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
-    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","status":200,"body":"Test response"},{"component":"ni_council_results_table","status":200,"body":"Test response"}]}'
+    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","status":200,"body":"Test"},{"component":"ni_council_results_table","status":200,"body":"Test"}]}'
 
     post '/components/batch', json, "CONTENT_TYPE" => "application/json"
 
