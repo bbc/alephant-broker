@@ -41,7 +41,9 @@ module Alephant
       end
 
       def s3_path
-        lookup.read(id, request.options, version).tap { |cache_id| raise InvalidCacheKey if cache_id.nil? }
+        lookup.read(id, request.options, version).tap do |lookup|
+          raise InvalidCacheKey if lookup.location.nil?
+        end.location
       end
 
       def lookup
