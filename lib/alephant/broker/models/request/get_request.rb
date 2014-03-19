@@ -7,9 +7,9 @@ module Alephant
       attr_reader :type, :component_id, :extension, :options, :content_type
 
       def initialize
+        super(:asset)
         env = RequestStore.store[:env]
         parse requested_components(env.path, env.query)
-        super(:asset)
       end
 
       def requested_components(path, query_string)

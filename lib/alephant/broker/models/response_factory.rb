@@ -25,16 +25,15 @@ module Alephant
           end
       end
 
+      def response(status)
+        Response.new(status)
+      end
+
       private
 
       def config
         @config
       end
-
-      def response(status)
-        Response.new(status)
-      end
-
     end
   end
 end
