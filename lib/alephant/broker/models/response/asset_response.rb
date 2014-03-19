@@ -41,21 +41,17 @@ module Alephant
       end
 
       def s3_path
-        lookup.read(id, request.options, version).tap do |lookup|
-          raise InvalidCacheKey if lookup.location.nil?
-        end.location
+        lookup.read(component_id, request.options, version).tap do |lookup_object|
+          raise InvalidCacheKey if lookup_object.location.nil?
+        end.location unless version.nil?
       end
 
       def lookup
         @lookup ||= Alephant::Lookup.create(config[:lookup_table_name])
       end
 
-      def asset?
-        request.type == :asset
-      end
-
       def key
-        asset? ? component_key : renderer_key
+        request.type == :batch ? renderer_key : component_key
       end
 
       def component_key
@@ -64,10 +60,6 @@ module Alephant
 
       def renderer_key
         "#{renderer_id}/#{opts_hash}"
-      end
-
-      def id
-        asset? ? component_id : renderer_id
       end
 
       def component_id
