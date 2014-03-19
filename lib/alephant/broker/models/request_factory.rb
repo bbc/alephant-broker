@@ -11,7 +11,7 @@ module Alephant
         case type
         when :component
           GetRequest.new
-        when :component_batch
+        when :components_batch
           PostRequest.new
         when :status
           StatusRequest.new

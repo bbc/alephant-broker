@@ -48,14 +48,14 @@ describe 'Broker Rack Application' do
   end
 
   it "Test asset data is returned" do
-    get '/components/test_component'
+    get '/component/test_component'
 
     expect(last_response).to be_ok
     expect(last_response.body).to eq('Test')
   end
 
   it "Tests query string parameters are passed correctly to lookup" do
-    get '/components/test_component?variant=test_variant'
+    get '/component/test_component?variant=test_variant'
 
     expect(last_response).to be_ok
     expect(last_response.body).to eq('Test')
@@ -67,7 +67,7 @@ describe 'Broker Rack Application' do
       .stub(:status)
       .and_return(404)
 
-    get '/components/test_component'
+    get '/component/test_component'
 
     expect(last_response.status).to eq(404)
   end
@@ -78,7 +78,7 @@ describe 'Broker Rack Application' do
       .stub(:status)
       .and_return(500)
 
-    get '/components/test_component'
+    get '/component/test_component'
 
     expect(last_response.status).to eq(500)
   end

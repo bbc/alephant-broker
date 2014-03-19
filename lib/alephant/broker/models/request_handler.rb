@@ -32,20 +32,13 @@ module Alephant
       def request_type
         case env.request_type
         when 'components'
-          component_type
+          :components_batch
+        when 'component'
+          :component
         when 'status'
           :status
         else
           :notfound
-        end
-      end
-
-      def component_type
-        case env.method
-        when 'POST'
-          :component_batch
-        when 'GET'
-          :component
         end
       end
 
