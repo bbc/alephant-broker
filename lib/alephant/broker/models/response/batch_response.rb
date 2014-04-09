@@ -1,4 +1,5 @@
 require 'alephant/logger'
+require 'peach'
 
 module Alephant
   module Broker
@@ -21,7 +22,7 @@ module Alephant
       private
 
       def json
-        get_components.each do |component|
+        get_components.peach do |component|
           id      = component['component']
           options = set_keys_to_symbols component.fetch('options', {})
 
