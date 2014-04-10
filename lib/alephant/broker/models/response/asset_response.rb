@@ -31,7 +31,7 @@ module Alephant
       private
 
       def cache
-        @cache ||= Alephant::Cache.new(config[:bucket_id], config[:path])
+        @cache ||= Alephant::Cache.new(config[:bucket_base_path], config[:s3_object_path])
       end
 
       def set_error_for(exception, status)
