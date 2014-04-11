@@ -29,9 +29,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rack-test"
-  spec.add_development_dependency "request_store"
-  spec.add_development_dependency "peach"
 
+  spec.add_runtime_dependency "request_store"
+  spec.add_runtime_dependency "peach"
   spec.add_runtime_dependency "alephant-lookup"
   spec.add_runtime_dependency "alephant-cache"
   spec.add_runtime_dependency 'alephant-logger'
