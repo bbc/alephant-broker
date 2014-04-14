@@ -24,7 +24,7 @@ describe Alephant::Broker::BatchResponse do
           { 'component' => 'foo1', 'options' => { 'variant' => 'bar1' } },
           { 'component' => 'foo2', 'options' => { 'variant' => 'bar2' } }
         ]}
-    )
+    ).as_null_object
   }
 
   before do

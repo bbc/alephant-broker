@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Alephant::Broker::ResponseFactory do
   describe "#response_from(request)" do
     let (:request) { double("Alephant::Broker::Request") }
-    let (:post_request) { double("Alephant::Broker::PostRequest") }
+    let (:post_request) { double("Alephant::Broker::PostRequest").as_null_object }
 
     it "should return asset response" do
       instance = Alephant::Broker::ResponseFactory.new({})
@@ -34,7 +34,6 @@ describe Alephant::Broker::ResponseFactory do
       Alephant::Broker::AssetResponse
         .any_instance
         .stub(:initialize)
-        .with(post_request, {})
 
       expect(instance.response_from(post_request))
         .to be_a Alephant::Broker::BatchResponse

@@ -23,12 +23,14 @@ module Alephant
 
       def json
         get_components.peach do |component|
+          thread_local_request = @request.clone
+
           id      = component['component']
           options = set_keys_to_symbols component.fetch('options', {})
 
-          @request.set_component(id, options)
+          thread_local_request.set_component(id, options)
 
-          asset = AssetResponse.new(@request, @config)
+          asset = AssetResponse.new(thread_local_request, @config)
           component.store('status', asset.status)
           component.store('body', asset.content) if valid_status_for asset
         end
