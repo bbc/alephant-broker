@@ -1,4 +1,5 @@
 require 'crimp'
+require 'alephant/logger'
 require 'alephant/cache'
 require 'alephant/lookup'
 require 'alephant/broker/errors/invalid_cache_key'
@@ -7,6 +8,8 @@ require 'alephant/sequencer'
 module Alephant
   module Broker
     class Component
+      include Logger
+
       attr_reader :id, :batch_id, :options, :content
 
       def initialize(id, batch_id, options)
@@ -41,11 +44,11 @@ module Alephant
       end
 
       def lookup
-        @lookup ||= Alephant::Lookup.create(config[:lookup_table_name])
+        @lookup ||= Alephant::Lookup.create(Broker.config[:lookup_table_name])
       end
 
       def key
-        request.type == :batch ? renderer_key : component_key
+        batch_id.nil? ? component_key : renderer_key
       end
 
       def component_key
@@ -53,11 +56,11 @@ module Alephant
       end
 
       def renderer_key
-        "#{renderer_id}/#{opts_hash}"
+        "#{batch_id}/#{opts_hash}"
       end
 
       def opts_hash
-        @opts_hash ||= Crimp.signature(request.options)
+        @opts_hash ||= Crimp.signature(options)
       end
 
       def version
@@ -65,7 +68,7 @@ module Alephant
       end
 
       def sequencer
-        @sequencer ||= Alephant::Sequencer.create(config[:sequencer_table_name], key)
+        @sequencer ||= Alephant::Sequencer.create(Broker.config[:sequencer_table_name], key)
       end
 
     end

@@ -2,7 +2,6 @@ require 'alephant/broker/version'
 require 'alephant/broker/request'
 require 'alephant/broker/environment'
 require 'alephant/broker'
-require 'alephant/logger'
 
 module Alephant
   module Broker
@@ -20,8 +19,6 @@ module Alephant
     end
 
     class Application
-      include Logger
-
       def initialize(c = nil)
         Broker.config = c unless c.nil?
       end

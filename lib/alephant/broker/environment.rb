@@ -1,4 +1,5 @@
 require 'json'
+require 'alephant/logger'
 
 module Alephant
   module Broker

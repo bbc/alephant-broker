@@ -13,6 +13,10 @@ module Alephant
       class Status < Base
         def initialize; super(200) end
       end
+
+      class ServerError < Base
+        def initialize; super(500) end
+      end
     end
   end
 end

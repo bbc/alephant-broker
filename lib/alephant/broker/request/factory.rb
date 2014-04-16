@@ -1,8 +1,4 @@
-require 'alephant/broker/request/asset'
-require 'alephant/broker/request/batch'
-require 'alephant/broker/request/notfound'
-require 'alephant/broker/request/status'
-
+require 'alephant/broker/request'
 
 module Alephant::Broker::Request
   class Factory
