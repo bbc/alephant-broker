@@ -7,24 +7,60 @@ require 'alephant/sequencer'
 
 module Alephant
   module Broker
+
+    class ElastiCache
+      def initialize
+        @elasticache = Dalli::ElastiCache.new(config_endpoint, dalli_options={})
+        @client = @elasticache.client
+      end
+
+      def config_endpoint
+        'location:12111'
+      end
+
+      def dalli_options
+        {
+          :expires_in => 5
+        }
+      end
+
+      def get(key, &block)
+        (result = @client.get(key)) ? result : call_through(key, block)
+      end
+
+      def call_through(key, &block)
+        result = block.call
+        cache.set(key, result)
+
+        result
+      end
+    end
+
     class Component
       include Logger
 
-      attr_reader :id, :batch_id, :options, :content
+      attr_reader :id, :batch_id, :options, :content, :cache_key
 
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
         @options  = options
+        @cache    = ElastiCache.new
       end
 
       def load
-        @content ||= cache.get(s3_path)
+        @content ||= @cache.get(cache_key) do
+          s3.get(s3_path)
+        end
       end
 
       private
 
-      def cache
+      def cache_key
+        @cache_key ||= "#{id}/#{opts_hash}/#{version}"
+      end
+
+      def s3
         @cache ||= Alephant::Cache.new(
           Broker.config[:s3_bucket_id],
           Broker.config[:s3_object_path]
