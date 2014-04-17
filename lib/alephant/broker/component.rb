@@ -4,37 +4,10 @@ require 'alephant/cache'
 require 'alephant/lookup'
 require 'alephant/broker/errors/invalid_cache_key'
 require 'alephant/sequencer'
+require 'alephant/broker/cache'
 
 module Alephant
   module Broker
-
-    class ElastiCache
-      def initialize
-        @elasticache = Dalli::ElastiCache.new(config_endpoint, dalli_options={})
-        @client = @elasticache.client
-      end
-
-      def config_endpoint
-        'location:12111'
-      end
-
-      def dalli_options
-        {
-          :expires_in => 5
-        }
-      end
-
-      def get(key, &block)
-        (result = @client.get(key)) ? result : call_through(key, block)
-      end
-
-      def call_through(key, &block)
-        result = block.call
-        cache.set(key, result)
-
-        result
-      end
-    end
 
     class Component
       include Logger
@@ -44,7 +17,7 @@ module Alephant
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
-        @cache    = ElastiCache.new
+        @cache    = Alephant::Broker::Cache.new
         @options  = symbolize(options || {})
       end
 
@@ -73,7 +46,7 @@ module Alephant
       end
 
       def s3
-        @cache ||= Alephant::Cache.new(
+        @s3_cache ||= Alephant::Cache.new(
           Broker.config[:s3_bucket_id],
           Broker.config[:s3_object_path]
         )
