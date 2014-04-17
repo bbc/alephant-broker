@@ -17,8 +17,8 @@ module Alephant
         def setup
           result  = load(component)
 
-          status  = result.status
-          content = result.body
+          status  = result['status']
+          content = result['body']
         end
 
       end
