@@ -1,3 +1,5 @@
+require 'aws-sdk'
+
 module Alephant
   module Broker
     module Response
