@@ -44,8 +44,8 @@ module Alephant
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
-        @options  = options
         @cache    = ElastiCache.new
+        @options  = symbolize(options || {})
       end
 
       def load
@@ -66,6 +66,10 @@ module Alephant
 
       def cache_key
         @cache_key ||= "#{id}/#{opts_hash}/#{version}"
+      end
+
+      def symbolize(hash)
+        Hash[hash.map { |k,v| [k.to_sym, v] }]
       end
 
       def s3
