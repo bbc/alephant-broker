@@ -17,7 +17,7 @@ module Alephant
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
-        @cache    = Alephant::Broker::Cache.new
+        @cache    = Cache::Client.new
         @options  = symbolize(options || {})
       end
 

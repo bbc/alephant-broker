@@ -10,30 +10,48 @@ end
 
 module Alephant
   module Broker
-    class Cache
+    module Cache
+      class Client
 
-      DEFAULT_CONFIG_ENDPOINT = 'localhost:11211'
-      DEFAULT_TTL             = 2592000
+        DEFAULT_TTL  = 2592000
 
-      def initialize
-        @elasticache = ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
-        @client = @elasticache.client
+        def initialize
+          unless config_endpoint.nil?
+            @@elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
+            @client = @@elasticache.client
+          else
+            @client = NullClient.new
+          end
+        end
+
+        def config_endpoint
+          Broker.config['elasticache_config_endpoint']
+        end
+
+        def ttl
+           Broker.config['elasticache_ttl'] || DEFAULT_TTL
+        end
+
+        def get(key)
+          begin
+            (result = @client.get(key)) ? result : set(key, yield)
+          rescue StandardError => e
+            yield
+          end
+        end
+
+        def set(key, value)
+          value.tap { |o| @client.set(key, o) }
+        end
+
       end
 
-      def config_endpoint
-        Broker.config['elasticache_config'] || DEFAULT_CONFIG_ENDPOINT
-      end
+      class NullClient
+        def get(key); end
 
-      def ttl
-         Broker.config['elasticache_ttl'] || DEFAULT_TTL
-      end
-
-      def get(key)
-        (result = @client.get(key)) ? result : set(key, yield)
-      end
-
-      def set(key, value)
-        value.tap { |o| @client.set(key, o) }
+        def set(key, value)
+          value
+        end
       end
 
     end
