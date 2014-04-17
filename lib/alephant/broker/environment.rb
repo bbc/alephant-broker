@@ -1,8 +1,9 @@
 require 'json'
+require 'alephant/logger'
 
 module Alephant
   module Broker
-    class CallEnvironment
+    class Environment
       include Logger
       attr_reader :settings
 
@@ -23,15 +24,18 @@ module Alephant
       end
 
       def query
-        settings['QUERY_STRING']
+        settings['QUERY_STRING'] || ""
+      end
+
+      def options
+        query.split('&').reduce({}) do |object, key_pair|
+          key, value = key_pair.split('=')
+          object.tap { |o| o.store(key.to_sym, value) }
+        end
       end
 
       def path
         settings['PATH_INFO']
-      end
-
-      def request_type
-        path.split('/')[1]
       end
 
       def data
@@ -41,7 +45,7 @@ module Alephant
       private
 
       def rack_input
-          (settings['rack.input'].read).tap { settings['rack.input'].rewind } # http://rack.rubyforge.org/doc/SPEC.html
+        (settings['rack.input'].read).tap { settings['rack.input'].rewind }
       end
 
       def parse(json)
