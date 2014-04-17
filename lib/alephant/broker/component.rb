@@ -31,12 +31,6 @@ module Alephant
         )
       end
 
-      def set_error_for(exception, status)
-        logger.info("Broker.assetResponse.set_error_for: #{status} exception raised (#{exception.message})")
-        self.status = status
-        self.content = exception.message
-      end
-
       def s3_path
         lookup.read(id, options, version).tap do |lookup_object|
           raise InvalidCacheKey if lookup_object.location.nil?

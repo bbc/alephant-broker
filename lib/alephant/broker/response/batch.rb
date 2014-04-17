@@ -25,21 +25,6 @@ module Alephant
 
         private
 
-        def load(component)
-          begin
-            body   = component.load
-            status = 200
-          rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            body   = "#{e.message}"
-            status = 404
-          rescue StandardError => e
-            body   = "#{e.message}"
-            status = 500
-          end
-
-          { 'body' => body, 'status' => status }
-        end
-
         def json
           components.pmap do | component |
             {
