@@ -4,9 +4,11 @@ require 'alephant/cache'
 require 'alephant/lookup'
 require 'alephant/broker/errors/invalid_cache_key'
 require 'alephant/sequencer'
+require 'alephant/broker/cache'
 
 module Alephant
   module Broker
+
     class Component
       include Logger
 
@@ -15,11 +17,14 @@ module Alephant
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
+        @cache    = Cache::Client.new
         @options  = symbolize(options || {})
       end
 
       def load
-        @content ||= cache.get(s3_path)
+        @content ||= @cache.get(cache_key) do
+          s3.get(s3_path)
+        end
       end
 
       def opts_hash
@@ -32,12 +37,16 @@ module Alephant
 
       private
 
+      def cache_key
+        @cache_key ||= "#{id}/#{opts_hash}/#{version}"
+      end
+
       def symbolize(hash)
         Hash[hash.map { |k,v| [k.to_sym, v] }]
       end
 
-      def cache
-        @cache ||= Alephant::Cache.new(
+      def s3
+        @s3_cache ||= Alephant::Cache.new(
           Broker.config[:s3_bucket_id],
           Broker.config[:s3_object_path]
         )
