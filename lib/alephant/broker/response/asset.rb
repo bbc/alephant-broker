@@ -15,21 +15,10 @@ module Alephant
         end
 
         def setup
-          begin
-            self.content = component.load
-          rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            set_error_for(e, 404)
-          rescue Exception => e
-            set_error_for(e, 500)
-          end
-        end
+          result  = load(component)
 
-        private
-
-        def set_error_for(exception, status)
-          logger.info("Broker.assetResponse.set_error_for: #{status} exception raised (#{exception.message})")
-          self.status = status
-          self.content = exception.message
+          @status  = result['status']
+          @content = result['body']
         end
 
       end

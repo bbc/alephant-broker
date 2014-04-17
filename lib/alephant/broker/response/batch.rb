@@ -25,28 +25,17 @@ module Alephant
 
         private
 
-        def load(component)
-          begin
-            body   = component.load
-            status = 200
-          rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            body   = "#{e.message}"
-            status = 404
-          rescue StandardError => e
-            body   = "#{e.message}"
-            status = 500
-          end
-
-          { 'body' => body, 'status' => status }
-        end
-
         def json
-          components.pmap do | component |
+          logger.info("Broker: Batch load started (#{batch_id})")
+          result = components.pmap do | component |
             {
               'component' => component.id,
-              'options'   => symbolize(component.options)
+              'options'   => symbolize(component.options || {})
             }.merge load(component)
           end
+          logger.info("Broker: Batch load done (#{batch_id})")
+
+          result
         end
 
         def symbolize(hash)

@@ -54,6 +54,14 @@ module Alephant
         end
       end
 
+      def opts_hash
+        @opts_hash ||= Crimp.signature(options)
+      end
+
+      def version
+        @version ||= sequencer.get_last_seen
+      end
+
       private
 
       def cache_key
@@ -65,12 +73,6 @@ module Alephant
           Broker.config[:s3_bucket_id],
           Broker.config[:s3_object_path]
         )
-      end
-
-      def set_error_for(exception, status)
-        logger.info("Broker.assetResponse.set_error_for: #{status} exception raised (#{exception.message})")
-        self.status = status
-        self.content = exception.message
       end
 
       def s3_path
@@ -93,14 +95,6 @@ module Alephant
 
       def renderer_key
         "#{batch_id}/#{opts_hash}"
-      end
-
-      def opts_hash
-        @opts_hash ||= Crimp.signature(options)
-      end
-
-      def version
-        @version ||= sequencer.get_last_seen
       end
 
       def sequencer

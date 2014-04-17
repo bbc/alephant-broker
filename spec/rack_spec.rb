@@ -1,8 +1,8 @@
 ENV['RACK_ENV'] = 'test'
 
+require 'spec_helper'
 require 'rack/test'
-require 'alephant/broker/app/rack'
-require 'request_store'
+require 'alephant/broker'
 
 RSpec.configure do |conf|
   conf.include Rack::Test::Methods
@@ -10,25 +10,24 @@ end
 
 describe 'Broker Rack Application' do
   before do
-    RequestStore.store[:env] = nil
-
-    Alephant::Broker::AssetResponse
+    Alephant::Broker::Component
       .any_instance
-      .stub(:initialize)
+      .stub(:load)
+      .and_return('Test')
 
-    Alephant::Broker::AssetResponse
+    Alephant::Broker::Component
+      .any_instance
+      .stub(:version)
+      .and_return(1)
+
+    Alephant::Broker::Response::Asset
       .any_instance
       .stub(:status)
       .and_return(200)
-
-    Alephant::Broker::AssetResponse
-      .any_instance
-      .stub(:content)
-      .and_return('Test')
   end
 
   def app
-    Alephant::Broker::RackApplication.new({
+    Alephant::Broker::Application.new({
       :lookup_table_name  => 'test_table',
       :bucket_id          => 'test_bucket',
       :path               => 'bucket_path'
@@ -62,7 +61,7 @@ describe 'Broker Rack Application' do
   end
 
   it "Tests 404 when lookup doesn't return a valid location" do
-    Alephant::Broker::AssetResponse
+    Alephant::Broker::Response::Asset
       .any_instance
       .stub(:status)
       .and_return(404)
@@ -73,7 +72,7 @@ describe 'Broker Rack Application' do
   end
 
   it "Tests 500 when exception is raised in application" do
-    Alephant::Broker::AssetResponse
+    Alephant::Broker::Response::Asset
       .any_instance
       .stub(:status)
       .and_return(500)
@@ -85,7 +84,7 @@ describe 'Broker Rack Application' do
 
   it "Test batch asset data is returned" do
     json          = '{"batch_id":"baz","components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
-    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","status":200,"body":"Test"},{"component":"ni_council_results_table","status":200,"body":"Test"}]}'
+    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","options":{},"body":"Test","status":200},{"component":"ni_council_results_table","options":{},"body":"Test","status":200}]}'
 
     post '/components/batch', json, "CONTENT_TYPE" => "application/json"
 
