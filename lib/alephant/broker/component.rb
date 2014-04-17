@@ -22,6 +22,14 @@ module Alephant
         @content ||= cache.get(s3_path)
       end
 
+      def opts_hash
+        @opts_hash ||= Crimp.signature(options)
+      end
+
+      def version
+        @version ||= sequencer.get_last_seen
+      end
+
       private
 
       def cache
@@ -51,14 +59,6 @@ module Alephant
 
       def renderer_key
         "#{batch_id}/#{opts_hash}"
-      end
-
-      def opts_hash
-        @opts_hash ||= Crimp.signature(options)
-      end
-
-      def version
-        @version ||= sequencer.get_last_seen
       end
 
       def sequencer

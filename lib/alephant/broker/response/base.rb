@@ -36,13 +36,17 @@ module Alephant
             status = 500
           end
 
-          log(component.id, status, e)
+          log(component, status, e)
 
           { 'body' => body, 'status' => status }
         end
 
-        def log(id, status, e = nil)
-          logger.info("Broker::Response #{id}:#{status} #{error_for(e)}")
+        def log(c, status, e = nil)
+          logger.info("Broker Loaded: #{details_for(c)} (#{status}) #{error_for(e)}")
+        end
+
+        def details_for(c)
+          "#{c.id}/#{c.opts_hash}/#{c.version} #{c.batch_id.nil? ? '' : "batched"} (#{c.options})"
         end
 
         def error_for(e)
