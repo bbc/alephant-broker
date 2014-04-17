@@ -15,7 +15,7 @@ module Alephant
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
-        @options  = options
+        @options  = symbolize(options || {})
       end
 
       def load
@@ -31,6 +31,10 @@ module Alephant
       end
 
       private
+
+      def symbolize(hash)
+        Hash[hash.map { |k,v| [k.to_sym, v] }]
+      end
 
       def cache
         @cache ||= Alephant::Cache.new(

@@ -30,7 +30,7 @@ module Alephant
           result = components.pmap do | component |
             {
               'component' => component.id,
-              'options'   => symbolize(component.options || {})
+              'options'   => component.options
             }.merge load(component)
           end
           logger.info("Broker: Batch load done (#{batch_id})")
@@ -38,9 +38,6 @@ module Alephant
           result
         end
 
-        def symbolize(hash)
-          Hash[hash.map { |k,v| [k.to_sym, v] }]
-        end
       end
     end
   end
