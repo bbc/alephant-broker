@@ -29,10 +29,10 @@ module Alephant
             body   = component.load
             status = 200
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            body   = "#{e.message}"
+            body   = "#{error_for(e)}"
             status = 404
           rescue StandardError => e
-            body   = "#{e.message}"
+            body   = "#{error_for(e)}"
             status = 500
           end
 
@@ -42,7 +42,7 @@ module Alephant
         end
 
         def log(c, status, e = nil)
-          logger.info("Broker Loaded: #{details_for(c)} (#{status}) #{error_for(e)}")
+          logger.info("Broker: Component loaded: #{details_for(c)} (#{status}) #{error_for(e)}")
         end
 
         def details_for(c)

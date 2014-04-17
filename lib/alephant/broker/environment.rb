@@ -24,7 +24,7 @@ module Alephant
       end
 
       def query
-        settings['QUERY_STRING']
+        settings['QUERY_STRING'] || ""
       end
 
       def options
