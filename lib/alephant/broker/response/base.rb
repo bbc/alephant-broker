@@ -4,7 +4,7 @@ module Alephant
   module Broker
     module Response
       class Base
-        attr_accessor :status, :content, :content_type
+        attr_accessor :status, :content, :content_type, :version, :cached
 
         STATUS_CODE_MAPPING = {
           200 => 'ok',
