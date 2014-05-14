@@ -38,7 +38,11 @@ module Alephant
       def send(response)
         [
           response.status,
-          { "Content-Type" => response.content_type },
+          {
+            "Content-Type" => response.content_type,
+            "X-Version"    => response.version.to_s,
+            "X-Cached"     => response.cached.to_s
+          },
           [ response.content.to_s ]
         ]
       end

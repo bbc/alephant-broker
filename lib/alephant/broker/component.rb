@@ -12,17 +12,19 @@ module Alephant
     class Component
       include Logger
 
-      attr_reader :id, :batch_id, :options, :content
+      attr_reader :id, :batch_id, :options, :content, :cached
 
       def initialize(id, batch_id, options)
         @id       = id
         @batch_id = batch_id
         @cache    = Cache::Client.new
         @options  = symbolize(options || {})
+        @cached   = true
       end
 
       def load
         @content ||= @cache.get(cache_key) do
+          @cached = false
           s3.get(s3_path)
         end
       end
