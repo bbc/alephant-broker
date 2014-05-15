@@ -11,7 +11,7 @@ module Alephant
         attr_reader :component
 
         def initialize(env)
-          logger.info("Request::Asset#initialize(#{env.settings})")
+          logger.debug("Request::Asset#initialize(#{env.settings})")
           component_id = component_id_for env.path
 
           @component = Component.new(
@@ -20,7 +20,7 @@ module Alephant
             env.options
           )
 
-          logger.info("Request::Asset#initialize: id: #{component_id}")
+          logger.debug("Request::Asset#initialize: id: #{component_id}")
           raise InvalidAssetId.new("No Asset ID specified") if component_id.nil?
         end
 

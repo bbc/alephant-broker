@@ -15,7 +15,7 @@ module Alephant
             @@elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
             @client = @@elasticache.client
           else
-            logger.info('Broker::Cache::Client#initialize: No config endpoint, NullClient used')
+            logger.debug('Broker::Cache::Client#initialize: No config endpoint, NullClient used')
             @client = NullClient.new
           end
         end

@@ -23,7 +23,7 @@ module Alephant
           begin
             response_for request_for(env)
           rescue Exception => e
-            logger.info("Broker.requestHandler.process: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
+            logger.warn("Broker.requestHandler.process: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
             Response::Factory.error
           end
         end

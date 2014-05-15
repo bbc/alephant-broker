@@ -11,12 +11,12 @@ module Alephant
         attr_reader :batch_id, :components
 
         def initialize(env)
-          logger.info("Request::Batch#initialize(#{env.settings})")
+          logger.debug("Request::Batch#initialize(#{env.settings})")
 
           @batch_id   = env.data['batch_id']
           @components = components_for env
 
-          logger.info("Request::Batch#initialize: id: #{@batch_id}")
+          logger.debug("Request::Batch#initialize: id: #{@batch_id}")
         end
 
         private
