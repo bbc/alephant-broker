@@ -37,8 +37,7 @@ module Alephant
           end
 
           log(component, status, e)
-
-          { 'body' => body, 'status' => status }
+          { 'body' => body.force_encoding('UTF-8'), 'status' => status }
         end
 
         def log(c, status, e = nil)
