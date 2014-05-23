@@ -13,10 +13,10 @@ module Alephant
         def initialize
           unless config_endpoint.nil?
             @@elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
-            @client = @@elasticache.client
+            @@client ||= @@elasticache.client
           else
             logger.debug('Broker::Cache::Client#initialize: No config endpoint, NullClient used')
-            @client = NullClient.new
+            @@client = NullClient.new
           end
         end
 
@@ -30,7 +30,7 @@ module Alephant
 
         def get(key, &block)
           begin
-            result = @client.get(key)
+            result = @@client.get(key)
             logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
             result ? result : set(key, block.call)
           rescue StandardError => e
@@ -39,7 +39,7 @@ module Alephant
         end
 
         def set(key, value)
-          value.tap { |o| @client.set(key, o) }
+          value.tap { |o| @@client.set(key, o) }
         end
 
       end
