@@ -1,74 +1,24 @@
-require 'crimp'
 require 'alephant/logger'
-require 'alephant/cache'
-require 'alephant/lookup'
-require 'alephant/broker/errors/invalid_cache_key'
-require 'alephant/sequencer'
 require 'alephant/broker/cache'
+require 'alephant/broker/component/loader'
 
 module Alephant::Broker
-  module Adapter
-    class Static
-      attr_reader :cache
+  module Component
 
-      def initialize(cache_client)
-        @cache = cache_client
-      end
+    def self.create(id, batch_id, options)
+      cache_client = Cache::Client.new
+      adapter = Loader::Static.new(cache_client)
 
-      def load(id, batch_id, options)
-        opts_hash  = Crimp.signature(options)
-        sequencer  = sequencer_for "#{batch_id || id}/#{opts_hash}"
-
-        version    = sequencer.get_last_seen
-        path       = path_for(id, options, version)
-
-        {
-          :content   => datastore.get path,
-          :version   => version
-        }
-      end
-
-      private
-
-      def datastore
-        @datastore ||= Alephant::Cache.new(
-          Broker.config[:s3_bucket_id],
-          Broker.config[:s3_object_path]
-        )
-      end
-
-      def path_for(id, options, version)
-        lookup.read(lookup_key, options, version).tap do |lookup_object|
-          raise InvalidCacheKey if lookup_object.location.nil?
-        end.location unless version.nil?
-      end
-
-      def lookup
-        @lookup ||= Alephant::Lookup.create(
-          Broker.config[:lookup_table_name]
-        )
-      end
-
-      def sequencer_for(seq_key)
-        @sequencer ||= Alephant::Sequencer.create(
-          Broker.config[:sequencer_table_name],
-          seq_key
-        )
-      end
+      Component.new(id, batch_id, options, loader)
     end
-  end
-end
-
-module Alephant
-  module Broker
 
     class Component
       include Logger
 
-      attr_reader :id, :batch_id, :options, :content, :cached, :adaptor
+      attr_reader :id, :batch_id, :options, :content, :cached, :loader
 
-      def initialize(id, batch_id, options, adaptor)
-        @adaptor   = adaptor
+      def initialize(id, batch_id, options, loader)
+        @loader    = loader
         @id        = id
         @batch_id  = batch_id
         @cache     = Cache::Client.new
@@ -79,7 +29,7 @@ module Alephant
       def load
         response ||= cache.get(cache_key) do
           @cached = false
-          adaptor.load(id, batch_id, opts_hash)
+          loader.load(id, batch_id, opts_hash)
         end
 
         @version   = response[:version]
@@ -99,3 +49,4 @@ module Alephant
     end
   end
 end
+
