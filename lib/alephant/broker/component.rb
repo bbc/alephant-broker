@@ -1,40 +1,37 @@
-require 'crimp'
 require 'alephant/logger'
-require 'alephant/cache'
-require 'alephant/lookup'
-require 'alephant/broker/errors/invalid_cache_key'
-require 'alephant/sequencer'
 require 'alephant/broker/cache'
+require 'alephant/broker/component/loader'
 
-module Alephant
-  module Broker
+module Alephant::Broker
+  module Component
+
+    def self.create(id, batch_id, options)
+      cache_client = Cache::Client.new
+      adapter = Loader::Static.new(cache_client)
+
+      Component.new(id, batch_id, options, loader)
+    end
 
     class Component
-      include Logger
+      attr_reader :id, :batch_id, :options, :content, :cached, :version
 
-      attr_reader :id, :batch_id, :options, :content, :cached
-
-      def initialize(id, batch_id, options)
-        @id       = id
-        @batch_id = batch_id
-        @cache    = Cache::Client.new
-        @options  = symbolize(options || {})
-        @cached   = true
+      def initialize(id, batch_id, options, loader)
+        @loader    = loader
+        @id        = id
+        @batch_id  = batch_id
+        @cache     = Cache::Client.new
+        @options   = symbolize(options || {})
+        @cached    = true
       end
 
       def load
-        @content ||= @cache.get(cache_key) do
+        response ||= cache.get(cache_key) do
           @cached = false
-          s3.get(s3_path)
+          @loader.load(id, batch_id, opts_hash)
         end
-      end
 
-      def opts_hash
-        @opts_hash ||= Crimp.signature(options)
-      end
-
-      def version
-        @version ||= sequencer.get_last_seen
+        @version   = response[:version]
+        @content   = response[:content]
       end
 
       private
@@ -47,39 +44,7 @@ module Alephant
         Hash[hash.map { |k,v| [k.to_sym, v] }]
       end
 
-      def s3
-        @s3_cache ||= Alephant::Cache.new(
-          Broker.config[:s3_bucket_id],
-          Broker.config[:s3_object_path]
-        )
-      end
-
-      def s3_path
-        lookup.read(id, options, version).tap do |lookup_object|
-          raise InvalidCacheKey if lookup_object.location.nil?
-        end.location unless version.nil?
-      end
-
-      def lookup
-        @lookup ||= Alephant::Lookup.create(Broker.config[:lookup_table_name])
-      end
-
-      def key
-        batch_id.nil? ? component_key : renderer_key
-      end
-
-      def component_key
-        "#{id}/#{opts_hash}"
-      end
-
-      def renderer_key
-        "#{batch_id}/#{opts_hash}"
-      end
-
-      def sequencer
-        @sequencer ||= Alephant::Sequencer.create(Broker.config[:sequencer_table_name], key)
-      end
-
     end
   end
 end
+

@@ -10,12 +10,12 @@ end
 
 describe 'Broker Rack Application' do
   before do
-    Alephant::Broker::Component
+    Alephant::Broker::Component::Component
       .any_instance
       .stub(:load)
       .and_return('Test')
 
-    Alephant::Broker::Component
+    Alephant::Broker::Component::Component
       .any_instance
       .stub(:version)
       .and_return(1)
