@@ -13,9 +13,7 @@ module Alephant::Broker
     end
 
     class Component
-      include Logger
-
-      attr_reader :id, :batch_id, :options, :content, :cached, :loader
+      attr_reader :id, :batch_id, :options, :content, :cached, :version
 
       def initialize(id, batch_id, options, loader)
         @loader    = loader
@@ -29,7 +27,7 @@ module Alephant::Broker
       def load
         response ||= cache.get(cache_key) do
           @cached = false
-          loader.load(id, batch_id, opts_hash)
+          @loader.load(id, batch_id, opts_hash)
         end
 
         @version   = response[:version]
