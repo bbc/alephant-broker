@@ -10,6 +10,8 @@ module Alephant
             Asset.new(request.component)
           when Request::Batch
             Batch.new(request.components, request.batch_id)
+          when Request::Multi
+            Multi.new(request.requests)
           when Request::Status
             Status.new
           else

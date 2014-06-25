@@ -9,6 +9,8 @@ module Alephant::Broker::Request
 
     def self.request_for(env)
       case request_type_from(env)
+      when 'multi'
+        Multi.new(env)
       when 'component'
         Asset.new(env)
       when 'components'
