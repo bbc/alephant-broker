@@ -20,6 +20,16 @@ module Alephant
           setup
         end
 
+        def to_h
+          {
+            :status       => @status,
+            :content      => @content,
+            :content_type => @content_type,
+            :version      => @version,
+            :cached       => @cached
+          }
+        end
+
         protected
 
         def setup; end

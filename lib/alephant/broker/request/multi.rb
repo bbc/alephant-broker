@@ -1,7 +1,6 @@
 require 'alephant/logger'
 require 'alephant/broker/component'
 
-
 module Alephant
   module Broker
     module Request
@@ -20,10 +19,16 @@ module Alephant
         def requests_for(env)
           env.data['requests'].map do |c|
             case c['type']
-            when 'batch'
-              #Batch.new
             when 'asset'
-              #Asset.new
+              asset = Asset.new
+
+              component_id = c['payload']['component_id']
+              options      = c['payload']['options']
+
+              component = Component.new(component_id, nil, options)
+              asset.component = component
+            else
+              raise StandardError.new "request type not identified"
             end
           end
         end

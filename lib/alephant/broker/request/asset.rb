@@ -8,26 +8,17 @@ module Alephant
       class Asset
         include Logger
 
-        attr_reader :component
+        attr_accessor :component
 
-        def initialize(env)
-          logger.debug("Request::Asset#initialize(#{env.settings})")
-          component_id = component_id_for env.path
+        def initialize(env = nil)
+          return if env.nil?
 
-          @component = Component.new(
-            component_id,
-            nil,
-            env.options
-          )
+          component_id = path.split('/')[2] || nil
+          options      = env.options
 
-          logger.debug("Request::Asset#initialize: id: #{component_id}")
           raise InvalidAssetId.new("No Asset ID specified") if component_id.nil?
-        end
 
-        private
-
-        def component_id_for(path)
-          path.split('/')[2] || nil
+          @component = Component.new(component_id, nil, options)
         end
 
       end
