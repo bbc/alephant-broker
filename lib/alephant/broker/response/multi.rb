@@ -6,7 +6,7 @@ module Alephant
       class Multi < Base
 
         def initialize(requests)
-          requests.reduce({ :responses => [] }) do |m,request|
+          requests.reduce(:responses => []) do |m,request|
             response = Factory.response_for request
 
             case response
