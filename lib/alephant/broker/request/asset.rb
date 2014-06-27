@@ -13,7 +13,7 @@ module Alephant
         def initialize(env = nil)
           return if env.nil?
 
-          component_id = path.split('/')[2] || nil
+          component_id = env.path.split('/')[2] || nil
           options      = env.options
 
           raise InvalidAssetId.new("No Asset ID specified") if component_id.nil?
