@@ -39,7 +39,7 @@ module Alephant
             body   = component.load
             status = 200
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            body   = "#{error_for(e)}"
+            body   = "Not found"
             status = 404
           rescue StandardError => e
             body   = "#{error_for(e)}"

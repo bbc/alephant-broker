@@ -4,8 +4,15 @@ module Alephant
   module Broker
     module Response
       class Multi < Base
+        attr_reader :requests
 
         def initialize(requests)
+          @requests = requests
+
+          super()
+        end
+
+        def raw_response
           requests.reduce(:responses => []) do |m,request|
             response = Factory.response_for request
 
@@ -20,10 +27,17 @@ module Alephant
                   :body         => response.to_h
                 }
               }
+            when NotFound
+              # Do nothing
             else
               raise StandardError.new "response type not identified"
             end
           end
+        end
+
+        def setup
+          @content_type = 'application/json'
+          @content      = JSON.generate(raw_response)
         end
       end
     end

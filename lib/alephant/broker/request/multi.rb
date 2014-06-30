@@ -26,7 +26,7 @@ module Alephant
               options      = c['payload']['options']
 
               component = Component.new(component_id, nil, options)
-              asset.component = component
+              asset.tap { |a| a.component = component }
             else
               raise StandardError.new "request type not identified"
             end
