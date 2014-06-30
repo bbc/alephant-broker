@@ -32,6 +32,8 @@ module Alephant
             else
               raise StandardError.new "response type not identified"
             end
+
+            m
           end
         end
 
