@@ -13,9 +13,11 @@ module Alephant
         }
 
         def initialize(status = 200, content_type = "text/html")
+          @version      = 'not available'
+          @cached       = false
           @content_type = content_type
-          @status  = status
-          @content = STATUS_CODE_MAPPING[status]
+          @status       = status
+          @content      = STATUS_CODE_MAPPING[status]
 
           setup
         end
@@ -36,8 +38,12 @@ module Alephant
 
         def load(component)
           begin
-            body   = component.load
-            status = 200
+            component.load
+
+            body           = component.content.force_encoding('UTF-8')
+            content_type   = component.content_type
+            version        = component.version if !component.version.nil?
+            cached         = component.cached
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
             body   = "Not found"
             status = 404
@@ -47,7 +53,12 @@ module Alephant
           end
 
           log(component, status, e)
-          { 'body' => body.force_encoding('UTF-8'), 'status' => status }
+
+          {
+            :body         => body,
+            :content_type => content_type,
+            :status       => status
+          }
         end
 
         def log(c, status, e = nil)

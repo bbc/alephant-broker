@@ -15,11 +15,7 @@ module Alephant
         end
 
         def setup
-          result  = load(component)
-          @status  = result['status']
-          @content = result['body']
-          @version = component.version.nil? ? 'not available' : component.version
-          @cached  = component.cached
+          load(component)
         end
 
       end
