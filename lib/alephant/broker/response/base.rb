@@ -4,6 +4,7 @@ module Alephant
   module Broker
     module Response
       class Base
+        attr_reader :headers
         attr_accessor :status, :content, :content_type, :version, :cached
 
         STATUS_CODE_MAPPING = {
@@ -13,9 +14,10 @@ module Alephant
         }
 
         def initialize(status = 200, content_type = "text/html")
+          @headers      = {}
           @content_type = content_type
-          @status  = status
-          @content = STATUS_CODE_MAPPING[status]
+          @status       = status
+          @content      = STATUS_CODE_MAPPING[status]
 
           setup
         end
