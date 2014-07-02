@@ -15,11 +15,13 @@ module Alephant
         end
 
         def setup
-          result  = load(component)
-          @status  = result['status']
-          @content = result['body']
-          @version = component.version.nil? ? 'not available' : component.version
-          @cached  = component.cached
+          loaded_content = load(component)
+
+          @content      = loaded_content[:body]
+          @content_type = loaded_content[:content_type]
+          @status       = loaded_content[:status]
+          @version      = component.version.nil? ? 'not available' : component.version
+          @cached       = component.cached
         end
 
       end

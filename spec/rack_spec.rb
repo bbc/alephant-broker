@@ -17,6 +17,16 @@ describe 'Broker Rack Application' do
 
     Alephant::Broker::Component
       .any_instance
+      .stub(:content)
+      .and_return('Test')
+
+    Alephant::Broker::Component
+      .any_instance
+      .stub(:content_type)
+      .and_return('foo/bar')
+
+    Alephant::Broker::Component
+      .any_instance
       .stub(:version)
       .and_return(1)
 
@@ -84,7 +94,7 @@ describe 'Broker Rack Application' do
 
   it "Test batch asset data is returned" do
     json          = '{"batch_id":"baz","components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
-    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","options":{},"body":"Test","status":200},{"component":"ni_council_results_table","options":{},"body":"Test","status":200}]}'
+    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","options":{},"status":200,"content_type":"foo/bar","body":"Test"},{"component":"ni_council_results_table","options":{},"status":200,"content_type":"foo/bar","body":"Test"}]}'
 
     post '/components/batch', json, "CONTENT_TYPE" => "application/json"
 

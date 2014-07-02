@@ -1,0 +1,141 @@
+diff --git a/lib/alephant/broker/component.rb b/lib/alephant/broker/component.rb
+index 8c7a1f4..bf0ef95 100644
+--- a/lib/alephant/broker/component.rb
++++ b/lib/alephant/broker/component.rb
+@@ -12,7 +12,7 @@ module Alephant
+     class Component
+       include Logger
+ 
+-      attr_reader :id, :batch_id, :options, :content, :cached
++      attr_reader :id, :batch_id, :options, :content, :content_type, :cached
+ 
+       def initialize(id, batch_id, options)
+         @id       = id
+@@ -23,10 +23,8 @@ module Alephant
+       end
+ 
+       def load
+-        @content ||= @cache.get(cache_key) do
+-          @cached = false
+-          s3.get(s3_path)
+-        end
++        @content_type = cache_object[:content_type]
++        @content      = cache_object[:content]
+       end
+ 
+       def opts_hash
+@@ -39,6 +37,13 @@ module Alephant
+ 
+       private
+ 
++      def cache_object
++        @cache_object ||= @cache.get(cache_key) do
++          @cached = false
++          s3.get(s3_path)
++        end
++      end
++
+       def cache_key
+         @cache_key ||= "#{id}/#{opts_hash}/#{version}"
+       end
+diff --git a/lib/alephant/broker/response/asset.rb b/lib/alephant/broker/response/asset.rb
+index 3e417d6..3e9fca2 100644
+--- a/lib/alephant/broker/response/asset.rb
++++ b/lib/alephant/broker/response/asset.rb
+@@ -15,11 +15,7 @@ module Alephant
+         end
+ 
+         def setup
+-          result  = load(component)
+-          @status  = result['status']
+-          @content = result['body']
+-          @version = component.version.nil? ? 'not available' : component.version
+-          @cached  = component.cached
++          load(component)
+         end
+ 
+       end
+diff --git a/lib/alephant/broker/response/base.rb b/lib/alephant/broker/response/base.rb
+index 1c8449f..b4f45ac 100644
+--- a/lib/alephant/broker/response/base.rb
++++ b/lib/alephant/broker/response/base.rb
+@@ -13,9 +13,11 @@ module Alephant
+         }
+ 
+         def initialize(status = 200, content_type = "text/html")
+-          @content_type = content_type
+-          @status  = status
+-          @content = STATUS_CODE_MAPPING[status]
++          version      = 'not available'
++          cached       = false
++          content_type = content_type
++          status       = status
++          content      = STATUS_CODE_MAPPING[status]
+ 
+           setup
+         end
+@@ -35,35 +37,44 @@ module Alephant
+         def setup; end
+ 
+         def load(component)
+-          begin
+-            body   = component.load
+-            status = 200
+-          rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
+-            body   = "Not found"
+-            status = 404
+-          rescue StandardError => e
+-            body   = "#{error_for(e)}"
+-            status = 500
+-          end
++          component.load
++
++          body           = component.content.force_encoding('UTF-8')
++          content_type   = component.content_type
++          version        = component.version if !component.version.nil?
++          cached         = component.cached
+ 
+           log(component, status, e)
+-          { 'body' => body.force_encoding('UTF-8'), 'status' => status }
+-        end
+ 
+-        def log(c, status, e = nil)
+-          logger.info("Broker: Component loaded: #{details_for(c)} (#{status}) #{error_for(e)}")
+-        end
++          {
++            :body         => body,
++            :content_type => content_type,
++            :status       => status
++          }
+ 
+-        def details_for(c)
+-          "#{c.id}/#{c.opts_hash}/#{c.version} #{c.batch_id.nil? ? '' : "batched"} (#{c.options})"
++        rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
++          body   = "Not found"
++          status = 404
++        rescue StandardError => e
++          body   = "#{error_for(e)}"
++          status = 500
+         end
++      end
+ 
+-        def error_for(e)
+-          e.nil? ? nil : "#{e.message}\n#{e.backtrace.join('\n')}"
+-        end
++      def log(c, status, e = nil)
++        logger.info("Broker: Component loaded: #{details_for(c)} (#{status}) #{error_for(e)}")
++      end
++
++      def details_for(c)
++        "#{c.id}/#{c.opts_hash}/#{c.version} #{c.batch_id.nil? ? '' : "batched"} (#{c.options})"
++      end
+ 
++      def error_for(e)
++        e.nil? ? nil : "#{e.message}\n#{e.backtrace.join('\n')}"
+       end
++
+     end
+   end
+ end
++end
+ 
