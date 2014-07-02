@@ -5,6 +5,7 @@ require 'alephant/broker'
 
 module Alephant
   module Broker
+    @@poll = true
 
     def self.handle(env)
       Request::Handler.process env
@@ -16,6 +17,14 @@ module Alephant
 
     def self.config=(c)
       @@configuration = c
+    end
+
+    def self.poll?
+      @@poll
+    end
+
+    def self.poll=(state)
+      @@poll = state
     end
 
     class Application
