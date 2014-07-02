@@ -1,4 +1,5 @@
 require 'aws-sdk'
+require 'ostruct'
 
 module Alephant
   module Broker
@@ -38,27 +39,22 @@ module Alephant
 
         def load(component)
           begin
+
+            data = OpenStruct.new(:status => 200, :content_type => content_type)
             component.load
 
-            body           = component.content.force_encoding('UTF-8')
-            content_type   = component.content_type
-            version        = component.version if !component.version.nil?
-            cached         = component.cached
+            data.content_type = component.content_type
+            data.body         = component.content.force_encoding('UTF-8')
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            body   = "Not found"
-            status = 404
+            data.body   = "Not found"
+            data.status = 404
           rescue StandardError => e
-            body   = "#{error_for(e)}"
-            status = 500
+            data.body   = "#{error_for(e)}"
+            data.status = 500
           end
 
-          log(component, status, e)
-
-          {
-            :body         => body,
-            :content_type => content_type,
-            :status       => status
-          }
+          log(component, data.status, e)
+          data.marshal_dump
         end
 
         def log(c, status, e = nil)
