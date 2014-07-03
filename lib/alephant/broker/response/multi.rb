@@ -6,6 +6,8 @@ module Alephant
       class Multi < Base
         attr_reader :requests
 
+        POLLING_DELAY = 2
+
         def initialize(requests)
           @requests = requests
 
@@ -13,7 +15,7 @@ module Alephant
         end
 
         def raw_response
-          requests.reduce(:responses => []) do |m,request|
+          requests.reduce(:delay => POLLING_DELAY, :responses => []) do |m,request|
             response = Factory.response_for request
 
             case response
