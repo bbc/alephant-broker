@@ -10,19 +10,19 @@ end
 
 describe 'Broker Rack Application' do
   before do
-    Alephant::Broker::Component
-      .any_instance
-      .stub(:load)
+    allow_any_instance_of(Alephant::Broker::Component).to receive(:load)
       .and_return('Test')
 
-    Alephant::Broker::Component
-      .any_instance
-      .stub(:version)
+    allow_any_instance_of(Alephant::Broker::Component).to receive(:content)
+      .and_return('Test')
+
+    allow_any_instance_of(Alephant::Broker::Component).to receive(:content_type)
+      .and_return('foo/bar')
+
+    allow_any_instance_of(Alephant::Broker::Component).to receive(:version)
       .and_return(1)
 
-    Alephant::Broker::Response::Asset
-      .any_instance
-      .stub(:status)
+    allow_any_instance_of(Alephant::Broker::Response::Asset).to receive(:status)
       .and_return(200)
   end
 
@@ -61,9 +61,7 @@ describe 'Broker Rack Application' do
   end
 
   it "Tests 404 when lookup doesn't return a valid location" do
-    Alephant::Broker::Response::Asset
-      .any_instance
-      .stub(:status)
+    allow_any_instance_of(Alephant::Broker::Response::Asset).to receive(:status)
       .and_return(404)
 
     get '/component/test_component'
@@ -72,9 +70,7 @@ describe 'Broker Rack Application' do
   end
 
   it "Tests 500 when exception is raised in application" do
-    Alephant::Broker::Response::Asset
-      .any_instance
-      .stub(:status)
+    allow_any_instance_of(Alephant::Broker::Response::Asset).to receive(:status)
       .and_return(500)
 
     get '/component/test_component'
@@ -84,7 +80,7 @@ describe 'Broker Rack Application' do
 
   it "Test batch asset data is returned" do
     json          = '{"batch_id":"baz","components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}'
-    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","options":{},"body":"Test","status":200},{"component":"ni_council_results_table","options":{},"body":"Test","status":200}]}'
+    compiled_json = '{"batch_id":"baz","components":[{"component":"ni_council_results_table","options":{},"status":200,"content_type":"foo/bar","body":"Test"},{"component":"ni_council_results_table","options":{},"status":200,"content_type":"foo/bar","body":"Test"}]}'
 
     post '/components/batch', json, "CONTENT_TYPE" => "application/json"
 

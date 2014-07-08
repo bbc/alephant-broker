@@ -1,9 +1,11 @@
 require 'aws-sdk'
+require 'ostruct'
 
 module Alephant
   module Broker
     module Response
       class Base
+        attr_reader :headers
         attr_accessor :status, :content, :content_type, :version, :cached
 
         STATUS_CODE_MAPPING = {
@@ -13,11 +15,24 @@ module Alephant
         }
 
         def initialize(status = 200, content_type = "text/html")
+          @headers      = {}
+          @version      = 'not available'
+          @cached       = false
           @content_type = content_type
-          @status  = status
-          @content = STATUS_CODE_MAPPING[status]
+          @status       = status
+          @content      = STATUS_CODE_MAPPING[status]
 
           setup
+        end
+
+        def to_h
+          {
+            :status       => @status,
+            :content      => @content,
+            :content_type => @content_type,
+            :version      => @version,
+            :cached       => @cached
+          }
         end
 
         protected
@@ -26,18 +41,22 @@ module Alephant
 
         def load(component)
           begin
-            body   = component.load
-            status = 200
+
+            data = OpenStruct.new(:status => 200, :content_type => content_type)
+            component.load
+
+            data.content_type = component.content_type
+            data.body         = component.content.force_encoding('UTF-8')
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
-            body   = "#{error_for(e)}"
-            status = 404
+            data.body   = "Not found"
+            data.status = 404
           rescue StandardError => e
-            body   = "#{error_for(e)}"
-            status = 500
+            data.body   = "#{error_for(e)}"
+            data.status = 500
           end
 
-          log(component, status, e)
-          { 'body' => body.force_encoding('UTF-8'), 'status' => status }
+          log(component, data.status, e)
+          data.marshal_dump
         end
 
         def log(c, status, e = nil)

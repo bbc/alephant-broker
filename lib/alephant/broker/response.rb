@@ -4,6 +4,7 @@ module Alephant
       require 'alephant/broker/response/base'
       require 'alephant/broker/response/asset'
       require 'alephant/broker/response/batch'
+      require 'alephant/broker/response/multi'
       require 'alephant/broker/response/factory'
 
       class NotFound < Base
