@@ -23,12 +23,12 @@ module Alephant
       end
 
       def load
-        # binding.pry
         @content_type = cache_object[:content_type]
         @content      = cache_object[:content]
       rescue
-        @content_type = 'text/html'
-        @content      = @cache.set(cache_key, retrieve_object)
+        content_hash  = @cache.set(cache_key, retrieve_object)
+        @content_type = content_hash[:content_type]
+        @content      = content_hash[:content]
       end
 
       def opts_hash

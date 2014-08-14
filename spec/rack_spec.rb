@@ -99,7 +99,7 @@ describe 'Broker Rack Application' do
     lookup_location_double = double('Alephant::Lookup::Location', :location => 'test/location')
     lookup_helper_double   = double('Alephant::Lookup::LookupHelper', :read => lookup_location_double)
 
-    cache_double           = double('Alephant::Broker::Cache::Client', :set => nil, :get => '<p>Some data</p>')
+    cache_double           = double('Alephant::Broker::Cache::Client', :set => { :content_type => 'test/html', :content => '<p>Some data</p>' }, :get => '<p>Some data</p>')
     s3_cache_double        = double('Alephant::Cache', :get => 'test_content')
 
     allow(Alephant::Lookup)
