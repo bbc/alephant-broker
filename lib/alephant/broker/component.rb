@@ -23,8 +23,12 @@ module Alephant
       end
 
       def load
+        # binding.pry
         @content_type = cache_object[:content_type]
         @content      = cache_object[:content]
+      rescue
+        @content_type = 'text/html'
+        @content      = @cache.set(cache_key, retrieve_object)
       end
 
       def opts_hash
@@ -38,10 +42,12 @@ module Alephant
       private
 
       def cache_object
-        @cache_object ||= @cache.get(cache_key) do
-          @cached = false
-          s3.get(s3_path)
-        end
+        @cache_object ||= @cache.get(cache_key) { retrieve_object }
+      end
+
+      def retrieve_object
+        @cached = false
+        s3.get(s3_path)
       end
 
       def cache_key

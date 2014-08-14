@@ -10,29 +10,29 @@ end
 
 describe 'Broker Rack Application' do
   before do
-    Alephant::Broker::Component
-      .any_instance
-      .stub(:load)
-      .and_return('Test')
+    cache_hash = {
+      :content_type => 'test/content',
+      :content      => 'Test'
+    }
 
-    Alephant::Broker::Component
-      .any_instance
-      .stub(:content)
-      .and_return('Test')
+    allow_any_instance_of(Alephant::Broker::Cache::Client)
+      .to receive(:get)
+      .and_return(cache_hash)
 
-    Alephant::Broker::Component
-      .any_instance
-      .stub(:content_type)
+    allow_any_instance_of(Alephant::Broker::Component)
+      .to receive(:content)
+      .and_return(cache_hash[:content])
+
+    allow_any_instance_of(Alephant::Broker::Component)
+      .to receive(:content_type)
       .and_return('foo/bar')
 
-    Alephant::Broker::Component
-      .any_instance
-      .stub(:version)
+    allow_any_instance_of(Alephant::Broker::Component)
+      .to receive(:version)
       .and_return(1)
 
-    Alephant::Broker::Response::Asset
-      .any_instance
-      .stub(:status)
+    allow_any_instance_of(Alephant::Broker::Response::Asset)
+      .to receive(:status)
       .and_return(200)
   end
 
@@ -71,9 +71,8 @@ describe 'Broker Rack Application' do
   end
 
   it "Tests 404 when lookup doesn't return a valid location" do
-    Alephant::Broker::Response::Asset
-      .any_instance
-      .stub(:status)
+    allow_any_instance_of(Alephant::Broker::Response::Asset)
+      .to receive(:status)
       .and_return(404)
 
     get '/component/test_component'
@@ -82,9 +81,8 @@ describe 'Broker Rack Application' do
   end
 
   it "Tests 500 when exception is raised in application" do
-    Alephant::Broker::Response::Asset
-      .any_instance
-      .stub(:status)
+    allow_any_instance_of(Alephant::Broker::Response::Asset)
+      .to receive(:status)
       .and_return(500)
 
     get '/component/test_component'
@@ -101,4 +99,30 @@ describe 'Broker Rack Application' do
     expect(last_response).to be_ok
     expect(last_response.body).to eq(compiled_json)
   end
+
+  it "Should handle old cache data gracefully" do
+    lookup_location_double = double('Alephant::Lookup::Location', :location => 'test/location')
+    lookup_helper_double   = double('Alephant::Lookup::LookupHelper', :read => lookup_location_double)
+
+    cache_double           = double('Alephant::Broker::Cache::Client', :set => nil, :get => '<p>Some data</p>')
+    s3_cache_double        = double('Alephant::Cache', :get => 'test_content')
+
+    allow(Alephant::Lookup)
+      .to receive(:create)
+      .and_return(lookup_helper_double)
+
+    allow(Alephant::Broker::Cache::Client)
+      .to receive(:new)
+      .and_return(cache_double)
+
+    allow(Alephant::Cache)
+      .to receive(:new)
+      .and_return(s3_cache_double)
+
+    expect(cache_double).to receive(:set).once
+
+    get '/component/test_component'
+
+  end
+
 end
