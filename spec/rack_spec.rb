@@ -20,16 +20,11 @@ describe 'Broker Rack Application' do
       .and_return(cache_hash)
 
     allow_any_instance_of(Alephant::Broker::Component)
-      .to receive(:content)
-      .and_return(cache_hash[:content])
-
-    allow_any_instance_of(Alephant::Broker::Component)
-      .to receive(:content_type)
-      .and_return('foo/bar')
-
-    allow_any_instance_of(Alephant::Broker::Component)
-      .to receive(:version)
-      .and_return(1)
+      .to receive_messages(
+        :content      => cache_hash[:content],
+        :content_type => 'foo/bar',
+        :version      => 1
+      )
 
     allow_any_instance_of(Alephant::Broker::Response::Asset)
       .to receive(:status)
