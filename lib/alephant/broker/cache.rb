@@ -28,9 +28,17 @@ module Alephant
            Broker.config['elasticache_ttl'] || DEFAULT_TTL
         end
 
+        def versioned(key)
+          [key, cache_version].compact.join('_')
+        end
+
+        def cache_version
+          Broker.config['elasticache_cache_version']
+        end
+
         def get(key, &block)
           begin
-            result = @@client.get(key)
+            result = @@client.get(versioned(key))
             logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
             result ? result : set(key, block.call)
           rescue StandardError => e
@@ -39,7 +47,7 @@ module Alephant
         end
 
         def set(key, value)
-          value.tap { |o| @@client.set(key, o) }
+          value.tap { |o| @@client.set(versioned(key), o) }
         end
 
       end
