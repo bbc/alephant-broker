@@ -51,7 +51,7 @@ module Alephant
       end
 
       def cache_key
-        @cache_key ||= join([id, opts_hash, version, broker_version], '/')
+        @cache_key ||= [id, opts_hash, version, broker_version].join('/')
       end
 
       def broker_version
