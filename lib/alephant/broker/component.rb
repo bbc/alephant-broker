@@ -51,7 +51,11 @@ module Alephant
       end
 
       def cache_key
-        @cache_key ||= "#{id}/#{opts_hash}/#{version}"
+        @cache_key ||= join([id, opts_hash, version, broker_version], '/')
+      end
+
+      def broker_version
+        @broker_version ||= Broker.config.fetch(:application_version, nil)
       end
 
       def symbolize(hash)
