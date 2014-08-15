@@ -28,7 +28,13 @@ module Alephant
            Broker.config['elasticache_ttl'] || DEFAULT_TTL
         end
 
+        def cache_version
+          Broker.config['elasticache_cache_version'] || ""
+        end
+
         def get(key, &block)
+          key += cache_version
+
           begin
             result = @@client.get(key)
             logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
@@ -39,6 +45,8 @@ module Alephant
         end
 
         def set(key, value)
+          key += cache_version
+
           value.tap { |o| @@client.set(key, o) }
         end
 
