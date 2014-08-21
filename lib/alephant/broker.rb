@@ -54,6 +54,7 @@ module Alephant
           response.status,
           {
             "Content-Type" => response.content_type,
+            "X-Sequence"   => response.sequence.to_s,
             "X-Version"    => response.version.to_s,
             "X-Cached"     => response.cached.to_s
           }.merge(response.headers),
@@ -65,10 +66,11 @@ module Alephant
 
       def stop_poll_response
         response = OpenStruct.new(
-          :status  => 420,
-          :content => "Stopped polling",
-          :cached  => false,
-          :version => 0,
+          :status   => 420,
+          :content  => "Stopped polling",
+          :cached   => false,
+          :version  => 0,
+          :sequence => 0,
           :headers => {
             "Content-Type"   => "plain/text",
             "X-Cached"       => "false",

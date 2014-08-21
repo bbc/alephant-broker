@@ -6,7 +6,7 @@ module Alephant
     module Response
       class Base
         attr_reader :headers
-        attr_accessor :status, :content, :content_type, :version, :cached
+        attr_accessor :status, :content, :content_type, :version, :sequence, :cached
 
         STATUS_CODE_MAPPING = {
           200 => 'ok',
@@ -16,7 +16,8 @@ module Alephant
 
         def initialize(status = 200, content_type = "text/html")
           @headers      = {}
-          @version      = 'not available'
+          @sequence     = 'not available'
+          @version      = Broker.config.fetch('elasticache_cache_version', 'not available').to_s
           @cached       = false
           @content_type = content_type
           @status       = status
@@ -31,6 +32,7 @@ module Alephant
             :content      => @content,
             :content_type => @content_type,
             :version      => @version,
+            :sequence     => @sequence,
             :cached       => @cached
           }
         end
