@@ -22,6 +22,10 @@ module Alephant
         def self.error
           ServerError.new
         end
+
+        def self.not_found
+          NotFound.new
+        end
       end
     end
   end
