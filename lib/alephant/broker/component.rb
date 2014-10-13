@@ -9,8 +9,8 @@ require 'alephant/broker/cache'
 module Alephant
   module Broker
     class Component
-      attr_reader :id, :batch_id, :options, :content, :content_type, :cached,
-                  :load_strategy
+      attr_reader :id, :batch_id, :options, :content, :cached, :load_strategy
+      attr_accessor :content_type
 
       def initialize(id, batch_id, load_strategy, options)
         @id       = id
@@ -24,7 +24,7 @@ module Alephant
       end
 
       def load
-        load_strategy.load self
+        @content = load_strategy.load self
       end
 
       private

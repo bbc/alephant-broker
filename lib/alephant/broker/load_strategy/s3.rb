@@ -12,16 +12,20 @@ module Alephant
         end
 
         def load(component)
-          @component    = component
-          @content_type = cache_object[:content_type]
-          @content      = cache_object[:content]
+          @component = component
+          set_content_type(component)
+          cache_object[:content]
         rescue
-          content_hash  = @cache.set(cache_key, retrieve_object)
-          @content_type = content_hash[:content_type]
-          @content      = content_hash[:content]
+          content_hash = @cache.set(cache_key, retrieve_object)
+          set_content_type(component)
+          content_hash[:content]
         end
 
         private 
+
+        def set_content_type(component)
+          component.content_type = cache_object[:content_type]
+        end
 
         def retrieve_object
           @cached = false
