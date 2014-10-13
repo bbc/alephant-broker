@@ -10,7 +10,7 @@ module Alephant
 
         attr_accessor :component
 
-        def initialize(env = nil)
+        def initialize(component_factory, env = nil)
           return if env.nil?
 
           component_id = env.path.split('/')[2] || nil
@@ -18,9 +18,8 @@ module Alephant
 
           raise InvalidAssetId.new("No Asset ID specified") if component_id.nil?
 
-          @component = Component.new(component_id, nil, options)
+          @component = component_factory.create(component_id, nil, options)
         end
-
       end
     end
   end

@@ -8,8 +8,8 @@ module Alephant
   module Broker
     @@poll = true
 
-    def self.handle(env)
-      Request::Handler.process env
+    def self.handle(load_strategy, env)
+      Request::Handler.process(load_strategy, env)
     end
 
     def self.config
@@ -29,8 +29,11 @@ module Alephant
     end
 
     class Application
-      def initialize(c = nil)
+      attr_reader :load_strategy
+
+      def initialize(load_strategy, c = nil)
         Broker.config = c unless c.nil?
+        @load_strategy = load_strategy
       end
 
       def call(env)
@@ -46,19 +49,16 @@ module Alephant
       end
 
       def response_for(call_environment)
-        Broker.handle call_environment
+        Broker.handle(load_strategy, call_environment)
       end
 
       def send(response)
         [
           response.status,
-          {
-            "Content-Type" => response.content_type,
-            "X-Sequence"   => response.sequence.to_s,
-            "X-Version"    => response.version.to_s,
-            "X-Cached"     => response.cached.to_s
-          }.merge(response.headers),
-          [ response.content.to_s ]
+          response.headers,
+          [
+            response.content.to_s
+          ]
         ]
       end
 
