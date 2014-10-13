@@ -29,6 +29,8 @@ module Alephant
     end
 
     class Application
+      attr_reader :load_strategy
+
       def initialize(load_strategy, c = nil)
         Broker.config = c unless c.nil?
         @load_strategy = load_strategy.new
@@ -47,7 +49,7 @@ module Alephant
       end
 
       def response_for(call_environment)
-        Broker.handle(@load_strategy, call_environment)
+        Broker.handle(load_strategy, call_environment)
       end
 
       def send(response)
