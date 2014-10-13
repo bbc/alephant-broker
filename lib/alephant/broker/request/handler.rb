@@ -23,8 +23,6 @@ module Alephant
           begin
             response_for request_for(load_strategy, env)
           rescue Exception => e
-            require "pry"
-            binding.pry
             logger.warn("Broker.requestHandler.process: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
             Response::Factory.error
           end
