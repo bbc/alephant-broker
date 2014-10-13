@@ -7,12 +7,12 @@ module Alephant
         attr_reader :id, :component
 
         def initialize
-          @cache = Cache::Client.new
+          @cache  = Cache::Client.new
           @cached = true
         end
 
         def load(component)
-          @component = component
+          @component    = component
           @content_type = cache_object[:content_type]
           @content      = cache_object[:content]
         rescue
