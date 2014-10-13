@@ -1,5 +1,6 @@
 require 'alephant/logger'
 require 'alephant/broker/component'
+require 'peach'
 
 
 module Alephant
@@ -8,11 +9,12 @@ module Alephant
       class Batch
         include Logger
 
-        attr_reader :batch_id, :components
+        attr_reader :batch_id, :components, :load_strategy
 
-        def initialize(env)
+        def initialize(load_strategy, env)
           logger.debug("Request::Batch#initialize(#{env.settings})")
 
+          @load_strategy = load_strategy
           @batch_id   = env.data['batch_id']
           @components = components_for env
 
@@ -26,6 +28,7 @@ module Alephant
             Component.new(
               c['component'],
               batch_id,
+              load_strategy,
               c['options']
             )
           end

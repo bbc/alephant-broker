@@ -7,14 +7,14 @@ module Alephant::Broker::Request
       env.path.split('/')[1]
     end
 
-    def self.request_for(env)
+    def self.request_for(load_strategy, env)
       case request_type_from(env)
       when 'multi'
         Multi.new(env)
       when 'component'
-        Asset.new(env)
+        Asset.new(load_strategy, env)
       when 'components'
-        Batch.new(env)
+        Batch.new(load_strategy, env)
       when 'status'
         Status.new
       else

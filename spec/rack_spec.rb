@@ -3,6 +3,7 @@ ENV['RACK_ENV'] = 'test'
 require 'spec_helper'
 require 'rack/test'
 require 'alephant/broker'
+require 'alephant/broker/load_strategy/s3'
 
 RSpec.configure do |conf|
   conf.include Rack::Test::Methods
@@ -32,7 +33,9 @@ describe 'Broker Rack Application' do
   end
 
   def app
-    Alephant::Broker::Application.new({
+    Alephant::Broker::Application.new(
+      Alephant::Broker::LoadStrategy::S3,
+      {
       :lookup_table_name  => 'test_table',
       :bucket_id          => 'test_bucket',
       :path               => 'bucket_path'
