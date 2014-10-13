@@ -38,7 +38,7 @@ module Alephant
       end
 
       def component_key
-       "#{id}/#{opts_hash}"
+        "#{id}/#{opts_hash}"
       end
 
       def renderer_key
