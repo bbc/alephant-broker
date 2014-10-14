@@ -21,7 +21,7 @@ module Alephant
           @content_type = loaded_content[:content_type]
           @status       = loaded_content[:status]
           @sequence     = component.version.nil? ? 'not available' : component.version
-          @cached       = component.cached
+          #@cached       = component.cached
         end
 
       end

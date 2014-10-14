@@ -4,27 +4,40 @@ module Alephant
   module Broker
     module LoadStrategy
       class S3
-        attr_reader :id, :component
+        attr_reader :id, :component, :cached, :batch_id, :options
 
         def initialize
           @cache  = Cache::Client.new
           @cached = true
         end
 
-        def load(component)
-          @component = component
-          set_content_type(component)
-          cache_object[:content]
-        rescue
+        def load(id, batch_id, options)
+          @id = id
+          @batch_id = batch_id
+          @options = options
+          Component.new(id, batch_id, cache_object[:content], headers, options)
+        rescue => e
           content_hash = @cache.set(cache_key, retrieve_object)
-          set_content_type(component)
-          content_hash[:content]
+          Component.new(id, batch_id, content_hash[:content], headers)
         end
 
         private 
 
-        def set_content_type(component)
-          component.content_type = cache_object[:content_type]
+        def headers
+          {
+            'Content-Type' => cache_object[:content_type].to_s,
+            #'X-Sequence'   => sequence.to_s,
+            'X-Version'    => version.to_s,
+            'X-Cached'     => cached.to_s
+          }
+        end
+
+        def version
+          Broker.config.fetch('elasticache_cache_version', 'not available').to_s
+        end
+
+        def sequence
+          sequencer.get_last_seen
         end
 
         def retrieve_object
@@ -36,8 +49,24 @@ module Alephant
           @cache_object ||= @cache.get(cache_key) { retrieve_object }
         end
 
+        def opts_hash
+          @opts_hash ||= Crimp.signature(options)
+        end
+
+        def component_key
+          "#{id}/#{opts_hash}"
+        end
+
+        def renderer_key
+          "#{batch_id}/#{opts_hash}"
+        end
+
+        def key
+          batch_id.nil? ? component_key : renderer_key
+        end
+
         def cache_key
-          @cache_key ||= "#{component.id}/#{component.opts_hash}/#{component.version}"
+          @cache_key ||= "#{id}/#{opts_hash}/#{version}"
         end
 
         def s3
@@ -48,9 +77,9 @@ module Alephant
         end
 
         def s3_path
-          lookup.read(component.id, component.options, component.version).tap do |lookup_object|
+          lookup.read(id, options, version).tap do |lookup_object|
             raise InvalidCacheKey if lookup_object.location.nil?
-          end.location unless component.version.nil?
+          end.location unless version.nil?
         end
 
         def lookup

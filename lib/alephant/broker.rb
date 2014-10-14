@@ -55,12 +55,7 @@ module Alephant
       def send(response)
         [
           response.status,
-          {
-            "Content-Type" => response.content_type,
-            "X-Sequence"   => response.sequence.to_s,
-            "X-Version"    => response.version.to_s,
-            "X-Cached"     => response.cached.to_s
-          }.merge(response.headers),
+          response.headers,
           [ response.content.to_s ]
         ]
       end

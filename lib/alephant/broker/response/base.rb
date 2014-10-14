@@ -45,7 +45,7 @@ module Alephant
           begin
 
             data = OpenStruct.new(:status => 200, :content_type => content_type)
-            component.load
+         #   component.load
 
             data.content_type = component.content_type
             data.body         = component.content.force_encoding('UTF-8')
@@ -66,7 +66,9 @@ module Alephant
         end
 
         def details_for(c)
-          "#{c.id}/#{c.opts_hash}/#{c.version} #{c.batch_id.nil? ? '' : "batched"} (#{c.options})"
+          #"#{c.id}/#{c.opts_hash}/#{c.version} #{c.batch_id.nil? ? '' : "batched"} (#{c.options})"
+          # ^ Not all components will have an opts_hash, now.
+          "#{c.id}/#{c.version} #{c.batch_id.nil? ? '' : "batched"} (#{c.options})"
         end
 
         def error_for(e)

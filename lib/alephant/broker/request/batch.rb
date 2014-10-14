@@ -11,10 +11,10 @@ module Alephant
 
         attr_reader :batch_id, :components, :load_strategy
 
-        def initialize(load_strategy, env)
+        def initialize(component_factory, env)
           logger.debug("Request::Batch#initialize(#{env.settings})")
 
-          @load_strategy = load_strategy
+          @component_factory = component_factory
           @batch_id   = env.data['batch_id']
           @components = components_for env
 
@@ -25,10 +25,9 @@ module Alephant
 
         def components_for(env)
           env.data['components'].map do |c|
-            Component.new(
+            @component_factory.create(
               c['component'],
               batch_id,
-              load_strategy,
               c['options']
             )
           end

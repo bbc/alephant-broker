@@ -9,40 +9,20 @@ require 'alephant/broker/cache'
 module Alephant
   module Broker
     class Component
-      attr_reader :id, :batch_id, :options, :content, :cached, :load_strategy
-      attr_accessor :content_type
+      attr_reader :id, :batch_id, :options, :content, :headers
 
-      def initialize(id, batch_id, load_strategy, options)
+      def initialize(id, batch_id, content, headers, options)
         @id       = id
         @batch_id = batch_id
         @options  = symbolize(options || {})
-        @load_strategy = load_strategy
-      end
-
-      def opts_hash
-        @opts_hash ||= Crimp.signature(options)
-      end
-
-      def load
-        @content = load_strategy.load self
+        @headers  = headers
+        @content  = content
       end
 
       private
 
       def symbolize(hash)
         Hash[hash.map { |k,v| [k.to_sym, v] }]
-      end
-
-      def key
-        batch_id.nil? ? component_key : renderer_key
-      end
-
-      def component_key
-        "#{id}/#{opts_hash}"
-      end
-
-      def renderer_key
-        "#{batch_id}/#{opts_hash}"
       end
     end
   end
