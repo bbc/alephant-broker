@@ -66,38 +66,22 @@ describe Alephant::Broker::Application do
       IO.read("#{File.dirname(__FILE__)}/fixtures/json/batch_compiled.json").strip
     end
 
-    context 'status code' do
-      context 'for a valid component ID' do
-        before { get '/component/test_component' }      
-        specify { expect(last_response.status).to eql 200 }
-      end
-
-      context 'for valid URL parameters in request' do
-        before { get '/component/test_component?variant=test_variant' }
-        specify { expect(last_response.status).to eq 200 }
-      end
-
-      context 'when using valid batch asset data' do
-        before { post '/components/batch', batch_json, 'CONTENT_TYPE' => 'application/json' }
-        specify { expect(last_response.status).to eql 200 }
-      end
+    context 'for a valid component ID' do
+      before { get '/component/test_component' }
+      specify { expect(last_response.status).to eql 200 }
+      specify { expect(last_response.body).to eql 'Test' }
     end
 
-    context 'response body' do
-      context 'for a valid component ID' do
-        before { get '/component/test_component' }      
-        specify { expect(last_response.body).to eql 'Test' }
-      end
-
-      context 'for valid URL parameters in request' do
-        before { get '/component/test_component?variant=test_variant' }
-        specify { expect(last_response.body).to eq 'Test' }
-      end
+    context 'for valid URL parameters in request' do
+      before { get '/component/test_component?variant=test_variant' }
+      specify { expect(last_response.status).to eq 200 }
+      specify { expect(last_response.body).to eq 'Test' }
+    end
    
-      context 'when using valid batch asset data' do
-        before { post '/components/batch', batch_json, 'CONTENT_TYPE' => 'application/json' }
-        specify { expect(last_response.body).to eql batch_compiled_json }
-      end
+    context 'when using valid batch asset data' do
+      before { post '/components/batch', batch_json, 'CONTENT_TYPE' => 'application/json' }
+      specify { expect(last_response.status).to eql 200 }
+      specify { expect(last_response.body).to eql batch_compiled_json }
     end
   end
 
