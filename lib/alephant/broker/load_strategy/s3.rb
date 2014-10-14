@@ -12,24 +12,34 @@ module Alephant
         end
 
         def load(id, batch_id, options)
-          @id = id
-          @batch_id = batch_id
-          @options = options
-          Component.new(id, batch_id, cache_object[:content], headers, options, opts_hash)
+          @id, @batch_id, @options = id, batch_id, options
+          create_component(cache_object)
         rescue
-          content_hash = @cache.set(cache_key, retrieve_object)
-          Component.new(id, batch_id, content_hash[:content], headers, options, opts_hash)
+          create_component(
+            @cache.set(cache_key, retrieve_object)
+          )
         end
 
         private 
 
-        def headers
+        def headers(data)
           {
-            'Content-Type' => cache_object[:content_type].to_s,
+            'Content-Type' => data[:content_type].to_s,
             #'X-Sequence'   => sequence.to_s,
             'X-Version'    => version.to_s,
             'X-Cached'     => cached.to_s
           }
+        end
+
+        def create_component(data)
+          Component.new(
+            id, 
+            batch_id, 
+            data[:content], 
+            headers(data),
+            options,
+            opts_hash
+          )
         end
 
         def version
