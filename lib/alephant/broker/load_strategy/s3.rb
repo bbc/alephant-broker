@@ -15,10 +15,10 @@ module Alephant
           @id = id
           @batch_id = batch_id
           @options = options
-          Component.new(id, batch_id, cache_object[:content], headers, options)
-        rescue => e
+          Component.new(id, batch_id, cache_object[:content], headers, options, opts_hash)
+        rescue
           content_hash = @cache.set(cache_key, retrieve_object)
-          Component.new(id, batch_id, content_hash[:content], headers)
+          Component.new(id, batch_id, content_hash[:content], headers, options, opts_hash)
         end
 
         private 

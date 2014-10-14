@@ -9,14 +9,15 @@ require 'alephant/broker/cache'
 module Alephant
   module Broker
     class Component
-      attr_reader :id, :batch_id, :options, :content, :headers
+      attr_reader :id, :batch_id, :options, :content, :headers, :opts_hash
 
-      def initialize(id, batch_id, content, headers, options)
+      def initialize(id, batch_id, content, headers, options, opts_hash)
         @id       = id
         @batch_id = batch_id
         @options  = symbolize(options || {})
         @headers  = headers
         @content  = content
+        @opts_hash = opts_hash
       end
 
       private
