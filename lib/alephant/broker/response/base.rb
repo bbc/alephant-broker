@@ -43,10 +43,7 @@ module Alephant
 
         def load(component)
           begin
-
-            data = OpenStruct.new(:status => 200, :content_type => content_type)
-         #   component.load
-
+            data = OpenStruct.new(status: 200, content_type: content_type)
             data.content_type = component.content_type
             data.body         = component.content.force_encoding('UTF-8')
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => e
