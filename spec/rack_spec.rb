@@ -40,24 +40,14 @@ describe Alephant::Broker::Application do
 
   describe 'Status endpoint `/status`' do
     before { get '/status' }
-
-    context 'status code' do
-      specify { expect(last_response.status).to eql 200 }
-    end
-    context 'response body' do
-      specify { expect(last_response.body).to eql 'ok' }
-    end
+    specify { expect(last_response.status).to eql 200 }
+    specify { expect(last_response.body).to eql 'ok' }
   end
 
   describe '404 endpoint `/banana`' do 
     before { get '/banana' }
-
-    context 'status code' do
-      specify { expect(last_response.status).to eql 404 }
-    end
-    context 'response body' do
-      specify { expect(last_response.body).to eq 'Not found' }
-    end
+    specify { expect(last_response.status).to eql 404 }
+    specify { expect(last_response.body).to eq 'Not found' }
   end
 
   describe 'Component endpoint `/component/...`' do
