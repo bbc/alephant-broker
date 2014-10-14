@@ -25,7 +25,7 @@ module Alephant
         def headers(data)
           {
             'Content-Type' => data[:content_type].to_s,
-            #'X-Sequence'   => sequence.to_s,
+            'X-Sequence'   => sequence.to_s,
             'X-Version'    => version.to_s,
             'X-Cached'     => cached.to_s
           }

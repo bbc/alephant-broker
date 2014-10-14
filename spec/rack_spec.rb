@@ -19,6 +19,12 @@ describe Alephant::Broker::Application do
       :content      => 'Test'
     }
   end
+  let(:sequencer_double) do
+    instance_double(
+      'Alephant::Sequencer::Sequencer',
+      :get_last_seen => '111'
+    )
+  end
 
   before do
     allow_any_instance_of(Logger).to receive(:info)
@@ -36,6 +42,8 @@ describe Alephant::Broker::Application do
 
     allow_any_instance_of(Alephant::Broker::Response::Asset)
       .to receive(:status).and_return(200)
+
+    allow(Alephant::Sequencer).to receive(:create) { sequencer_double }
   end
 
   describe 'Status endpoint `/status`' do
