@@ -1,4 +1,5 @@
 require "alephant/broker/cache"
+require 'alephant/broker/errors/content_not_found'
 
 module Alephant
   module Broker
@@ -15,8 +16,9 @@ module Alephant
           @id, @batch_id, @options = id, batch_id, options
           create_component(cache_object)
         rescue
+          object = retrieve_object or raise ContentNotFound
           create_component(
-            @cache.set(cache_key, retrieve_object)
+            @cache.set(cache_key, object)
           )
         end
 
