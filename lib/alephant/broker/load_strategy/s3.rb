@@ -1,5 +1,6 @@
 require "alephant/broker/cache"
 require 'alephant/broker/errors/content_not_found'
+require 'alephant/broker/errors/invalid_cache_key'
 
 module Alephant
   module Broker
@@ -16,9 +17,8 @@ module Alephant
           @id, @batch_id, @options = id, batch_id, options
           create_component(cache_object)
         rescue
-          object = retrieve_object or raise ContentNotFound
           create_component(
-            @cache.set(cache_key, object)
+            @cache.set(cache_key, retrieve_object)
           )
         end
 
@@ -55,6 +55,8 @@ module Alephant
         def retrieve_object
           @cached = false
           s3.get(s3_path)
+        rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
+          raise ContentNotFound
         end
 
         def cache_object

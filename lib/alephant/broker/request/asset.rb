@@ -1,6 +1,5 @@
 require 'alephant/logger'
 require 'alephant/broker/component'
-require 'alephant/broker/load_strategy/s3'
 require 'alephant/broker/errors/invalid_asset_id'
 
 module Alephant

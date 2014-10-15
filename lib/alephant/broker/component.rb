@@ -12,12 +12,16 @@ module Alephant
       attr_reader :id, :batch_id, :options, :content, :headers, :opts_hash
 
       def initialize(id, batch_id, content, headers, options, opts_hash)
-        @id       = id
-        @batch_id = batch_id
-        @options  = symbolize(options || {})
-        @headers  = headers
-        @content  = content
+        @id        = id
+        @batch_id  = batch_id
+        @options   = symbolize(options || {})
+        @headers   = headers
+        @content   = content.force_encoding 'UTF-8'
         @opts_hash = opts_hash
+      end
+
+      def content_type
+        headers['Content-Type']
       end
 
       private

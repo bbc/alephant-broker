@@ -56,7 +56,9 @@ module Alephant
         [
           response.status,
           response.headers,
-          [ response.content.to_s ]
+          [
+            response.content.to_s
+          ]
         ]
       end
 

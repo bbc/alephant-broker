@@ -81,7 +81,7 @@ describe Alephant::Broker::Application do
     context 'when using valid batch asset data' do
       before { post '/components/batch', batch_json, 'CONTENT_TYPE' => 'application/json' }
       specify { expect(last_response.status).to eql 200 }
-      specify { expect(last_response.body).to eql batch_compiled_json }
+      specify { expect(JSON.parse last_response.body).to eq JSON.parse(batch_compiled_json) }
     end
   end
 

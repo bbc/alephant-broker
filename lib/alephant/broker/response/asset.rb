@@ -1,4 +1,3 @@
-require 'alephant/broker/errors/invalid_cache_key'
 require 'alephant/logger'
 
 module Alephant
@@ -7,23 +6,33 @@ module Alephant
       class Asset < Base
         include Logger
 
-        attr_reader :component
-
         def initialize(component)
           @component = component
           super()
         end
 
         def setup
-          loaded_content = load(component)
-
-          @content      = loaded_content[:body]
-          @content_type = loaded_content[:content_type]
-          @status       = loaded_content[:status]
-          @sequence     = component.version.nil? ? 'not available' : component.version
-          #@cached       = component.cached
+          @headers  = @component.headers
+          @content  = @component.content
+          @sequence = @component.version.nil? ? 'not available'
+                                              : @component.version
+          log
         end
 
+        private
+
+        def batched
+          @component.batch_id.nil? ? '' : 'batched'
+        end
+
+        def details
+          c = @component
+          "#{c.id}/#{c.opts_hash}/#{c.headers} #{batched} #{c.options}"
+        end
+
+        def log
+          logger.info "Broker: Component loaded! #{details} (200)"
+        end
       end
     end
   end

@@ -18,22 +18,25 @@ module Alephant
 
         def setup
           @content = JSON.generate({
-            "batch_id" => batch_id,
-            "components" => json
+            'batch_id' => batch_id,
+            'components' => json
           })
         end
 
         private
 
         def json
-          logger.info("Broker: Batch load started (#{batch_id})")
-          result = components.pmap do | component |
+          logger.info "Broker: Batch load started (#{batch_id})"
+          result = components.pmap do |component|
             {
-              'component' => component.id,
-              'options'   => component.options
-            }.merge load(component)
+              'component'    => component.id,
+              'options'      => component.options,
+              'status'       => status,
+              'content_type' => component.content_type,
+              'body'         => component.content
+            }
           end
-          logger.info("Broker: Batch load done (#{batch_id})")
+          logger.info "Broker: Batch load done (#{batch_id})"
 
           result
         end
