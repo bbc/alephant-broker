@@ -14,8 +14,6 @@ module Alephant
         def setup
           @headers  = @component.headers
           @content  = @component.content
-          @sequence = @component.version.nil? ? 'not available'
-                                              : @component.version
           log
         end
 
