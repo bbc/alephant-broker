@@ -1,3 +1,5 @@
+require 'alephant/broker/component_meta'
+
 module Alephant
   module Broker
     class ComponentFactory
@@ -6,7 +8,8 @@ module Alephant
       end
 
       def create(id, batch_id, options)
-        @load_strategy.load(id, batch_id, options)
+        component_meta = ComponentMeta.new(id, batch_id, options)
+        @load_strategy.load(component_meta)
       end
     end
   end

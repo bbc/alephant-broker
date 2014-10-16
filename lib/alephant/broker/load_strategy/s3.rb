@@ -6,16 +6,15 @@ module Alephant
   module Broker
     module LoadStrategy
       class S3
-        def initialize
-          @cached = true
-        end
-
-        def load(id, batch_id, options)
-          @id, @batch_id, @options = id, batch_id, options
-          create_component cache_object
+        def load(component_meta)
+          create_component(component_meta, cache_object(component_meta))
         rescue
           create_component(
-            cache.set(cache_key, retrieve_object)
+            component_meta,
+            cache.set(
+              cache_key(component_meta),
+              retrieve_object(component_meta)
+            )
           )
         end
 
@@ -25,63 +24,66 @@ module Alephant
           @cache ||= Cache::Client.new
         end
 
-        def headers(data)
+        def headers(component_meta, data)
           {
             'Content-Type' => data[:content_type].to_s,
-            'X-Sequence'   => sequence.to_s,
+            'X-Sequence'   => sequence(component_meta).to_s,
             'X-Version'    => version.to_s,
-            'X-Cached'     => @cached.to_s
+            'X-Cached'     => component_meta.cached.to_s
           }
         end
 
-        def create_component(data)
+        def create_component(component_meta, data)
           Component.new(
-            @id,
-            @batch_id,
+            component_meta.id,
+            component_meta.batch_id,
             data[:content], 
-            headers(data),
-            @options,
-            opts_hash
+            headers(component_meta, data),
+            component_meta.options,
+            opts_hash(component_meta)
           )
         end
 
         def version
-          Broker.config.fetch('elasticache_cache_version', 'not available').to_s
+          Broker.config.fetch(
+            'elasticache_cache_version', 'not available'
+          ).to_s
         end
 
-        def sequence
-          sequencer.get_last_seen
+        def sequence(component_meta)
+          sequencer(component_meta).get_last_seen
         end
 
-        def retrieve_object
-          @cached = false
-          s3.get s3_path
+        def retrieve_object(component_meta)
+          component_meta.cached = false
+          s3.get s3_path(component_meta)
         rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
           raise ContentNotFound
         end
 
-        def cache_object
-          cache.get(cache_key) { retrieve_object }
+        def cache_object(component_meta)
+          cache.get(cache_key component_meta) { retrieve_object }
         end
 
-        def opts_hash
-          Crimp.signature @options
+        def opts_hash(options)
+          Crimp.signature component_meta.options
         end
 
-        def component_key
-          "#{@id}/#{opts_hash}"
+        def component_key(component_meta)
+          "#{component_meta.id}/#{opts_hash(component_meta)}"
         end
 
-        def renderer_key
-          "#{@batch_id}/#{opts_hash}"
+        def renderer_key(component_meta)
+          "#{component_meta.batch_id}/#{opts_hash(component_meta)}"
         end
 
-        def key
-          @batch_id.nil? ? component_key : renderer_key
+        def key(component_meta)
+          component_meta.batch_id.nil? ? component_key(component_meta)
+                                       : renderer_key(component_meta)
         end
 
-        def cache_key
-          "#{@id}/#{opts_hash}/#{version}"
+        def cache_key(component_meta)
+          "#{component_meta.id}/#{opts_hash(component_meta.options)}/#{version}"
         end
 
         def s3
@@ -91,18 +93,22 @@ module Alephant
           )
         end
 
-        def s3_path
-          lookup.read(@id, @options, sequence).tap do |obj|
+        def s3_path(component_meta)
+          lookup.read(component_meta.id, component_meta.options, sequence(component_meta)).tap do |obj|
             raise InvalidCacheKey if obj.location.nil?
-          end.location unless sequence.nil?
+          end.location unless sequence(component_meta).nil?
         end
 
         def lookup
-          @lookup ||= Alephant::Lookup.create(Broker.config[:lookup_table_name])
+          @lookup ||= Alephant::Lookup.create(
+            Broker.config[:lookup_table_name]
+          )
         end
 
-        def sequencer
-          Alephant::Sequencer.create(Broker.config[:sequencer_table_name], key)
+        def sequencer(component_meta)
+          Alephant::Sequencer.create(
+            Broker.config[:sequencer_table_name], key(component_meta)
+          )
         end
       end
     end
