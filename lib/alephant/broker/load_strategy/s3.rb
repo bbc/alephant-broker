@@ -9,7 +9,6 @@ module Alephant
         attr_reader :id, :component, :cached, :batch_id, :options
 
         def initialize
-          @cache  = Cache::Client.new
           @cached = true
         end
 
@@ -18,11 +17,15 @@ module Alephant
           create_component(cache_object)
         rescue
           create_component(
-            @cache.set(cache_key, retrieve_object)
+            cache.set(cache_key, retrieve_object)
           )
         end
 
         private 
+
+        def cache
+          @cache ||= Cache::Client.new
+        end
 
         def headers(data)
           {
@@ -60,7 +63,7 @@ module Alephant
         end
 
         def cache_object
-          @cache_object ||= @cache.get(cache_key) { retrieve_object }
+          @cache_object ||= cache.get(cache_key) { retrieve_object }
         end
 
         def opts_hash

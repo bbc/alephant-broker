@@ -5,7 +5,7 @@ describe Alephant::Broker::Application do
 
   let(:app) do
     described_class.new(
-      Alephant::Broker::LoadStrategy::S3,
+      Alephant::Broker::LoadStrategy::S3.new,
       {
         :lookup_table_name => 'test_table',
         :bucket_id         => 'test_bucket',

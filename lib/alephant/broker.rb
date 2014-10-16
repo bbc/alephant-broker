@@ -33,7 +33,7 @@ module Alephant
 
       def initialize(load_strategy, c = nil)
         Broker.config = c unless c.nil?
-        @load_strategy = load_strategy.new
+        @load_strategy = load_strategy
       end
 
       def call(env)
