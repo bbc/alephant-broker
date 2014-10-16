@@ -7,47 +7,38 @@ module Alephant
     module LoadStrategy
       class S3
         def load(component_meta)
-          create_component(component_meta, cache_object(component_meta))
+          component_meta.component(
+            add_s3_headers(
+              cache_object(component_meta),
+              component_meta  
+            )
+          )
         rescue
-          create_component(
-            component_meta,
-            cache.set(
-              cache_key(component_meta),
-              retrieve_object(component_meta)
+          component_meta.component(
+            add_s3_headers(
+              cache.set(
+                component_meta.cache_key,
+                retrieve_object(component_meta)
+              ),
+              component_meta
             )
           )
         end
 
         private 
 
+        def add_s3_headers(component_data, component_meta)
+          component_data.merge(
+            { headers: headers(component_meta) }
+          )
+        end
+
         def cache
           @cache ||= Cache::Client.new
         end
 
-        def headers(component_meta, data)
-          {
-            'Content-Type' => data[:content_type].to_s,
-            'X-Sequence'   => sequence(component_meta).to_s,
-            'X-Version'    => version.to_s,
-            'X-Cached'     => component_meta.cached.to_s
-          }
-        end
-
-        def create_component(component_meta, data)
-          Component.new(
-            component_meta.id,
-            component_meta.batch_id,
-            data[:content], 
-            headers(component_meta, data),
-            component_meta.options,
-            opts_hash(component_meta)
-          )
-        end
-
-        def version
-          Broker.config.fetch(
-            'elasticache_cache_version', 'not available'
-          ).to_s
+        def headers(component_meta)
+          { 'X-Sequence' => sequence(component_meta).to_s }
         end
 
         def sequence(component_meta)
@@ -62,28 +53,9 @@ module Alephant
         end
 
         def cache_object(component_meta)
-          cache.get(cache_key component_meta) { retrieve_object }
-        end
-
-        def opts_hash(options)
-          Crimp.signature component_meta.options
-        end
-
-        def component_key(component_meta)
-          "#{component_meta.id}/#{opts_hash(component_meta)}"
-        end
-
-        def renderer_key(component_meta)
-          "#{component_meta.batch_id}/#{opts_hash(component_meta)}"
-        end
-
-        def key(component_meta)
-          component_meta.batch_id.nil? ? component_key(component_meta)
-                                       : renderer_key(component_meta)
-        end
-
-        def cache_key(component_meta)
-          "#{component_meta.id}/#{opts_hash(component_meta.options)}/#{version}"
+          cache.get(component_meta.cache_key) do
+            retrieve_object component_meta
+          end
         end
 
         def s3
@@ -94,7 +66,11 @@ module Alephant
         end
 
         def s3_path(component_meta)
-          lookup.read(component_meta.id, component_meta.options, sequence(component_meta)).tap do |obj|
+          lookup.read(
+            component_meta.id,
+            component_meta.options,
+            sequence(component_meta)
+          ).tap do |obj|
             raise InvalidCacheKey if obj.location.nil?
           end.location unless sequence(component_meta).nil?
         end
@@ -107,7 +83,7 @@ module Alephant
 
         def sequencer(component_meta)
           Alephant::Sequencer.create(
-            Broker.config[:sequencer_table_name], key(component_meta)
+            Broker.config[:sequencer_table_name], component_meta.key
           )
         end
       end
