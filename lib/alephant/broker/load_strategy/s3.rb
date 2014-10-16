@@ -94,9 +94,9 @@ module Alephant
         end
 
         def s3_path
-          lookup.read(id, options, version).tap do |lookup_object|
+          lookup.read(id, options, sequence).tap do |lookup_object|
             raise InvalidCacheKey if lookup_object.location.nil?
-          end.location unless version.nil?
+          end.location unless sequence.nil?
         end
 
         def lookup
