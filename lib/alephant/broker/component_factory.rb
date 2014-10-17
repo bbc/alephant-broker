@@ -9,7 +9,11 @@ module Alephant
 
       def create(id, batch_id, options)
         component_meta = ComponentMeta.new(id, batch_id, options)
-        @load_strategy.load(component_meta)
+
+        Component.new(
+          component_meta,
+          @load_strategy.load(component_meta)
+        )
       end
     end
   end

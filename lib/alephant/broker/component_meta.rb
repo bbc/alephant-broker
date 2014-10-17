@@ -11,17 +11,6 @@ module Alephant
         @cached = true
       end
 
-      def component(data)
-        Component.new(
-          id,
-          batch_id,
-          data[:content], 
-          headers(data),
-          options,
-          opts_hash
-        )
-      end
-
       def cache_key
         "#{id}/#{opts_hash}/#{version}"
       end

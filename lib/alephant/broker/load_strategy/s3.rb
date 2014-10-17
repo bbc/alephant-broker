@@ -7,21 +7,17 @@ module Alephant
     module LoadStrategy
       class S3
         def load(component_meta)
-          component_meta.component(
-            add_s3_headers(
-              cache_object(component_meta),
-              component_meta  
-            )
+          add_s3_headers(
+            cache_object(component_meta),
+            component_meta
           )
         rescue
-          component_meta.component(
-            add_s3_headers(
-              cache.set(
-                component_meta.cache_key,
-                retrieve_object(component_meta)
-              ),
-              component_meta
-            )
+          add_s3_headers(
+            cache.set(
+              component_meta.cache_key,
+              retrieve_object(component_meta)
+            ),
+            component_meta
           )
         end
 
