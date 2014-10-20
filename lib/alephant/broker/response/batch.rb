@@ -31,7 +31,7 @@ module Alephant
             {
               'component'    => component.id,
               'options'      => component.options,
-              'status'       => status,
+              'status'       => component.status,
               'content_type' => component.content_type,
               'body'         => component.content
             }

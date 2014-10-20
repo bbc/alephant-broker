@@ -8,13 +8,13 @@ module Alephant
 
         def initialize(component)
           @component = component
-          super()
+          super component.status
         end
 
         def setup
           @headers  = @component.headers
           @content  = @component.content
-          log
+          log if @component.is_a? Component
         end
 
         private
