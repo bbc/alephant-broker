@@ -1,5 +1,7 @@
 module Alephant
   module Broker
-    class ContentNotFound < StandardError; end
+    module Errors
+      class ContentNotFound < StandardError; end
+    end
   end
 end

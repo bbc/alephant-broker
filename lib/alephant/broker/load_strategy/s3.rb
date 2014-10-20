@@ -45,7 +45,7 @@ module Alephant
           component_meta.cached = false
           s3.get s3_path(component_meta)
         rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
-          raise ContentNotFound
+          raise Alephant::Broker::Errors::ContentNotFound
         end
 
         def cache_object(component_meta)
