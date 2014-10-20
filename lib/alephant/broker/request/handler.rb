@@ -21,15 +21,7 @@ module Alephant
         end
 
         def self.process(load_strategy, env)
-          begin
-            response_for request_for(load_strategy, env)
-          rescue ContentNotFound
-            logger.warn 'Broker.requestHandler.process: Exception raised (Content not found)'
-            Response::Factory.not_found
-          rescue Exception => e
-            logger.warn("Broker.requestHandler.process: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
-            Response::Factory.error
-          end
+          response_for request_for(load_strategy, env)
         end
       end
     end
