@@ -37,4 +37,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'alephant-sequencer'
   spec.add_runtime_dependency "dalli-elasticache"
   spec.add_runtime_dependency 'pmap'
+  spec.add_runtime_dependency "faraday"
 end
