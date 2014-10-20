@@ -25,11 +25,11 @@ module Alephant
         batch_id.nil? ? component_key : renderer_key
       end
 
-      private
-
       def opts_hash
         Crimp.signature options
       end
+
+      private
 
       def component_key
         "#{id}/#{opts_hash}"

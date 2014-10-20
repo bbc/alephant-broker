@@ -16,9 +16,9 @@ module Alephant
         @batch_id  = meta.batch_id
         @options   = symbolize(meta.options || {})
         @content   = data[:content].force_encoding 'UTF-8'
-        @opts_hash = opts_hash
-        @data = data
-        @meta = meta
+        @opts_hash = meta.opts_hash
+        @data      = data
+        @meta      = meta
       end
 
       def content_type
@@ -31,6 +31,10 @@ module Alephant
           'X-Version'    => meta.version.to_s,
           'X-Cached'     => meta.cached.to_s
         }.merge(data[:headers] || {})
+      end
+
+      def status
+        200
       end
 
       private
