@@ -17,7 +17,7 @@ module Alephant
 
       def headers
         {
-          'Content-Type' => 'application/json'
+          'Content-Type' => 'text/plain'
         }
       end
 
