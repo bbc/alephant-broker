@@ -33,19 +33,23 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       end
 
       context "and available over HTTP" do
-        it "gets from HTTP" do
+        before :each do
           allow(Faraday).to receive(:get) do
             double('Faraday', body: body, :'success?' => true)
           end
+         end
 
-          expect(subject.load component_meta).to eq body
+        it "gets from HTTP" do
+         expect(subject.load component_meta).to eq body
         end
       end
 
       context "and HTTP request fails" do
-        specify do
+        before :each do
           allow(Faraday).to receive(:get).and_raise 
+        end
 
+        specify do
           expect do
             subject.load component_meta
           end.to raise_error Alephant::Broker::LoadStrategy::HTTP::RequestFailed
@@ -53,11 +57,13 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       end
 
       context "and HTTP request 404s" do
-        specify do
+        before :each do
           allow(Faraday).to receive(:get) do
             double('Faraday', body: body, :'success?' => false)
           end
+        end
 
+        specify do
           expect do
             subject.load component_meta
           end.to raise_error Alephant::Broker::LoadStrategy::HTTP::RequestFailed
