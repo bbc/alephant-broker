@@ -38,9 +38,7 @@ module Alephant
         def request(component_meta)
           component_meta.cached = false
 
-          #TODO: Find how to extract URL params from options
-          url = url_strategy.generate(component_meta.options)
-          Faraday.get(url).
+          Faraday.get(url_strategy.generate component_meta.options)
                   tap { |r| raise ContentNotFound if not r.success? }.
                   body
         rescue => e
