@@ -37,12 +37,18 @@ module Alephant
 
         def request(component_meta)
           component_meta.cached = false
-
-          Faraday.get(url_generator.generate component_meta.options).
+          Faraday.get(url_for component_meta).
                   tap { |r| raise ContentNotFound if not r.success? }.
                   body
         rescue => e
           raise RequestFailed, e
+        end
+
+        def url_for(component_meta)
+          url_generator.generate(
+            component_meta.id,
+            component_meta.options
+          )
         end
       end
     end
