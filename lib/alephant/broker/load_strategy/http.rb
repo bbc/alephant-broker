@@ -14,9 +14,9 @@ module Alephant
           end
         end
 
-        def initialize(url_strategy)
+        def initialize(url_generator)
           @cache = Cache::Client.new
-          @url_strategy = url_strategy
+          @url_generator = url_generator
         end
 
         def load(component_meta)
@@ -27,7 +27,7 @@ module Alephant
 
         private
 
-        attr_reader :cache, :url_strategy
+        attr_reader :cache, :url_generator
 
         def cache_object(component_meta)
           cache.get(component_meta.cache_key) do
@@ -38,7 +38,7 @@ module Alephant
         def request(component_meta)
           component_meta.cached = false
 
-          Faraday.get(url_strategy.generate component_meta.options)
+          Faraday.get(url_generator.generate component_meta.options).
                   tap { |r| raise ContentNotFound if not r.success? }.
                   body
         rescue => e

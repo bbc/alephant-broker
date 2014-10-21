@@ -1,12 +1,12 @@
 require "spec_helper"
 
 describe Alephant::Broker::LoadStrategy::HTTP do
-  subject { described_class.new(url_strategy) }
+  subject { described_class.new(url_generator) }
 
   let(:component_meta) do
     double('Alephant::Broker::ComponentMeta', cache_key: "cache_key")
   end
-  let(:url_strategy) { double(generate: "http://foo.bar") }
+  let(:url_generator) { double(generate: "http://foo.bar") }
   let(:cache) { double('Alephant::Broker::Cache::Client') }
   let(:body) { "body" }
 
