@@ -1,6 +1,4 @@
 require "spec_helper"
-require "alephant/broker/load_strategy/http"
-require "alephant/broker/cache"
 
 describe Alephant::Broker::LoadStrategy::HTTP do
   subject { described_class.new(url_strategy) }
