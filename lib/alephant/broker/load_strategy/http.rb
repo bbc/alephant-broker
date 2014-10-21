@@ -42,7 +42,7 @@ module Alephant
                   tap { |r| raise ContentNotFound if not r.success? }.
                   body
         rescue => e
-          raise RequestFailed, e # What would catch this ? Should be one rescued to create a ServerError
+          raise RequestFailed, e
         end
       end
     end
