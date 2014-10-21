@@ -8,6 +8,12 @@ module Alephant
       class HTTP
         class RequestFailed < StandardError; end
 
+        class URL
+          def generate
+            raise NotImplementedError
+          end
+        end
+
         def initialize(url_strategy)
           @cache = Cache::Client.new
           @url_strategy = url_strategy
