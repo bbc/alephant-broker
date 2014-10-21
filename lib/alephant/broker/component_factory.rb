@@ -1,7 +1,6 @@
 require 'alephant/broker/component_meta'
 require 'alephant/broker/errors/content_not_found'
-require 'alephant/broker/not_found'
-require 'alephant/broker/server_error'
+require 'alephant/broker/error_component'
 require 'alephant/logger'
 
 module Alephant
@@ -21,10 +20,10 @@ module Alephant
         )
       rescue Alephant::Broker::Errors::ContentNotFound
         logger.warn 'Broker.ComponentFactory.create: Exception raised (ContentNotFound)'
-        NotFound.new component_meta
+        ErrorComponent.new(component_meta, 404)
       rescue => e
         logger.warn("Broker.ComponentFactory.create: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
-        ServerError.new(component_meta, e)
+        ErrorComponent.new(component_meta, 500, e)
       end
     end
   end
