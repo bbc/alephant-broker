@@ -15,7 +15,6 @@ module Alephant
         end
 
         def initialize(url_generator)
-          @cache = Cache::Client.new
           @url_generator = url_generator
         end
 
@@ -28,6 +27,10 @@ module Alephant
         private
 
         attr_reader :cache, :url_generator
+
+        def cache
+          @cache ||= Cache::Client.new
+        end
 
         def cache_object(component_meta)
           cache.get(component_meta.cache_key) do
