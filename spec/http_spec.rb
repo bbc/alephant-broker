@@ -4,11 +4,17 @@ describe Alephant::Broker::LoadStrategy::HTTP do
   subject { described_class.new(url_generator) }
 
   let(:component_meta) do
-    double('Alephant::Broker::ComponentMeta', cache_key: "cache_key")
+    double('Alephant::Broker::ComponentMeta', cache_key: 'cache_key', id: 'test')
   end
   let(:url_generator) { double(generate: "http://foo.bar") }
   let(:cache) { double('Alephant::Broker::Cache::Client') }
-  let(:body) { "body" }
+  let(:body) { '<h1>Batman!</h1>' }
+  let(:content) do
+    {
+      :content => body,
+      :content_type => 'text/html'
+    }
+  end
 
   before :each do
     allow(Alephant::Broker::Cache::Client).to receive(:new) { cache }
@@ -17,11 +23,11 @@ describe Alephant::Broker::LoadStrategy::HTTP do
   describe "#load" do
     context "content in cache" do
       before :each do
-        allow(cache).to receive(:get) { body }
+        allow(cache).to receive(:get) { content }
       end
 
       it "gets from cache" do
-        expect(subject.load component_meta).to eq body
+        expect(subject.load component_meta).to eq content
       end
     end
 
@@ -33,14 +39,21 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       end
 
       context "and available over HTTP" do
+        let(:env) { double('env', response_headers: response_headers) }
+        let(:response_headers) { {'content-type' => 'text/html; test'} }
+
         before :each do
           allow(Faraday).to receive(:get) do
-            double('Faraday', body: body, :'success?' => true)
+            double(
+              'Faraday',
+              body: body,
+              :'success?' => true,
+              env: env)
           end
          end
 
         it "gets from HTTP" do
-         expect(subject.load component_meta).to eq body
+         expect(subject.load component_meta).to eq content
         end
       end
 
