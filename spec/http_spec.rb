@@ -44,8 +44,8 @@ describe Alephant::Broker::LoadStrategy::HTTP do
 
         before :each do
           allow(Faraday).to receive(:get) do
-            double(
-              'Faraday',
+            instance_double(
+              'Faraday::Response',
               body: body,
               :'success?' => true,
               env: env)
@@ -72,7 +72,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       context "and HTTP request 404s" do
         before :each do
           allow(Faraday).to receive(:get) do
-            double('Faraday', body: body, :'success?' => false)
+            instance_double('Faraday::Response', body: body, :'success?' => false)
           end
         end
 
