@@ -21,7 +21,7 @@ module Alephant
         def load(component_meta)
           cache_object(component_meta)
         rescue
-          cache.set(component_meta.cache_key, request(component_meta))
+          cache.set(component_meta.cache_key, content(component_meta))
         end
 
         private
@@ -33,16 +33,25 @@ module Alephant
         end
 
         def cache_object(component_meta)
-          cache.get(component_meta.cache_key) do
-            request component_meta
-          end
+          cache.get(component_meta.cache_key) { content component_meta }
+        end
+
+        def content(component_meta)
+          resp = request component_meta
+          {
+            :content => resp.body,
+            :content_type => extract_content_type_from(resp.env.response_headers)
+          }
+        end
+
+        def extract_content_type_from(headers)
+          headers['content-type'].split(';').first
         end
 
         def request(component_meta)
           component_meta.cached = false
           Faraday.get(url_for component_meta).
-                  tap { |r| raise ContentNotFound if not r.success? }.
-                  body
+                  tap { |r| raise ContentNotFound unless r.success? }
         rescue => e
           raise RequestFailed, e
         end
