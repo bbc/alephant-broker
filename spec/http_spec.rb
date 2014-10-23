@@ -65,7 +65,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
         specify do
           expect do
             subject.load component_meta
-          end.to raise_error Alephant::Broker::LoadStrategy::HTTP::RequestFailed
+          end.to raise_error
         end
       end
 
@@ -79,7 +79,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
         specify do
           expect do
             subject.load component_meta
-          end.to raise_error Alephant::Broker::LoadStrategy::HTTP::RequestFailed
+          end.to raise_error
         end
       end
     end
