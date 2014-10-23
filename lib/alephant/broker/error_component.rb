@@ -3,10 +3,10 @@ module Alephant
     class ErrorComponent
       attr_reader :batch_id, :content, :id, :options, :status
 
-      def initialize(meta, status, body = nil)
+      def initialize(meta, status, exception)
         @batch_id = meta.batch_id
         @status   = status
-        @content  = content_for body
+        @content  = content_for exception
         @id       = meta.id
         @options  = {}
       end
@@ -23,19 +23,8 @@ module Alephant
 
       private
 
-      STATUS_CODE_MAPPING = {
-        404 => 'Not found',
-        500 => 'Error retrieving content'
-      }
-
-      def content_for(body)
-        body.nil? ? STATUS_CODE_MAPPING[status]
-                  : format_content_for(body)
-      end
-
-      def format_content_for(body)
-        body.is_a?(Exception) ? "#{body.message}\n#{body.backtrace.join('\n')}"
-                              : body
+      def content_for(exception)
+        "#{exception.message}\n#{exception.backtrace.join('\n')}"
       end
     end
   end
