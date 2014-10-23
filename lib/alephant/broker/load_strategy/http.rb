@@ -48,8 +48,9 @@ module Alephant
 
         def request(component_meta)
           component_meta.cached = false
-          Faraday.get(url_for component_meta).
-                  tap { |r| raise ContentNotFound unless r.success? }
+          Faraday.get(url_for component_meta).tap do |r|
+            raise Alephant::Broker::Errors::ContentNotFound unless r.success?
+          end
         end
 
         def url_for(component_meta)
