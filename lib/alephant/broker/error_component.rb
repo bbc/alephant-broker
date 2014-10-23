@@ -34,8 +34,8 @@ module Alephant
       end
 
       def format_content_for(body)
-        body.is_a? Exception ? "#{e.message}\n#{e.backtrace.join('\n')}"
-                             : body
+        body.is_a?(Exception) ? "#{body.message}\n#{body.backtrace.join('\n')}"
+                              : body
       end
     end
   end
