@@ -6,8 +6,6 @@ module Alephant
   module Broker
     module LoadStrategy
       class HTTP
-        class RequestFailed < StandardError; end
-
         class URL
           def generate
             raise NotImplementedError
@@ -50,10 +48,9 @@ module Alephant
 
         def request(component_meta)
           component_meta.cached = false
-          Faraday.get(url_for component_meta).
-                  tap { |r| raise ContentNotFound unless r.success? }
-        rescue => e
-          raise RequestFailed, e
+          Faraday.get(url_for component_meta).tap do |r|
+            raise Alephant::Broker::Errors::ContentNotFound unless r.success?
+          end
         end
 
         def url_for(component_meta)
