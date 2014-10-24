@@ -14,11 +14,11 @@ module Alephant
           return if env.nil?
 
           component_id = env.path.split('/')[2] || nil
-          options      = env.options
+          raw_options  = env.query
 
           raise InvalidAssetId.new("No Asset ID specified") if component_id.nil?
 
-          @component = component_factory.create(component_id, nil, options)
+          @component = component_factory.create(component_id, nil, raw_options)
         end
       end
     end
