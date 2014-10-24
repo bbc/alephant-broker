@@ -27,13 +27,6 @@ module Alephant
         settings['QUERY_STRING'] || ""
       end
 
-      def options
-        query.split('&').reduce({}) do |object, key_pair|
-          key, value = key_pair.split('=')
-          object.tap { |o| o.store(key.to_sym, value) }
-        end
-      end
-
       def path
         settings['PATH_INFO']
       end
