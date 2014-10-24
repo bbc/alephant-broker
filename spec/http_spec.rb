@@ -35,7 +35,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       before :each do
         allow(cache).to receive(:get).and_yield
         allow(component_meta).to receive(:'cached=').with(false) { false }
-        allow(component_meta).to receive(:options).and_return Hash.new
+        allow(component_meta).to receive(:raw_options).and_return Hash.new
       end
 
       context "and available over HTTP" do
@@ -59,7 +59,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
 
       context "and HTTP request fails" do
         before :each do
-          allow(Faraday).to receive(:get).and_raise 
+          allow(Faraday).to receive(:get).and_raise
         end
 
         specify do
