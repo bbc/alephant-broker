@@ -12,8 +12,8 @@ module Alephant
         @load_strategy = load_strategy
       end
 
-      def create(id, batch_id, options)
-        component_meta = ComponentMeta.new(id, batch_id, options)
+      def create(id, batch_id, raw_options)
+        component_meta = ComponentMeta.new(id, batch_id, raw_options)
         Component.new(
           component_meta,
           @load_strategy.load(component_meta)
