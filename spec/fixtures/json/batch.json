@@ -1,1 +1,1 @@
-{"batch_id":"baz","components":[{"component":"ni_council_results_table"},{"component":"ni_council_results_table"}]}
+{"batch_id":"baz","components":[{"component":"ni_council_results_table", "options":{"foo" : "bar"}},{"component":"ni_council_results_table"}]}

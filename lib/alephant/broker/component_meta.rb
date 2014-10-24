@@ -1,18 +1,25 @@
 module Alephant
   module Broker
     class ComponentMeta
-      attr_reader :id, :options, :batch_id
+      attr_reader :id, :raw_options, :batch_id
       attr_accessor :cached
 
-      def initialize(id, batch_id, options)
-        @id = id
-        @batch_id = batch_id
-        @options = options
-        @cached = true
+      def initialize(id, batch_id, raw_options)
+        @id          = id
+        @batch_id    = batch_id
+        @raw_options = raw_options
+        @cached      = true
       end
 
       def cache_key
         "#{id}/#{opts_hash}/#{version}"
+      end
+
+      def options
+        @options ||= raw_options.split('&').reduce({}) do |object, key_pair|
+          key, value = key_pair.split('=')
+          object.tap { |o| o.store(key.to_sym, value) }
+        end
       end
 
       def version

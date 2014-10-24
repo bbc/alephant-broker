@@ -21,12 +21,16 @@ module Alephant
 
         private
 
+        def build_query(hash)
+          hash.nil? ? '' : Rack::Utils.build_query(hash)
+        end
+
         def components_for(env)
           env.data['components'].map do |c|
             @component_factory.create(
               c['component'],
               batch_id,
-              c['options']
+              build_query(c['options'])
             )
           end
         end
