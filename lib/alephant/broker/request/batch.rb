@@ -1,5 +1,6 @@
 require 'alephant/logger'
 require 'alephant/broker/component'
+require 'pmap'
 
 module Alephant
   module Broker
@@ -26,7 +27,7 @@ module Alephant
         end
 
         def components_for(env)
-          env.data['components'].map do |c|
+          env.data['components'].pmap do |c|
             @component_factory.create(
               c['component'],
               batch_id,

@@ -1,5 +1,4 @@
 require 'alephant/logger'
-require 'pmap'
 
 module Alephant
   module Broker
@@ -27,7 +26,7 @@ module Alephant
 
         def json
           logger.info "Broker: Batch load started (#{batch_id})"
-          result = components.pmap do |component|
+          result = components.map do |component|
             {
               'component'    => component.id,
               'options'      => component.options,
