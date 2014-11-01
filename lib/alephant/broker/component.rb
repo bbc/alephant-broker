@@ -9,20 +9,30 @@ require 'alephant/broker/cache'
 module Alephant
   module Broker
     class Component
-      attr_reader :id, :batch_id, :options, :content, :opts_hash
+      attr_reader :id, :batch_id, :options, :opts_hash
 
-      def initialize(meta, data)
+      def initialize(meta, load_strategy)
+	@load_strategy = load_strategy
         @id        = meta.id
         @batch_id  = meta.batch_id
         @options   = symbolize(meta.options || {})
-        @content   = data[:content].force_encoding 'UTF-8'
+        #@content   = data[:content].force_encoding 'UTF-8'
         @opts_hash = meta.opts_hash
-        @data      = data
+        #@data      = data
         @meta      = meta
       end
 
       def content_type
         headers['Content-Type']
+      end
+
+      def load
+        @data = @load_strategy.load meta
+        @content = @data[:content].force_encoding 'UTF-8'
+      end
+
+      def content
+        @content
       end
 
       def headers
