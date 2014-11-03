@@ -16,7 +16,7 @@ module Alephant
         component_meta = ComponentMeta.new(id, batch_id, raw_options)
         Component.new(
           component_meta,
-          @load_strategy
+          @load_strategy.load(component_meta)
         )
       rescue Alephant::Broker::Errors::ContentNotFound => e
         logger.warn 'Broker.ComponentFactory.create: Exception raised (ContentNotFound)'
