@@ -20,7 +20,7 @@ module Alephant
       def options
         @options ||= raw_options.split('&').reduce({}) do |object, key_pair|
           key, value = key_pair.split('=')
-          object.tap { |o| o.store(key.to_sym, CGI.unescape(value)) }
+          object.tap { |o| o.store(key.to_sym, check_for_hash(CGI.unescape(value))) }
         end
       end
 
@@ -40,12 +40,28 @@ module Alephant
 
       private
 
+      def check_for_hash(value)
+        is_hash?(value) ? string_to_hash(value) : value
+      end
+
       def component_key
         "#{id}/#{opts_hash}"
       end
 
+      def is_hash?(s)
+        s.include?('{') and s.include?('}') and s.include?('=>')
+      end
+
       def renderer_key
         "#{batch_id}/#{opts_hash}"
+      end
+
+      def string_to_hash(string)
+        {}.tap do |hash|
+          string.delete!('{}\"').split(',').each do |pair|
+            pair.split('=>').tap { |k, v| hash[k.strip] = v }
+          end
+        end
       end
 
       def headers(data)
