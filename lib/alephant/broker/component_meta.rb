@@ -1,3 +1,5 @@
+require 'cgi'
+
 module Alephant
   module Broker
     class ComponentMeta
@@ -18,7 +20,7 @@ module Alephant
       def options
         @options ||= raw_options.split('&').reduce({}) do |object, key_pair|
           key, value = key_pair.split('=')
-          object.tap { |o| o.store(key.to_sym, value) }
+          object.tap { |o| o.store(key.to_sym, CGI.unescape(value)) }
         end
       end
 
