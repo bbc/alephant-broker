@@ -29,8 +29,8 @@ module Alephant
           end
         end
 
-        def set(key, value)
-          value.tap { |o| @@client.set(versioned(key), o) }
+        def set(key, value, ttl = nil)
+          value.tap { |o| @@client.set(versioned(key), o, ttl) }
         end
 
         private
