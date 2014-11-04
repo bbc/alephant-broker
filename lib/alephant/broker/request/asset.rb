@@ -1,5 +1,4 @@
 require 'alephant/logger'
-require 'alephant/broker/component'
 require 'alephant/broker/errors/invalid_asset_id'
 
 module Alephant
@@ -12,13 +11,17 @@ module Alephant
 
         def initialize(component_factory, env = nil)
           return if env.nil?
+          @component = component_factory.create(
+            component_id(env.path),
+            nil,
+            env.options
+          )
+        end
 
-          component_id = env.path.split('/')[2] || nil
-          raw_options  = env.query
+        private
 
-          raise InvalidAssetId.new("No Asset ID specified") if component_id.nil?
-
-          @component = component_factory.create(component_id, nil, raw_options)
+        def component_id(path)
+          path.split('/')[2] || (raise InvalidAssetId.new 'No Asset ID specified')
         end
       end
     end

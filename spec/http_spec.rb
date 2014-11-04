@@ -4,7 +4,12 @@ describe Alephant::Broker::LoadStrategy::HTTP do
   subject { described_class.new(url_generator) }
 
   let(:component_meta) do
-    double('Alephant::Broker::ComponentMeta', cache_key: 'cache_key', id: 'test')
+    double(
+      'Alephant::Broker::ComponentMeta',
+      cache_key: 'cache_key',
+      id: 'test',
+      options: {}
+    )
   end
   let(:url_generator) { double(generate: "http://foo.bar") }
   let(:cache) { double('Alephant::Broker::Cache::Client') }
@@ -35,7 +40,6 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       before :each do
         allow(cache).to receive(:get).and_yield
         allow(component_meta).to receive(:'cached=').with(false) { false }
-        allow(component_meta).to receive(:raw_options).and_return Hash.new
       end
 
       context "and available over HTTP" do
