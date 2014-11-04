@@ -56,7 +56,7 @@ module Alephant
         def url_for(component_meta)
           url_generator.generate(
             component_meta.id,
-            component_meta.raw_options
+            component_meta.options
           )
         end
       end
