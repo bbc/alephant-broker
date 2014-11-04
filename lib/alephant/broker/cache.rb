@@ -4,7 +4,6 @@ require 'alephant/logger'
 module Alephant
   module Broker
     module Cache
-
       class Client
         include Logger
 
@@ -19,6 +18,22 @@ module Alephant
             @@client = NullClient.new
           end
         end
+
+        def get(key, &block)
+          begin
+            result = @@client.get(versioned(key))
+            logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
+            result ? result : set(key, block.call)
+          rescue StandardError => e
+            block.call if block_given?
+          end
+        end
+
+        def set(key, value, ttl = nil)
+          value.tap { |o| @@client.set(versioned(key), o, ttl) }
+        end
+
+        private
 
         def config_endpoint
           Broker.config['elasticache_config_endpoint']
@@ -35,21 +50,6 @@ module Alephant
         def cache_version
           Broker.config['elasticache_cache_version']
         end
-
-        def get(key, &block)
-          begin
-            result = @@client.get(versioned(key))
-            logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
-            result ? result : set(key, block.call)
-          rescue StandardError => e
-            block.call if block_given?
-          end
-        end
-
-        def set(key, value)
-          value.tap { |o| @@client.set(versioned(key), o) }
-        end
-
       end
 
       class NullClient
@@ -59,7 +59,6 @@ module Alephant
           value
         end
       end
-
     end
   end
 end
