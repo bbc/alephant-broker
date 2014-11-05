@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 
 describe Alephant::Broker::ComponentMeta do
-  subject { described_class.new env }
   let(:id) { "foo" }
   let(:batch_id) { "bar" }
   let(:options) do
@@ -9,6 +8,7 @@ describe Alephant::Broker::ComponentMeta do
       'variant' => 'K03000001'
     }
   end
+  subject { described_class.new(id, batch_id, options) }
 
   describe '#options' do
     let(:expected) do

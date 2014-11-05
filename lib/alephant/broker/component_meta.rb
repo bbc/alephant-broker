@@ -7,7 +7,7 @@ module Alephant
       def initialize(id, batch_id, options)
         @id          = id
         @batch_id    = batch_id
-        @options     = convert_keys options
+        @options     = convert_keys(options || {})
         @cached      = true
       end
 
