@@ -7,7 +7,7 @@ module Alephant
       def initialize(id, batch_id, options)
         @id          = id
         @batch_id    = batch_id
-        @options     = options
+        @options     = convert_keys options
         @cached      = true
       end
 
@@ -30,6 +30,10 @@ module Alephant
       end
 
       private
+
+      def convert_keys(hash)
+        Hash[ hash.map { |k, v| [k.to_sym, v] } ]
+      end
 
       def component_key
         "#{id}/#{opts_hash}"
