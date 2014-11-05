@@ -36,14 +36,10 @@ module Alephant
       end
 
       def options
-        convert_keys Rack::Utils.parse_nested_query(query)
+        Rack::Utils.parse_nested_query query
       end
 
       private
-
-      def convert_keys(hash)
-        Hash[ hash.map { |k, v| [k.to_sym, v] } ]
-      end
 
       def rack_input
         (settings['rack.input'].read).tap { settings['rack.input'].rewind }
