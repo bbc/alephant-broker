@@ -1,10 +1,12 @@
 require_relative 'spec_helper'
 
-describe Alephant::Broker::Environment do
+describe Alephant::Broker::ComponentMeta do
   subject { described_class.new env }
-  let(:env) do
+  let(:id) { "foo" }
+  let(:batch_id) { "bar" }
+  let(:options) do
     {
-      'QUERY_STRING' => 'variant=K03000001'
+      'variant' => 'K03000001'
     }
   end
 
