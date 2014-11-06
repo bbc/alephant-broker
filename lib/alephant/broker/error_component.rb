@@ -24,7 +24,13 @@ module Alephant
       private
 
       def content_for(exception)
-        "#{exception.message}\n#{exception.backtrace.join('\n')}"
+        "#{exception.message}".tap do |msg|
+          msg << "\n#{exception.backtrace.join('\n')}" if debug?
+        end
+      end
+
+      def debug?
+        Broker.config.fetch('debug', false)
       end
     end
   end
