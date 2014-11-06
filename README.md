@@ -1,10 +1,8 @@
 # Alephant::Broker
 
-Brokers requests for rendered templates stored in S3
+Brokers requests for rendered templates, retrieved from S3 or a HTML endpoint.
 
-[![Build Status](https://travis-ci.org/BBC-News/alephant-broker.png?branch=master)](https://travis-ci.org/BBC-News/alephant-broker)
-
-[![Gem Version](https://badge.fury.io/rb/alephant-broker.png)](http://badge.fury.io/rb/alephant-broker)
+[![Build Status](https://travis-ci.org/BBC-News/alephant-broker.png?branch=master)](https://travis-ci.org/BBC-News/alephant-broker)[![Gem Version](https://badge.fury.io/rb/alephant-broker.png)](http://badge.fury.io/rb/alephant-broker)
 
 ## Installation
 
@@ -14,101 +12,104 @@ Add this line to your application's Gemfile:
 
 And then execute:
 
-    $ bundle
+    bundle install
 
 Or install it yourself as:
 
-    $ gem install alephant-broker
+    gem install alephant-broker
 
 ## Usage
 
 ### Barebones
 
-```ruby
-require 'alephant/broker'
+#### S3 Load Strategy
 
-request = Alephant::Broker::Request.new('/component/id', 'variant=hello')
-config  = {
-  :bucket_id         => "s3-render-example",
-  :path              => "foo",
-  :lookup_table_name => "example_lookup"
+```
+require 'alephant-broker'
+
+config = {
+  :bucket_id         => 'test_bucket',
+  :path              => 'foo',
+  :lookup_table_name => 'test_lookup'
 }
 
-broker = Alephant::Broker.handle(request, config)
-
-# => #<Alephant::Broker::Response:0x5215005d
-# @content="<p>some HTML response</p>",
-# @content_type="text/html",
-# @status=200>
-```
-
-### Simple App
-
-```ruby
-require 'alephant/broker/app'
-
-config  = {
-  :bucket_id         => "s3-render-example",
-  :path              => "foo",
-  :lookup_table_name => "example_lookup"
+request = {
+  'PATH_INFO'      => '/component/foo'
+  'QUERY_STRING'   => 'variant=bar',
+  'REQUEST_METHOD' => 'GET'
 }
 
-app = Alephant::Broker::Application.new(config)
-request = app.request_from('/component/id', 'variant=hello')
-
-app.handle(request)
-
-# => #<Alephant::Broker::Response:0x5215005d
-# @content="<p>some HTML response</p>",
-# @content_type="text/html",
-# @status=200>
+Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::S3.new,
+  config
+).call(request).tap do |response|
+  puts "status:  #{response.code}"
+  puts "content: #{response.content}"
+end
 ```
 
-### Rack
+#### HTML Load Strategy
 
-```ruby
-require 'alephant/broker/app/rack'
-require 'configuration'
+```
+require 'alephant-broker'
 
-module Foo
-  class Bar < Alephant::Broker::RackApplication
-    def initialize
-      super(Configuration.new)
-    end
+class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
+  def generate
+    'http://example-api.com/data'
   end
 end
+
+request = {
+  'PATH_INFO'      => '/component/foo'
+  'QUERY_STRING'   => 'variant=bar',
+  'REQUEST_METHOD' => 'GET'
+}
+
+Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::HTML.new(URLGenerator.new)
+).call(request).tap do |response|
+  puts "status:  #{response.code}"
+  puts "content: #{response.content}"
+end
+```
+
+### Rack App
+
+Create **config.ru** using example below, and then run:
+
+    rackup config.ru
+
+```
+require 'alephant-broker'
+
+class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
+  def generate
+    'http://example-api.com/data'
+  end
+end
+
+run Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::HTML.new(URLGenerator.new)
+)
 ```
 
 ## Pry'ing
 
-If you're using Pry to debug this gem...
+Use [Pry](https://github.com/pry/pry) to debug the gem:
 
-```ruby
-export AWS_ACCESS_KEY_ID='xxxx'
-export AWS_SECRET_ACCESS_KEY='xxxx'
-export AWS_REGION='eu-west-1'
-
-config = {
-  :bucket_id         => "s3-render-example",
-  :path              => "foo",
-  :lookup_table_name => "example_lookup"
-}
- 
-env = {
-  "PATH_INFO"    => "/component/england_council_header",
-  "QUERY_STRING" => ""
-}
- 
-require 'alephant/broker/app/rack'
- 
-app = Alephant::Broker::RackApplication.new(config)
-app.call(env)
+```
+Batman!
 ```
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/alephant-broker/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+1. [Fork it!]( http://github.com/bbc-news/alephant-broker/fork)
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Create a new [Pull Request](https://github.com/BBC-News/alephant-broker/pulls).
+
+Feel free to create a new [issue](https://github.com/BBC-News/alephant-broker/issues/new) if you find a bug.
+
+
+
