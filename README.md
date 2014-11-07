@@ -58,8 +58,8 @@ require 'alephant/broker'
 require 'alephant/broker/load_strategy/http'
 
 class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
-  def generate
-    'http://example-api.com/data'
+  def generate(id, options)
+    "http://example-api.com/data?id=#{id}"
   end
 end
 
@@ -88,8 +88,8 @@ require 'alephant/broker'
 require 'alephant/broker/load_strategy/http'
 
 class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
-  def generate
-    'http://example-api.com/data'
+  def generate(id, options)
+    "http://example-api.com/data?id=#{id}"
   end
 end
 
@@ -97,7 +97,6 @@ run Alephant::Broker::Application.new(
   Alephant::Broker::LoadStrategy::HTTP.new(UrlGenerator.new),
   {}
 )
-
 ```
 
 ## Contributing
