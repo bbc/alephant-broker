@@ -1,10 +1,8 @@
 # Alephant::Broker
 
-Brokers requests for rendered templates stored in S3
+Brokers requests for rendered templates, retrieved from S3 or a HTML endpoint.
 
-[![Build Status](https://travis-ci.org/BBC-News/alephant-broker.png?branch=master)](https://travis-ci.org/BBC-News/alephant-broker)
-
-[![Gem Version](https://badge.fury.io/rb/alephant-broker.png)](http://badge.fury.io/rb/alephant-broker)
+[![Build Status](https://travis-ci.org/BBC-News/alephant-broker.png?branch=master)](https://travis-ci.org/BBC-News/alephant-broker)[![Gem Version](https://badge.fury.io/rb/alephant-broker.png)](http://badge.fury.io/rb/alephant-broker)
 
 ## Installation
 
@@ -14,101 +12,105 @@ Add this line to your application's Gemfile:
 
 And then execute:
 
-    $ bundle
+    bundle install
 
 Or install it yourself as:
 
-    $ gem install alephant-broker
+    gem install alephant-broker
 
 ## Usage
 
+The **Broker** is capable of retrieving rendered templates from either [S3](http://aws.amazon.com/s3/) or a HTML endpoint (e.g. [alephant-publisher-request](https://github.com/BBC-News/alephant-publisher-request)). This must be decided when creating an instance of the **Broker**, as a **load strategy** is given as a parameter (see below for examples).
+
 ### Barebones
+
+##### S3 Load Strategy
 
 ```ruby
 require 'alephant/broker'
+require 'alephant/broker/load_strategy/s3'
 
-request = Alephant::Broker::Request.new('/component/id', 'variant=hello')
-config  = {
-  :bucket_id         => "s3-render-example",
-  :path              => "foo",
-  :lookup_table_name => "example_lookup"
+config = {
+  :bucket_id         => 'test_bucket',
+  :path              => 'foo',
+  :lookup_table_name => 'test_lookup'
 }
 
-broker = Alephant::Broker.handle(request, config)
-
-# => #<Alephant::Broker::Response:0x5215005d
-# @content="<p>some HTML response</p>",
-# @content_type="text/html",
-# @status=200>
-```
-
-### Simple App
-
-```ruby
-require 'alephant/broker/app'
-
-config  = {
-  :bucket_id         => "s3-render-example",
-  :path              => "foo",
-  :lookup_table_name => "example_lookup"
+request = {
+  'PATH_INFO'      => '/component/foo',
+  'QUERY_STRING'   => 'variant=bar',
+  'REQUEST_METHOD' => 'GET'
 }
 
-app = Alephant::Broker::Application.new(config)
-request = app.request_from('/component/id', 'variant=hello')
-
-app.handle(request)
-
-# => #<Alephant::Broker::Response:0x5215005d
-# @content="<p>some HTML response</p>",
-# @content_type="text/html",
-# @status=200>
-```
-
-### Rack
-
-```ruby
-require 'alephant/broker/app/rack'
-require 'configuration'
-
-module Foo
-  class Bar < Alephant::Broker::RackApplication
-    def initialize
-      super(Configuration.new)
-    end
-  end
+Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::S3.new,
+  config
+).call(request).tap do |response|
+  puts "status:  #{response.status}"
+  puts "content: #{response.content}"
 end
 ```
 
-## Pry'ing
-
-If you're using Pry to debug this gem...
+##### HTML Load Strategy
 
 ```ruby
-export AWS_ACCESS_KEY_ID='xxxx'
-export AWS_SECRET_ACCESS_KEY='xxxx'
-export AWS_REGION='eu-west-1'
+require 'alephant/broker'
+require 'alephant/broker/load_strategy/http'
 
-config = {
-  :bucket_id         => "s3-render-example",
-  :path              => "foo",
-  :lookup_table_name => "example_lookup"
+class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
+  def generate(id, options)
+    "http://example-api.com/data?id=#{id}"
+  end
+end
+
+request = {
+  'PATH_INFO'      => '/component/foo',
+  'QUERY_STRING'   => 'variant=bar',
+  'REQUEST_METHOD' => 'GET'
 }
- 
-env = {
-  "PATH_INFO"    => "/component/england_council_header",
-  "QUERY_STRING" => ""
-}
- 
-require 'alephant/broker/app/rack'
- 
-app = Alephant::Broker::RackApplication.new(config)
-app.call(env)
+
+Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::HTTP.new(UrlGenerator.new),
+  {}
+).call(request).tap do |response|
+  puts "status:  #{response.status}"
+  puts "content: #{response.content}"
+end
+```
+
+**Note**: the HTML load strategy relies upon being given a [URLGenerator](https://github.com/BBC-News/alephant-broker/blob/master/lib/alephant/broker/load_strategy/http.rb#L9-L13). This must be implemented within your own application, and extend `Alephant::Broker::LoadStrategy::HTTP::URL` (see above for an example). It is used to generate the URL which will act as the HTML endpoint.
+
+### Rack App
+
+Create **config.ru** using example below, and then run:
+
+    rackup config.ru
+
+```ruby
+require 'alephant/broker'
+require 'alephant/broker/load_strategy/http'
+
+class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
+  def generate(id, options)
+    "http://example-api.com/data?id=#{id}"
+  end
+end
+
+run Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::HTTP.new(UrlGenerator.new),
+  {}
+)
 ```
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/alephant-broker/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+1. [Fork it!]( http://github.com/bbc-news/alephant-broker/fork)
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Create a new [Pull Request](https://github.com/BBC-News/alephant-broker/pulls).
+
+Feel free to create a new [issue](https://github.com/BBC-News/alephant-broker/issues/new) if you find a bug.
+
+
+
