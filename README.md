@@ -20,6 +20,8 @@ Or install it yourself as:
 
 ## Usage
 
+The **Broker** is capable of retrieving rendered templates from either [S3](http://aws.amazon.com/s3/) or a HTML endpoint (e.g. [alephant-publisher-request](https://github.com/BBC-News/alephant-publisher-request)). This must be decided when creating an instance of the **Broker**, as a **load strategy** is given as a parameter (see below for examples).
+
 ### Barebones
 
 ##### S3 Load Strategy
