@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ### Barebones
 
-#### S3 Load Strategy
+##### S3 Load Strategy
 
 ```
 require 'alephant-broker'
@@ -48,7 +48,7 @@ Alephant::Broker::Application.new(
 end
 ```
 
-#### HTML Load Strategy
+##### HTML Load Strategy
 
 ```
 require 'alephant-broker'
@@ -91,14 +91,6 @@ end
 run Alephant::Broker::Application.new(
   Alephant::Broker::LoadStrategy::HTML.new(URLGenerator.new)
 )
-```
-
-## Pry'ing
-
-Use [Pry](https://github.com/pry/pry) to debug the gem:
-
-```
-Batman!
 ```
 
 ## Contributing
