@@ -37,7 +37,7 @@ config = {
 }
 
 request = {
-  'PATH_INFO'      => '/component/foo'
+  'PATH_INFO'      => '/component/foo',
   'QUERY_STRING'   => 'variant=bar',
   'REQUEST_METHOD' => 'GET'
 }
@@ -76,8 +76,9 @@ Alephant::Broker::Application.new(
   puts "status:  #{response.status}"
   puts "content: #{response.content}"
 end
-
 ```
+
+**Note**: the HTML load strategy relies upon being given a [URLGenerator](https://github.com/BBC-News/alephant-broker/blob/master/lib/alephant/broker/load_strategy/http.rb#L9-L13). This must be implemented within your own application, and extend `Alephant::Broker::LoadStrategy::HTTP::URL` (see above for an example). It is used to generate the URL which will act as the HTML endpoint.
 
 ### Rack App
 
