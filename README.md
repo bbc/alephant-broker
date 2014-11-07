@@ -27,7 +27,8 @@ The **Broker** is capable of retrieving rendered templates from either [S3](http
 ##### S3 Load Strategy
 
 ```
-require 'alephant-broker'
+require 'alephant/broker'
+require 'alephant/broker/load_strategy/s3'
 
 config = {
   :bucket_id         => 'test_bucket',
@@ -53,7 +54,8 @@ end
 ##### HTML Load Strategy
 
 ```
-require 'alephant-broker'
+require 'alephant/broker'
+require 'alephant/broker/load_strategy/http'
 
 class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
   def generate
@@ -82,7 +84,8 @@ Create **config.ru** using example below, and then run:
     rackup config.ru
 
 ```
-require 'alephant-broker'
+require 'alephant/broker'
+require 'alephant/broker/load_strategy/http'
 
 class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
   def generate
@@ -91,8 +94,10 @@ class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
 end
 
 run Alephant::Broker::Application.new(
-  Alephant::Broker::LoadStrategy::HTML.new(URLGenerator.new)
+  Alephant::Broker::LoadStrategy::HTTP.new(UrlGenerator.new),
+  {}
 )
+
 ```
 
 ## Contributing
