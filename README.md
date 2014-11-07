@@ -46,7 +46,7 @@ Alephant::Broker::Application.new(
   Alephant::Broker::LoadStrategy::S3.new,
   config
 ).call(request).tap do |response|
-  puts "status:  #{response.code}"
+  puts "status:  #{response.status}"
   puts "content: #{response.content}"
 end
 ```
@@ -64,17 +64,19 @@ class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
 end
 
 request = {
-  'PATH_INFO'      => '/component/foo'
+  'PATH_INFO'      => '/component/foo',
   'QUERY_STRING'   => 'variant=bar',
   'REQUEST_METHOD' => 'GET'
 }
 
 Alephant::Broker::Application.new(
-  Alephant::Broker::LoadStrategy::HTML.new(URLGenerator.new)
+  Alephant::Broker::LoadStrategy::HTTP.new(UrlGenerator.new),
+  {}
 ).call(request).tap do |response|
-  puts "status:  #{response.code}"
+  puts "status:  #{response.status}"
   puts "content: #{response.content}"
 end
+
 ```
 
 ### Rack App
