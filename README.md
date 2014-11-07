@@ -26,7 +26,7 @@ The **Broker** is capable of retrieving rendered templates from either [S3](http
 
 ##### S3 Load Strategy
 
-```
+```ruby
 require 'alephant/broker'
 require 'alephant/broker/load_strategy/s3'
 
@@ -53,7 +53,7 @@ end
 
 ##### HTML Load Strategy
 
-```
+```ruby
 require 'alephant/broker'
 require 'alephant/broker/load_strategy/http'
 
@@ -86,7 +86,7 @@ Create **config.ru** using example below, and then run:
 
     rackup config.ru
 
-```
+```ruby
 require 'alephant/broker'
 require 'alephant/broker/load_strategy/http'
 
