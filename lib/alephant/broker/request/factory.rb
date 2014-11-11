@@ -13,8 +13,6 @@ module Alephant
           component_factory = ComponentFactory.new load_strategy
 
           case request_type_from(env)
-          when 'multi'
-            Multi.new(env)
           when 'component'
             Asset.new(component_factory, env)
           when 'components'
