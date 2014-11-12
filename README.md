@@ -86,7 +86,7 @@ The HTML load strategy relies upon being given a URLGenerator, which is used to 
 * extend [`Alephant::Broker::LoadStrategy::HTTP::URL`](https://github.com/BBC-News/alephant-broker/blob/master/lib/alephant/broker/load_strategy/http.rb#L9-L13).
 * include a `#generate` method which takes `id` (string) and `options` (hash) as parameters.
 
-```
+```ruby
 require 'alephant/broker/load_strategy/http'
 require 'rack'
 
