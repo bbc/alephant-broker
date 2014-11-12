@@ -78,7 +78,30 @@ Alephant::Broker::Application.new(
 end
 ```
 
-**Note**: the HTML load strategy relies upon being given a [URLGenerator](https://github.com/BBC-News/alephant-broker/blob/master/lib/alephant/broker/load_strategy/http.rb#L9-L13). This must be implemented within your own application, and extend `Alephant::Broker::LoadStrategy::HTTP::URL` (see above for an example). It is used to generate the URL which will act as the HTML endpoint.
+**Note**
+
+The HTML load strategy relies upon being given a URLGenerator, which is used to generate the URL of the HTML endpoint (see below for example). The class must:
+
+* be implemented within your own application.
+* extend [`Alephant::Broker::LoadStrategy::HTTP::URL`](https://github.com/BBC-News/alephant-broker/blob/master/lib/alephant/broker/load_strategy/http.rb#L9-L13).
+* include a `#generate` method which takes `id` (string) and `options` (hash) as parameters.
+
+```
+require 'alephant/broker/load_strategy/http'
+require 'rack'
+
+class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
+  def generate(id, options)
+    "http://api.my-app.com/component/#{id}?#{to_query_string(options)}"
+  end
+
+  private
+
+  def to_query_string(hash)
+    Rack::Utils.build_query hash
+  end
+end
+```
 
 ### Rack App
 
