@@ -31,8 +31,8 @@ require 'alephant/broker'
 require 'alephant/broker/load_strategy/s3'
 
 config = {
-  :bucket_id         => 'test_bucket',
-  :path              => 'foo',
+  :s3_bucket_id      => 'test_bucket',
+  :s3_object_path    => 'foo',
   :lookup_table_name => 'test_lookup'
 }
 
