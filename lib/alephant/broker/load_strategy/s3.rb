@@ -21,7 +21,7 @@ module Alephant
           )
         end
 
-        private 
+        private
 
         def add_s3_headers(component_data, component_meta)
           component_data.merge(
@@ -38,7 +38,7 @@ module Alephant
         end
 
         def sequence(component_meta)
-          sequencer(component_meta).get_last_seen
+          sequencer.get_last_seen component_meta.key
         end
 
         def retrieve_object(component_meta)
@@ -77,9 +77,9 @@ module Alephant
           )
         end
 
-        def sequencer(component_meta)
-          Alephant::Sequencer.create(
-            Broker.config[:sequencer_table_name], component_meta.key
+        def sequencer
+          @sequencer ||= Alephant::Sequencer.create(
+            Broker.config[:sequencer_table_name], nil
           )
         end
       end
