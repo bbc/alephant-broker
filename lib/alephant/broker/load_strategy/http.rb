@@ -56,6 +56,7 @@ module Alephant
             end
           end
           request_time = Time.new - before
+          logger.metric({:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time})
         end
 
         def url_for(component_meta)
