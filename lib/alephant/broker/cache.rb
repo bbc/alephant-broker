@@ -55,7 +55,7 @@ module Alephant
       class NullClient
         def get(key); end
 
-        def set(key, value)
+        def set(key, value, ttl = nil)
           value
         end
       end
