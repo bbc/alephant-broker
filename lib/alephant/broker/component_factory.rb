@@ -20,9 +20,11 @@ module Alephant
         )
       rescue Alephant::Broker::Errors::ContentNotFound => e
         logger.warn 'Broker.ComponentFactory.create: Exception raised (ContentNotFound)'
+        logger.metric(:name => "BrokerComponentFactoryContentNotFound", :unit => "Count", :value => 1)
         ErrorComponent.new(component_meta, 404, e)
       rescue => e
         logger.warn("Broker.ComponentFactory.create: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
+        logger.metric(:name => "BrokerComponentFactoryExceptionRaised", :unit => "Count", :value => 1)
         ErrorComponent.new(component_meta, 500, e)
       end
     end

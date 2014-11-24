@@ -1,11 +1,14 @@
 require 'alephant/broker/cache'
 require 'alephant/broker/errors/content_not_found'
+require 'alephant/logger'
 require 'faraday'
 
 module Alephant
   module Broker
     module LoadStrategy
       class HTTP
+        include Logger
+
         class URL
           def generate
             raise NotImplementedError
@@ -19,6 +22,7 @@ module Alephant
         def load(component_meta)
           cache_object(component_meta)
         rescue
+          logger.metric(:name => "BrokerLoadStrategyHTTPCacheMiss", :unit => "Count", :value => 1)
           cache.set(component_meta.cache_key, content(component_meta))
         end
 
@@ -47,9 +51,17 @@ module Alephant
         end
 
         def request(component_meta)
+          before = Time.new
           component_meta.cached = false
+
           Faraday.get(url_for component_meta).tap do |r|
-            raise Alephant::Broker::Errors::ContentNotFound unless r.success?
+            unless r.success?
+              logger.metric(:name => "BrokerLoadStrategyHTTPContentNotFound", :unit => "Count", :value => 1)
+              raise Alephant::Broker::Errors::ContentNotFound
+            end
+
+            request_time = Time.new - before
+            logger.metric(:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time)
           end
         end
 

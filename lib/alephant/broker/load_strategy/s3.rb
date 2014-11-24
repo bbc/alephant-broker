@@ -1,17 +1,21 @@
 require "alephant/broker/cache"
 require 'alephant/broker/errors/content_not_found'
 require 'alephant/broker/errors/invalid_cache_key'
+require 'alephant/logger'
 
 module Alephant
   module Broker
     module LoadStrategy
       class S3
+        include Logger
+
         def load(component_meta)
           add_s3_headers(
             cache_object(component_meta),
             component_meta
           )
         rescue
+          logger.metric(:name => "BrokerLoadStrategyS3CacheMiss", :unit => "Count", :value => 1)
           add_s3_headers(
             cache.set(
               component_meta.cache_key,
@@ -45,6 +49,7 @@ module Alephant
           component_meta.cached = false
           s3.get s3_path(component_meta)
         rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
+          logger.metric(:name => "BrokerLoadStrategyS3InvalidCacheKey", :unit => "Count", :value => 1)
           raise Alephant::Broker::Errors::ContentNotFound
         end
 

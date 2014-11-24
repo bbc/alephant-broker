@@ -15,6 +15,7 @@ module Alephant
             @@client ||= @@elasticache.client
           else
             logger.debug('Broker::Cache::Client#initialize: No config endpoint, NullClient used')
+            logger.metric(:name => "BrokerCacheClientNoConfigEndpoint", :unit => "Count", :value => 1)
             @@client = NullClient.new
           end
         end
@@ -23,6 +24,7 @@ module Alephant
           begin
             result = @@client.get(versioned(key))
             logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
+            logger.metric(:name => "BrokerCacheClientGetKeyMiss", :unit => "Count", :value => 1) unless result
             result ? result : set(key, block.call)
           rescue StandardError => e
             block.call if block_given?
