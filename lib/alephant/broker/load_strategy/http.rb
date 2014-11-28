@@ -6,6 +6,8 @@ module Alephant
   module Broker
     module LoadStrategy
       class HTTP
+        include Logger
+
         class URL
           def generate
             raise NotImplementedError
