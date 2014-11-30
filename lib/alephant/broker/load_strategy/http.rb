@@ -56,9 +56,9 @@ module Alephant
               logger.metric({:name => "InvalidBrokerHTTPLoad", :unit => "Count", :value => 1})
               raise Alephant::Broker::Errors::ContentNotFound
             end
+            request_time = Time.new - before
+            logger.metric({:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time})
           end
-          request_time = Time.new - before
-          logger.metric({:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time})
         end
 
         def url_for(component_meta)
