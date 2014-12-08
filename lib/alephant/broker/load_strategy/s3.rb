@@ -22,7 +22,7 @@ module Alephant
           )
         end
 
-        private 
+        private
 
         def add_s3_headers(component_data, component_meta)
           component_data.merge(
