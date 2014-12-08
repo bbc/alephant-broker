@@ -1,4 +1,5 @@
 require 'alephant/broker/errors/invalid_cache_key'
+require 'alephant/logger'
 require 'aws-sdk'
 require 'ostruct'
 
@@ -6,6 +7,8 @@ module Alephant
   module Broker
     module Response
       class Base
+        include Logger
+
         attr_reader :content, :headers, :status
 
         STATUS_CODE_MAPPING = {
