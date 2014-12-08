@@ -51,11 +51,13 @@ module Alephant
         def request(component_meta)
           before = Time.new
           component_meta.cached = false
+
           Faraday.get(url_for component_meta).tap do |r|
             if not r.success?
-              logger.metric({:name => "InvalidBrokerHTTPLoad", :unit => "Count", :value => 1})
+              logger.metric({:name => "BrokerLoadStrategyHTTPContentNotFound", :unit => "Count", :value => 1})
               raise Alephant::Broker::Errors::ContentNotFound
             end
+
             request_time = Time.new - before
             logger.metric({:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time})
           end
