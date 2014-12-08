@@ -21,6 +21,7 @@ module Alephant
         def load(component_meta)
           cache_object(component_meta)
         rescue
+          logger.metric({:name => "BrokerLoadStrategyHTTPCacheMiss", :unit => "Count", :value => 1})
           cache.set(component_meta.cache_key, content(component_meta))
         end
 
