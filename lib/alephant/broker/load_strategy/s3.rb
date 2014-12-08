@@ -1,11 +1,14 @@
 require "alephant/broker/cache"
 require 'alephant/broker/errors/content_not_found'
 require 'alephant/broker/errors/invalid_cache_key'
+require 'alephant/logger'
 
 module Alephant
   module Broker
     module LoadStrategy
       class S3
+        include Logger
+
         def load(component_meta)
           add_s3_headers(
             cache_object(component_meta),

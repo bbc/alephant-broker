@@ -1,5 +1,6 @@
 require 'alephant/broker/cache'
 require 'alephant/broker/errors/content_not_found'
+require 'alephant/logger'
 require 'faraday'
 
 module Alephant
