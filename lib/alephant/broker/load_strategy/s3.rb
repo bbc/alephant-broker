@@ -12,6 +12,7 @@ module Alephant
             component_meta
           )
         rescue
+          logger.metric({:name => "BrokerLoadStrategyS3CacheMiss", :unit => "Count", :value => 1})
           add_s3_headers(
             cache.set(
               component_meta.cache_key,
