@@ -46,6 +46,7 @@ module Alephant
           component_meta.cached = false
           s3.get s3_path(component_meta)
         rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
+          logger.metric({:name => "BrokerLoadStrategyS3InvalidCacheKey", :unit => "Count", :value => 1})
           raise Alephant::Broker::Errors::ContentNotFound
         end
 
