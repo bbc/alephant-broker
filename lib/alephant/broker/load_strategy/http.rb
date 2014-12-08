@@ -55,7 +55,7 @@ module Alephant
           component_meta.cached = false
 
           Faraday.get(url_for component_meta).tap do |r|
-            if not r.success?
+            unless r.success?
               logger.metric({:name => "BrokerLoadStrategyHTTPContentNotFound", :unit => "Count", :value => 1})
               raise Alephant::Broker::Errors::ContentNotFound
             end
