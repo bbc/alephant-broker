@@ -19,12 +19,20 @@ module Alephant
           @headers = { "Content-Type" => content_type }
           @status  = status
 
+          log if status !~ /200/
+
           setup
         end
 
         protected
 
         def setup; end
+
+        private
+
+        def log
+          logger.metric({:name => "BrokerResponse#{status}", :unit => "Count", :value => 1})
+        end
       end
     end
   end
