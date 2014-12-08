@@ -34,7 +34,7 @@ module Alephant
         private
 
         def log
-          logger.metric({:name => "BrokerResponse#{status}", :unit => "Count", :value => 1})
+          logger.metric(:name => "BrokerResponse#{status}", :unit => "Count", :value => 1)
         end
       end
     end

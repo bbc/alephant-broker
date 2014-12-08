@@ -22,7 +22,7 @@ module Alephant
         def load(component_meta)
           cache_object(component_meta)
         rescue
-          logger.metric({:name => "BrokerLoadStrategyHTTPCacheMiss", :unit => "Count", :value => 1})
+          logger.metric(:name => "BrokerLoadStrategyHTTPCacheMiss", :unit => "Count", :value => 1)
           cache.set(component_meta.cache_key, content(component_meta))
         end
 
@@ -56,12 +56,12 @@ module Alephant
 
           Faraday.get(url_for component_meta).tap do |r|
             unless r.success?
-              logger.metric({:name => "BrokerLoadStrategyHTTPContentNotFound", :unit => "Count", :value => 1})
+              logger.metric(:name => "BrokerLoadStrategyHTTPContentNotFound", :unit => "Count", :value => 1)
               raise Alephant::Broker::Errors::ContentNotFound
             end
 
             request_time = Time.new - before
-            logger.metric({:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time})
+            logger.metric(:name => "BrokerHTTPLoadComponentTime", :unit => "Seconds", :value => request_time)
           end
         end
 

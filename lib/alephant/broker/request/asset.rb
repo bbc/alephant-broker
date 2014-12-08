@@ -17,7 +17,7 @@ module Alephant
             env.options
           )
         rescue InvalidAssetId
-          logger.metric({:name => "BrokerRequestAssetInvalidAssetId", :unit => "Count", :value => 1})
+          logger.metric(:name => "BrokerRequestAssetInvalidAssetId", :unit => "Count", :value => 1)
           logger.warn 'Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)'
         end
 
