@@ -1,5 +1,4 @@
 require 'crimp'
-require 'alephant/logger'
 require 'alephant/cache'
 require 'alephant/lookup'
 require 'alephant/broker/errors/invalid_cache_key'
