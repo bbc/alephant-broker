@@ -25,7 +25,7 @@ module Alephant
 
         def details
           c = @component
-          "#{c.id}/#{c.opts_hash}/#{c.headers} #{batched} #{c.options}"
+          "#{c.id}/#{c.options}/#{c.headers} #{batched} #{c.options}"
         end
 
         def log
