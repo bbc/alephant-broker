@@ -5,7 +5,7 @@ describe Alephant::Broker::Application do
 
   let(:app) do
     described_class.new(
-      Alephant::Broker::LoadStrategy::S3.new,
+      Alephant::Broker::LoadStrategy::S3::Sequenced.new,
       {
         :lookup_table_name => 'test_table',
         :bucket_id         => 'test_bucket',
@@ -52,7 +52,7 @@ describe Alephant::Broker::Application do
     specify { expect(last_response.body).to eql 'ok' }
   end
 
-  describe '404 endpoint `/banana`' do 
+  describe '404 endpoint `/banana`' do
     before { get '/banana' }
     specify { expect(last_response.status).to eql 404 }
     specify { expect(last_response.body).to eq 'Not found' }
@@ -77,7 +77,7 @@ describe Alephant::Broker::Application do
       specify { expect(last_response.status).to eq 200 }
       specify { expect(last_response.body).to eq 'Test' }
     end
-   
+
     context 'when using valid batch asset data' do
       before { post '/components/batch', batch_json, 'CONTENT_TYPE' => 'application/json' }
       specify { expect(last_response.status).to eql 200 }
@@ -89,10 +89,10 @@ describe Alephant::Broker::Application do
     let(:cache_double) do
       instance_double(
         'Alephant::Broker::Cache::Client',
-        :set => { 
+        :set => {
           :content_type => 'test/html',
-          :content => '<p>Some data</p>' 
-        }, 
+          :content => '<p>Some data</p>'
+        },
         :get => '<p>Some data</p>'
       )
     end
@@ -117,7 +117,7 @@ describe Alephant::Broker::Application do
       end
       it 'should update the cache (call `.set`)' do
         expect(cache_double).to receive(:set).once
-      end 
+      end
       after { get '/component/test_component' }
     end
   end
