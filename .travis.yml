@@ -4,6 +4,7 @@ rvm:
 notifications:
   email:
     recipients:
-      - kenoir@gmail.com
+      - FutureMediaNewsRubyGems@bbc.co.uk
     on_failure: change
     on_success: never
+sudo: false
