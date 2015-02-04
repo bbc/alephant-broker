@@ -10,7 +10,7 @@ module Alephant
           end
 
           def headers(component_meta)
-            { 'X-Sequence' => sequence(component_meta).to_s }
+            { "X-Sequence" => sequence(component_meta).to_s }
           end
 
           def s3_path(component_meta)
@@ -19,7 +19,7 @@ module Alephant
               component_meta.options,
               sequence(component_meta)
             ).tap do |obj|
-              raise InvalidCacheKey if obj.location.nil?
+              fail InvalidCacheKey if obj.location.nil?
             end.location unless sequence(component_meta).nil?
           end
 
