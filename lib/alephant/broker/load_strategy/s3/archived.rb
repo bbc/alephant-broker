@@ -6,7 +6,7 @@ module Alephant
       module S3
         class Archived < Base
           def s3_path(component_meta)
-            "#{component_meta.id}/#{component_meta.opts_hash}".tap do |location|
+            component_meta.id.tap do |location|
               raise InvalidCacheKey if location.nil?
             end
           end
