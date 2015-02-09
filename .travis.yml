@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - "jruby"
+  - "jruby-1.7.16"
 notifications:
   email:
     recipients:
