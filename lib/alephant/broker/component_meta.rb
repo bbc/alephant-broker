@@ -42,14 +42,6 @@ module Alephant
       def renderer_key
         "#{batch_id}/#{opts_hash}"
       end
-
-      def headers(data)
-        {
-          'Content-Type' => data[:content_type].to_s,
-          'X-Version'    => version.to_s,
-          'X-Cached'     => cached.to_s
-        }.merge(data[:headers] || {})
-      end
     end
   end
 end

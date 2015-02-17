@@ -27,8 +27,6 @@ module Alephant
       def headers
         {
           'Content-Type' => data[:content_type].to_s,
-          'X-Version'    => meta.version.to_s,
-          'X-Cached'     => meta.cached.to_s
         }.merge(data[:headers] || {})
       end
 

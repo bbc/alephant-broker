@@ -82,6 +82,13 @@ module Alephant
               Broker.config[:lookup_table_name]
             )
           end
+
+          def headers(component_meta)
+            {
+              'X-Version'    => Broker.config['elasticache_cache_version'].to_s,
+              'X-Cached'     => cached.to_s
+            }
+          end
         end
       end
     end

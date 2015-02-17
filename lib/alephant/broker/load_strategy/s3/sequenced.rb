@@ -28,6 +28,12 @@ module Alephant
               Broker.config[:sequencer_table_name], nil
             )
           end
+
+          def headers(component_meta)
+            {
+              "X-Sequence" => sequence(component_meta).to_s
+            }.merge(super(component_meta))
+          end
         end
       end
     end
