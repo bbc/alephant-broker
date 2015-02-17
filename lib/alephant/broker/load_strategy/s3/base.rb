@@ -94,8 +94,8 @@ module Alephant
 
           def headers(component_meta)
             {
-              'X-Version'    => Broker.config['elasticache_cache_version'].to_s,
-              'X-Cached'     => cached.to_s
+              'X-Cache-Version'    => Broker.config['elasticache_cache_version'].to_s,
+              'X-Cached'           => cached.to_s
             }
           end
         end
