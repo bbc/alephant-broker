@@ -17,14 +17,14 @@ module Alephant
         Crimp.signature options
       end
 
+      def component_key
+        "#{id}/#{opts_hash}"
+      end
+
       private
 
       def convert_keys(hash)
         Hash[ hash.map { |k, v| [k.to_sym, v] } ]
-      end
-
-      def component_key
-        "#{id}/#{opts_hash}"
       end
 
       def renderer_key
