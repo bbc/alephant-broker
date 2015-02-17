@@ -22,7 +22,8 @@ module Alephant
 
         def get(key, &block)
           begin
-            result = @@client.get(versioned(key))
+            key = versioned(key)
+            result = @@client.get key
             logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
             logger.metric(:name => "BrokerCacheClientGetKeyMiss", :unit => "Count", :value => 1) unless result
             result ? result : set(key, block.call)

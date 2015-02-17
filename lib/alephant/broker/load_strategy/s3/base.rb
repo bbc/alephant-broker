@@ -9,6 +9,11 @@ module Alephant
       module S3
         class Base
           include Logger
+          attr_accessor :cached
+
+          def initialize
+            @cached = true
+          end
 
           def load(component_meta)
             add_s3_headers(
@@ -23,7 +28,7 @@ module Alephant
             )
             add_s3_headers(
               cache.set(
-                component_meta.cache_key,
+                cache_key(component_meta),
                 retrieve_object(component_meta)
               ),
               component_meta
@@ -34,6 +39,10 @@ module Alephant
 
           def headers(component_meta)
             Hash.new
+          end
+
+          def cache_key(component_meta)
+            component_meta.component_key
           end
 
           private
@@ -53,7 +62,7 @@ module Alephant
           end
 
           def retrieve_object(component_meta)
-            component_meta.cached = false
+            cached = false
             s3.get s3_path(component_meta)
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
             logger.metric(
@@ -65,7 +74,7 @@ module Alephant
           end
 
           def cache_object(component_meta)
-            cache.get(component_meta.cache_key) do
+            cache.get cache_key(component_meta) do
               retrieve_object component_meta
             end
           end
@@ -81,6 +90,13 @@ module Alephant
             @lookup ||= Alephant::Lookup.create(
               Broker.config[:lookup_table_name]
             )
+          end
+
+          def headers(component_meta)
+            {
+              'X-Cache-Version'    => Broker.config['elasticache_cache_version'].to_s,
+              'X-Cached'           => cached.to_s
+            }
           end
         end
       end

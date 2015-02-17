@@ -9,10 +9,6 @@ module Alephant
             sequencer.get_last_seen component_meta.key
           end
 
-          def headers(component_meta)
-            { "X-Sequence" => sequence(component_meta).to_s }
-          end
-
           def s3_path(component_meta)
             lookup.read(
               component_meta.id,
@@ -27,6 +23,16 @@ module Alephant
             @sequencer ||= Alephant::Sequencer.create(
               Broker.config[:sequencer_table_name], nil
             )
+          end
+
+          def cache_key(component_meta)
+            "#{super(component_meta)}/#{sequence(component_meta)}"
+          end
+
+          def headers(component_meta)
+            {
+              "X-Sequence" => sequence(component_meta).to_s
+            }.merge(super(component_meta))
           end
         end
       end
