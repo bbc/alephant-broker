@@ -1,7 +1,7 @@
 module Alephant
   module Broker
     class ComponentMeta
-      attr_reader :id, :options, :batch_id, :opts_hash
+      attr_reader :id, :options, :batch_id
 
       def initialize(id, batch_id, options)
         @id          = id
