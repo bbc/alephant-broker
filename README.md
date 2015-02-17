@@ -125,6 +125,16 @@ run Alephant::Broker::Application.new(
 )
 ```
 
+### Cache version number
+
+The broker looks for a configuration value `elasticache_cache_version` and if it exists it uses it to construct the cache key.
+This allows the cache to be busted if the data in the cache changes, or for any other reason that it needs to be invalidated.
+
+This version is added as a header to the response in the following format:
+
+`X-Cache-Version: {CACHE_VERSION}`
+
+
 ## Contributing
 
 1. [Fork it!]( http://github.com/bbc-news/alephant-broker/fork)
