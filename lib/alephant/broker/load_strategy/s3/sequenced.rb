@@ -6,7 +6,7 @@ module Alephant
       module S3
         class Sequenced < Base
           def sequence(component_meta)
-            @sequence ||= sequencer.get_last_seen component_meta.key
+            sequencer.get_last_seen component_meta.key
           end
 
           def s3_path(component_meta)
@@ -23,10 +23,6 @@ module Alephant
             @sequencer ||= Alephant::Sequencer.create(
               Broker.config[:sequencer_table_name], nil
             )
-          end
-
-          def version
-            @version ||= sequence(component_meta)
           end
 
           def cache_key(component_meta)
