@@ -1,16 +1,16 @@
-require_relative 'spec_helper'
+require_relative "spec_helper"
 
 describe Alephant::Broker::ComponentMeta do
   let(:id) { "foo" }
   let(:batch_id) { "bar" }
   let(:options) do
     {
-      'variant' => 'K03000001'
+      "variant" => "K03000001"
     }
   end
   subject { described_class.new(id, batch_id, options) }
 
-  describe '#options' do
+  describe "#options" do
     let(:expected) do
       {
         :variant => "K03000001"

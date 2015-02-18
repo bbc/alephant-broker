@@ -12,12 +12,12 @@ module Alephant
       end
 
       def content_type
-        headers['Content-Type']
+        headers["Content-Type"]
       end
 
       def headers
         {
-          'Content-Type' => 'text/plain'
+          "Content-Type" => "text/plain"
         }
       end
 
@@ -30,7 +30,7 @@ module Alephant
       end
 
       def debug?
-        Broker.config.fetch('debug', false)
+        Broker.config.fetch("debug", false)
       end
     end
   end

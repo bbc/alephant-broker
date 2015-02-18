@@ -17,7 +17,7 @@ module Alephant
 
       def version
         Broker.config.fetch(
-          'elasticache_cache_version', 'not available'
+          "elasticache_cache_version", "not available"
         ).to_s
       end
 
@@ -32,7 +32,7 @@ module Alephant
       private
 
       def convert_keys(hash)
-        Hash[ hash.map { |k, v| [k.to_sym, v] } ]
+        Hash[hash.map { |k, v| [k.to_sym, v] }]
       end
 
       def component_key
@@ -45,9 +45,9 @@ module Alephant
 
       def headers(data)
         {
-          'Content-Type' => data[:content_type].to_s,
-          'X-Version'    => version.to_s,
-          'X-Cached'     => cached.to_s
+          "Content-Type" => data[:content_type].to_s,
+          "X-Version"    => version.to_s,
+          "X-Cached"     => cached.to_s
         }.merge(data[:headers] || {})
       end
     end

@@ -1,5 +1,5 @@
-require 'alephant/logger'
-require 'alephant/broker/errors/invalid_asset_id'
+require "alephant/logger"
+require "alephant/broker/errors/invalid_asset_id"
 
 module Alephant
   module Broker
@@ -18,16 +18,15 @@ module Alephant
           )
         rescue InvalidAssetId
           logger.metric(:name => "BrokerRequestAssetInvalidAssetId", :unit => "Count", :value => 1)
-          logger.warn 'Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)'
+          logger.warn "Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)"
         end
 
         private
 
         def component_id(path)
-          path.split('/')[2] || (raise InvalidAssetId.new 'No Asset ID specified')
+          path.split("/")[2] || (fail InvalidAssetId.new "No Asset ID specified")
         end
       end
     end
   end
 end
-

@@ -32,13 +32,13 @@ module Alephant
 
           protected
 
-          def headers(component_meta)
-            Hash.new
+          def headers(_component_meta)
+            {}
           end
 
           private
 
-          def s3_path(component_meta)
+          def s3_path(_component_meta)
             fail NotImplementedError
           end
 

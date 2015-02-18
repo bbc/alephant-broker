@@ -1,7 +1,7 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'alephant/broker/version'
+require "alephant/broker/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "alephant-broker"
@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "alephant-lookup"
   spec.add_runtime_dependency "alephant-cache"
   spec.add_runtime_dependency "alephant-logger", "~> 0"
-  spec.add_runtime_dependency 'alephant-sequencer'
+  spec.add_runtime_dependency "alephant-sequencer"
   spec.add_runtime_dependency "dalli-elasticache"
   spec.add_runtime_dependency "pmap"
   spec.add_runtime_dependency "faraday"

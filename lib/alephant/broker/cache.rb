@@ -1,5 +1,5 @@
-require 'dalli-elasticache'
-require 'alephant/logger'
+require "dalli-elasticache"
+require "alephant/logger"
 
 module Alephant
   module Broker
@@ -7,28 +7,26 @@ module Alephant
       class Client
         include Logger
 
-        DEFAULT_TTL  = 2592000
+        DEFAULT_TTL  = 2_592_000
 
         def initialize
           unless config_endpoint.nil?
-            @@elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
+            @@elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, :expires_in => ttl)
             @@client ||= @@elasticache.client
           else
-            logger.debug('Broker::Cache::Client#initialize: No config endpoint, NullClient used')
+            logger.debug("Broker::Cache::Client#initialize: No config endpoint, NullClient used")
             logger.metric(:name => "BrokerCacheClientNoConfigEndpoint", :unit => "Count", :value => 1)
             @@client = NullClient.new
           end
         end
 
         def get(key, &block)
-          begin
-            result = @@client.get(versioned(key))
-            logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
-            logger.metric(:name => "BrokerCacheClientGetKeyMiss", :unit => "Count", :value => 1) unless result
-            result ? result : set(key, block.call)
-          rescue StandardError => e
-            block.call if block_given?
-          end
+          result = @@client.get(versioned(key))
+          logger.info("Broker::Cache::Client#get key: #{key} - #{result ? 'hit' : 'miss'}")
+          logger.metric(:name => "BrokerCacheClientGetKeyMiss", :unit => "Count", :value => 1) unless result
+          result ? result : set(key, block.call)
+        rescue StandardError => e
+          block.call if block_given?
         end
 
         def set(key, value, ttl = nil)
@@ -38,30 +36,29 @@ module Alephant
         private
 
         def config_endpoint
-          Broker.config['elasticache_config_endpoint']
+          Broker.config["elasticache_config_endpoint"]
         end
 
         def ttl
-           Broker.config['elasticache_ttl'] || DEFAULT_TTL
+          Broker.config["elasticache_ttl"] || DEFAULT_TTL
         end
 
         def versioned(key)
-          [key, cache_version].compact.join('_')
+          [key, cache_version].compact.join("_")
         end
 
         def cache_version
-          Broker.config['elasticache_cache_version']
+          Broker.config["elasticache_cache_version"]
         end
       end
 
       class NullClient
-        def get(key); end
+        def get(_key); end
 
-        def set(key, value, ttl = nil)
+        def set(_key, value, _ttl = nil)
           value
         end
       end
     end
   end
 end
-
