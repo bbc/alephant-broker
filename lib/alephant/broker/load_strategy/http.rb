@@ -1,4 +1,4 @@
-require 'alephant/broker/cache'
+require 'alephant/broker/cache/factory'
 require 'alephant/broker/errors/content_not_found'
 require 'alephant/logger'
 require 'faraday'
@@ -31,7 +31,7 @@ module Alephant
         attr_reader :cache, :url_generator
 
         def cache
-          @cache ||= Cache::Client.new
+          @cache ||= Cache::Factory.create
         end
 
         def cache_object(component_meta)

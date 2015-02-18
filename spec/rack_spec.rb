@@ -26,9 +26,15 @@ describe Alephant::Broker::Application do
     )
   end
 
+  let(:cache_double) do
+    instance_double(Alephant::Broker::Cache::Client, :get => cache_hash)
+  end
+
   before do
     allow_any_instance_of(Logger).to receive(:info)
     allow_any_instance_of(Logger).to receive(:debug)
+
+    allow(Alephant::Broker::Cache::Factory).to receive(:create).and_return(cache_double)
 
     allow_any_instance_of(Alephant::Broker::Cache::Client)
       .to receive(:get).and_return(cache_hash)
@@ -86,15 +92,11 @@ describe Alephant::Broker::Application do
   end
 
   describe 'Cached data' do
-    let(:cache_double) do
-      instance_double(
-        'Alephant::Broker::Cache::Client',
-        :set => {
-          :content_type => 'test/html',
-          :content => '<p>Some data</p>'
-        },
-        :get => '<p>Some data</p>'
-      )
+    let(:cache_data) do
+      {
+        :content_type => 'test/html',
+        :content => '<p>Some data</p>'
+      }
     end
     let(:lookup_location_double) do
       instance_double('Alephant::Lookup::Location', location: 'test/location')

@@ -5,6 +5,7 @@ require 'alephant/broker'
 
 module Alephant
   module Broker
+    @@configuration = {}
 
     def self.handle(load_strategy, env)
       Request::Handler.process(load_strategy, env)

@@ -22,7 +22,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
   end
 
   before :each do
-    allow(Alephant::Broker::Cache::Client).to receive(:new) { cache }
+    allow(Alephant::Broker::Cache::Factory).to receive(:create) { cache }
   end
 
   describe "#load" do

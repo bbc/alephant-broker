@@ -1,4 +1,4 @@
-require "alephant/broker/cache"
+require "alephant/broker/cache/factory"
 require "alephant/broker/errors/content_not_found"
 require "alephant/broker/errors/invalid_cache_key"
 require "alephant/logger"
@@ -49,7 +49,7 @@ module Alephant
           end
 
           def cache
-            @cache ||= Cache::Client.new
+            @cache ||= Cache::Factory.create
           end
 
           def retrieve_object(component_meta)
