@@ -20,7 +20,9 @@ module Alephant
         end
 
         def load(component_meta)
-          cache_object(component_meta)
+          cache_object(component_meta).tap do
+            logger.metric(:name => "BrokerLoadStrategyHTTPCacheHit", :unit => "Count", :value => 1)
+          end
         rescue
           logger.metric(:name => "BrokerLoadStrategyHTTPCacheMiss", :unit => "Count", :value => 1)
           cache.set(component_meta.cache_key, content(component_meta))
