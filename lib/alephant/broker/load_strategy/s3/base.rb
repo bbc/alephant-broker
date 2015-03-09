@@ -19,7 +19,13 @@ module Alephant
             add_s3_headers(
               cache_object(component_meta),
               component_meta
-            )
+            ).tap do
+              logger.metric(
+                :name  => "BrokerLoadStrategyS3CacheHit",
+                :unit  => "Count",
+                :value => 1
+              )
+            end
           rescue
             logger.metric(
               :name  => "BrokerLoadStrategyS3CacheMiss",
