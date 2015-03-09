@@ -13,6 +13,7 @@ module Alephant
         extend Logger
 
         def self.request_for(load_strategy, env)
+          logger.metric(:name => "BrokerRequest", :unit => "Count", :value => 1)
           Request::Factory.request_for(load_strategy, env)
         end
 
