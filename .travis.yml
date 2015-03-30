@@ -8,3 +8,4 @@ notifications:
     on_failure: change
     on_success: never
 sudo: false
+script: bundle exec rake all
