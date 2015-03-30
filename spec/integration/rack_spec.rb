@@ -80,7 +80,7 @@ describe Alephant::Broker::Application do
   end
 
   describe "Components endpoint '/components'" do
-    let(:fixture_path) { "#{File.dirname(__FILE__)}/fixtures/json" }
+    let(:fixture_path) { "#{File.dirname(__FILE__)}/../fixtures/json" }
     let(:batch_json) do
       IO.read("#{fixture_path}/batch.json").strip
     end
