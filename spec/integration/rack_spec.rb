@@ -1,4 +1,4 @@
-require "spec_helper"
+require_relative "spec_helper"
 
 describe Alephant::Broker::Application do
   include Rack::Test::Methods
@@ -17,11 +17,11 @@ describe Alephant::Broker::Application do
     )
   end
   let(:content) do
-    {
+    AWS::Core::Data.new(
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {}
-    }
+    )
   end
   let(:sequencer_double) do
     instance_double(
@@ -104,12 +104,10 @@ describe Alephant::Broker::Application do
 
   describe "S3 headers" do
     let(:content) do
-      {
+      AWS::Core::Data.new(
         :content => "missing_content",
-        :meta    => {
-          :headers => {}
-        }
-      }
+        :meta    => {}
+      )
     end
     let(:s3_cache_double) do
       instance_double(
@@ -120,7 +118,7 @@ describe Alephant::Broker::Application do
 
     context "with 404 status code set" do
       before do
-        content[:meta][:headers]["Status"] = 404
+        content[:meta]["status"] = 404
         allow(Alephant::Cache).to receive(:new) { s3_cache_double }
         get "/component/test_component"
       end
@@ -130,17 +128,39 @@ describe Alephant::Broker::Application do
 
     context "with cache and additional headers set" do
       before do
-        content[:meta][:headers] = {
-          "Cache-Control" => "max-age=60",
-          "X-Some-Header" => "foo",
-          "Status"        => 200
+        content[:meta] = {
+          "head_cache-control"       => "max-age=60",
+          "head_x-some-header"       => "foo",
+          "head_header_without_dash" => "bar",
+          "status"                   => 200
         }
         allow(Alephant::Cache).to receive(:new) { s3_cache_double }
         get "/component/test_component"
       end
 
-      specify { expect(last_response.headers).to include("Cache-Control") }
-      specify { expect(last_response.headers).to include("X-Some-Header") }
+      specify do
+        expect(
+          last_response.headers
+        ).to include_case_sensitive("Cache-Control")
+      end
+      specify do
+        expect(
+          last_response.headers["Cache-Control"]
+        ).to eq(content[:meta]["head_cache-control"])
+      end
+
+      specify do
+        expect(
+          last_response.headers
+        ).to include_case_sensitive("X-Some-Header")
+      end
+
+      specify do
+        expect(
+          last_response.headers
+        ).to include_case_sensitive("Header_without_dash")
+      end
+
       specify { expect(last_response.headers).to_not include("Status") }
       specify { expect(last_response.status).to eq 200 }
     end

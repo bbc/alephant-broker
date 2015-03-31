@@ -10,6 +10,8 @@ module Alephant
     class Component
       attr_reader :id, :batch_id, :options, :content, :opts_hash
 
+      HEADER_PREFIX = "head_"
+
       def initialize(meta, data)
         @id        = meta.id
         @batch_id  = meta.batch_id
@@ -29,11 +31,11 @@ module Alephant
           "Content-Type" => data[:content_type].to_s
         }
           .merge(data[:headers] || {})
-          .merge(stripped_headers)
+          .merge(meta_data_headers)
       end
 
       def status
-        meta_data_headers.key?("Status") ? meta_data_headers["Status"] : 200
+        data[:meta].key?("status") ? data[:meta]["status"] : 200
       end
 
       private
@@ -41,11 +43,15 @@ module Alephant
       attr_reader :meta, :data
 
       def meta_data_headers
-        @meta_data_headers ||= data[:meta].fetch(:headers, {})
+        @meta_data_headers ||= data[:meta].to_h.reduce({}) do |accum, (k, v)|
+          accum.tap do |a|
+            a[header_key(k)] = v.to_s if k.start_with?(HEADER_PREFIX)
+          end
+        end
       end
 
-      def stripped_headers
-        meta_data_headers.reject { |k, _| k == "Status" }
+      def header_key(key)
+        key.gsub(HEADER_PREFIX, "").split("-").map(&:capitalize).join("-")
       end
 
       def symbolize(hash)
