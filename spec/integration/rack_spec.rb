@@ -106,9 +106,7 @@ describe Alephant::Broker::Application do
     let(:content) do
       {
         :content => "missing_content",
-        :meta    => {
-          :headers => {}
-        }
+        :meta    => {}
       }
     end
     let(:s3_cache_double) do
@@ -120,7 +118,7 @@ describe Alephant::Broker::Application do
 
     context "with 404 status code set" do
       before do
-        content[:meta][:headers]["Status"] = 404
+        content[:meta]["Status"] = 404
         allow(Alephant::Cache).to receive(:new) { s3_cache_double }
         get "/component/test_component"
       end
@@ -130,10 +128,10 @@ describe Alephant::Broker::Application do
 
     context "with cache and additional headers set" do
       before do
-        content[:meta][:headers] = {
-          "Cache-Control" => "max-age=60",
-          "X-Some-Header" => "foo",
-          "Status"        => 200
+        content[:meta] = {
+          "head_Cache-Control" => "max-age=60",
+          "head_X-Some-Header" => "foo",
+          "Status"             => 200
         }
         allow(Alephant::Cache).to receive(:new) { s3_cache_double }
         get "/component/test_component"
