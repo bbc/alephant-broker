@@ -1,5 +1,5 @@
 module Alephant
   module Broker
-    VERSION = "3.4.1"
+    VERSION = "3.5.0"
   end
 end
