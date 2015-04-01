@@ -6,5 +6,3 @@ RSpec::Matchers.define :include_case_sensitive do |expected|
     actual.keys.one? { |k| expected == k }
   end
 end
-
-

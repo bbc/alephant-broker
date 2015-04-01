@@ -17,11 +17,11 @@ describe Alephant::Broker::Application do
     )
   end
   let(:content) do
-    {
+    AWS::Core::Data.new(
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {}
-    }
+    )
   end
   let(:sequencer_double) do
     instance_double(
@@ -104,10 +104,10 @@ describe Alephant::Broker::Application do
 
   describe "S3 headers" do
     let(:content) do
-      {
+      AWS::Core::Data.new(
         :content => "missing_content",
         :meta    => {}
-      }
+      )
     end
     let(:s3_cache_double) do
       instance_double(
@@ -118,7 +118,7 @@ describe Alephant::Broker::Application do
 
     context "with 404 status code set" do
       before do
-        content[:meta]["Status"] = 404
+        content[:meta]["status"] = 404
         allow(Alephant::Cache).to receive(:new) { s3_cache_double }
         get "/component/test_component"
       end
@@ -137,9 +137,23 @@ describe Alephant::Broker::Application do
         get "/component/test_component"
       end
 
-      specify { expect(last_response.headers).to include_case_sensitive("Cache-Control") }
+      specify do
+        expect(
+          last_response.headers
+        ).to include_case_sensitive("Cache-Control")
+      end
+      specify do
+        expect(
+          last_response.headers["Cache-Control"]
+        ).to eq(content[:meta]["head_cache-control"])
+      end
 
-      specify { expect(last_response.headers).to include_case_sensitive("X-Some-Header") }
+      specify do
+        expect(
+          last_response.headers
+        ).to include_case_sensitive("X-Some-Header")
+      end
+
       specify { expect(last_response.headers).to_not include("Status") }
       specify { expect(last_response.status).to eq 200 }
     end
