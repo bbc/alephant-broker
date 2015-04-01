@@ -45,9 +45,13 @@ module Alephant
       def meta_data_headers
         @meta_data_headers ||= data[:meta].reduce({}) do |accum, (k, v)|
           accum.tap do |a|
-            a[k.gsub(HEADER_PREFIX, "")] = v if k.start_with? HEADER_PREFIX
+            a[interpolated_header_key(k)] = v if k.start_with? HEADER_PREFIX
           end
         end
+      end
+
+      def interpolated_header_key(key)
+        key.gsub(HEADER_PREFIX, "").split("-").map(&:capitalize).join("-")
       end
 
       def symbolize(hash)

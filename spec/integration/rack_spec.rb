@@ -1,4 +1,4 @@
-require "spec_helper"
+require_relative "spec_helper"
 
 describe Alephant::Broker::Application do
   include Rack::Test::Methods
@@ -139,7 +139,7 @@ describe Alephant::Broker::Application do
 
       specify { expect(last_response.headers).to include_case_sensitive("Cache-Control") }
 
-      specify { expect(last_response.headers).to include("X-Some-Header") }
+      specify { expect(last_response.headers).to include_case_sensitive("X-Some-Header") }
       specify { expect(last_response.headers).to_not include("Status") }
       specify { expect(last_response.status).to eq 200 }
     end
