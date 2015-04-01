@@ -129,9 +129,10 @@ describe Alephant::Broker::Application do
     context "with cache and additional headers set" do
       before do
         content[:meta] = {
-          "head_cache-control" => "max-age=60",
-          "head_x-some-header" => "foo",
-          "status"             => 200
+          "head_cache-control"       => "max-age=60",
+          "head_x-some-header"       => "foo",
+          "head_header_without_dash" => "bar",
+          "status"                   => 200
         }
         allow(Alephant::Cache).to receive(:new) { s3_cache_double }
         get "/component/test_component"
@@ -152,6 +153,12 @@ describe Alephant::Broker::Application do
         expect(
           last_response.headers
         ).to include_case_sensitive("X-Some-Header")
+      end
+
+      specify do
+        expect(
+          last_response.headers
+        ).to include_case_sensitive("Header_without_dash")
       end
 
       specify { expect(last_response.headers).to_not include("Status") }
