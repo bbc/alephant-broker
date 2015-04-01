@@ -1,7 +1,8 @@
-require 'alephant/broker/errors/invalid_cache_key'
-require 'alephant/logger'
-require 'aws-sdk'
-require 'ostruct'
+require "alephant/broker/errors/invalid_cache_key"
+require "alephant/logger"
+require "aws-sdk"
+require "ostruct"
+require "date"
 
 module Alephant
   module Broker
@@ -12,9 +13,9 @@ module Alephant
         attr_reader :content, :headers, :status
 
         STATUS_CODE_MAPPING = {
-          200 => 'ok',
-          404 => 'Not found',
-          500 => 'Error retrieving content'
+          200 => "ok",
+          404 => "Not found",
+          500 => "Error retrieving content"
         }
 
         def initialize(status = 200, content_type = "text/html")
@@ -22,8 +23,7 @@ module Alephant
           @headers = { "Content-Type" => content_type }
           @status  = status
 
-          log if status !~ /200/
-
+          log_status
           setup
         end
 
@@ -33,11 +33,27 @@ module Alephant
 
         private
 
+        def log_status
+          add_no_cache_headers if status !~ /200/
+        end
+
+        def add_no_cache_headers
+          headers.merge!(
+            "Cache-Control" => "no-cache, must-revalidate",
+            "Pragma"        => "no-cache",
+            "Expires"       => Date.today.prev_year.httpdate
+          )
+          log
+        end
+
         def log
-          logger.metric(:name => "BrokerResponse#{status}", :unit => "Count", :value => 1)
+          logger.metric(
+            :name  => "BrokerResponse#{status}",
+            :unit  => "Count",
+            :value => 1
+          )
         end
       end
     end
   end
 end
-

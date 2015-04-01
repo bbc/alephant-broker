@@ -59,6 +59,9 @@ describe Alephant::Broker::Application do
     before { get "/banana" }
     specify { expect(last_response.status).to eql 404 }
     specify { expect(last_response.body).to eq "Not found" }
+    specify { expect(last_response.headers).to include("Cache-Control") }
+    specify { expect(last_response.headers).to include("Pragma") }
+    specify { expect(last_response.headers).to include("Expires") }
   end
 
   describe "Component endpoint '/component/...'" do
