@@ -67,7 +67,7 @@ module Alephant
             end
 
             request_time = Time.new - before
-            logger.metric("BrokerHTTPLoadComponentTime", opts.merge(
+            logger.metric("LoadComponentTime", opts.merge(
               :unit  => "Seconds", :value => request_time,
             ).tap { |h| h[:dimensions].merge!(:function => "request") })
           end

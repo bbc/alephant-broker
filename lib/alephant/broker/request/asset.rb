@@ -17,7 +17,7 @@ module Alephant
             env.options
           )
         rescue InvalidAssetId
-          logger.metric("BrokerRequestAssetInvalidAssetId", opts)
+          logger.metric("InvalidAssetId", opts)
           logger.error "Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)"
         end
 

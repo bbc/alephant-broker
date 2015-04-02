@@ -15,7 +15,7 @@ module Alephant
             @@client ||= @@elasticache.client
           else
             logger.debug "Broker::Cache::Client#initialize: No config endpoint, NullClient used"
-            logger.metric("NoConfigEndpoint", dimensions.merge(:function => "initialize"))
+            logger.metric("NoConfigEndpoint", opts.merge(:function => "initialize"))
             @@client = NullClient.new
           end
         end
