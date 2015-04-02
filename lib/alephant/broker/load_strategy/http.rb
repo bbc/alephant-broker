@@ -23,7 +23,7 @@ module Alephant
           cache_object(component_meta)
         rescue
           logger.metric(
-            "BrokerLoadStrategyHTTPCacheMiss",
+            "CacheMiss",
             opts[:dimensions].merge(:function => "load")
           )
           cache.set(component_meta.cache_key, content(component_meta))
@@ -60,7 +60,7 @@ module Alephant
           Faraday.get(url_for component_meta).tap do |r|
             unless r.success?
               logger.metric(
-                "BrokerLoadStrategyHTTPContentNotFound",
+                "ContentNotFound",
                 opts[:dimensions].merge(:function => "request")
               )
               raise Alephant::Broker::Errors::ContentNotFound
