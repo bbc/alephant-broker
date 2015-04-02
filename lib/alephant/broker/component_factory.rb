@@ -19,11 +19,11 @@ module Alephant
           @load_strategy.load(component_meta)
         )
       rescue Alephant::Broker::Errors::ContentNotFound => e
-        logger.warn 'Broker.ComponentFactory.create: Exception raised (ContentNotFound)'
+        logger.warn "Broker.ComponentFactory.create: Exception raised (ContentNotFound)"
         logger.metric("ContentNotFound", opts)
         ErrorComponent.new(component_meta, 404, e)
       rescue => e
-        logger.warn("Broker.ComponentFactory.create: Exception raised (#{e.message}, #{e.backtrace.join('\n')})")
+        logger.warn "Broker.ComponentFactory.create: Exception raised (#{e.message}, #{e.backtrace.join('\n')})"
         logger.metric("ExceptionRaised", opts)
         ErrorComponent.new(component_meta, 500, e)
       end

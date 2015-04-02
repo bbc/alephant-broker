@@ -18,7 +18,7 @@ module Alephant
           )
         rescue InvalidAssetId
           logger.metric("BrokerRequestAssetInvalidAssetId", opts)
-          logger.error 'Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)'
+          logger.error "Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)"
         end
 
         private

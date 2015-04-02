@@ -14,7 +14,7 @@ module Alephant
             @@elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
             @@client ||= @@elasticache.client
           else
-            logger.debug('Broker::Cache::Client#initialize: No config endpoint, NullClient used')
+            logger.debug "Broker::Cache::Client#initialize: No config endpoint, NullClient used"
             logger.metric("NoConfigEndpoint", dimensions.merge(:function => "initialize"))
             @@client = NullClient.new
           end
@@ -24,7 +24,7 @@ module Alephant
           begin
             versioned_key = versioned key
             result = @@client.get versioned_key
-            logger.info("Broker::Cache::Client#get key: #{versioned_key} - #{result ? 'hit' : 'miss'}")
+            logger.info "Broker::Cache::Client#get key: #{versioned_key} - #{result ? 'hit' : 'miss'}"
             logger.metric(
               "GetKeyMiss",
               opts[:dimensions].merge(:function => "get")
