@@ -20,24 +20,12 @@ module Alephant
         )
       rescue Alephant::Broker::Errors::ContentNotFound => e
         logger.warn "Broker.ComponentFactory.create: Exception raised (ContentNotFound)"
-        logger.metric("ContentNotFound", opts)
+        logger.metric "ContentNotFound"
         ErrorComponent.new(component_meta, 404, e)
       rescue => e
         logger.warn "Broker.ComponentFactory.create: Exception raised (#{e.message}, #{e.backtrace.join('\n')})"
-        logger.metric("ExceptionRaised", opts)
+        logger.metric "ExceptionRaised"
         ErrorComponent.new(component_meta, 500, e)
-      end
-
-      private
-
-      def opts
-        {
-          :dimensions => {
-            :module   => "AlephantBroker",
-            :class    => "ComponentFactory",
-            :function => "create"
-          }
-        }
       end
     end
   end

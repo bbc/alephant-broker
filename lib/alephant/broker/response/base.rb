@@ -47,17 +47,7 @@ module Alephant
         end
 
         def log
-          logger.metric("BrokerResponse#{status}", opts)
-        end
-
-        def opts
-          {
-            :dimensions => {
-              :module   => "AlephantBrokerResponse",
-              :class    => "Base",
-              :function => "log"
-            }
-          }
+          logger.metric "BrokerResponse#{status}"
         end
       end
     end

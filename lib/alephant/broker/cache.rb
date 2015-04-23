@@ -15,7 +15,7 @@ module Alephant
             @@client ||= @@elasticache.client
           else
             logger.debug "Broker::Cache::Client#initialize: No config endpoint, NullClient used"
-            logger.metric("NoConfigEndpoint", opts.merge(:function => "initialize"))
+            logger.metric "NoConfigEndpoint"
             @@client = NullClient.new
           end
         end
@@ -25,10 +25,7 @@ module Alephant
             versioned_key = versioned key
             result = @@client.get versioned_key
             logger.info "Broker::Cache::Client#get key: #{versioned_key} - #{result ? 'hit' : 'miss'}"
-            logger.metric(
-              "GetKeyMiss",
-              opts[:dimensions].merge(:function => "get")
-            ) unless result
+            logger.metric "GetKeyMiss" unless result
             result ? result : set(key, block.call)
           rescue StandardError => e
             block.call if block_given?
@@ -40,15 +37,6 @@ module Alephant
         end
 
         private
-
-        def opts
-          {
-            :dimensions => {
-              :module   => "AlephantBrokerCache",
-              :class    => "Client"
-            }
-          }
-        end
 
         def config_endpoint
           Broker.config['elasticache_config_endpoint']
