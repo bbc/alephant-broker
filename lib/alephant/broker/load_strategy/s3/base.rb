@@ -21,10 +21,7 @@ module Alephant
               component_meta
             )
           rescue
-            logger.metric(
-              "S3CacheMiss",
-              opts[:dimensions].merge(:function => "load")
-            )
+            logger.metric "S3CacheMiss"
             add_s3_headers(
               cache.set(
                 cache_key(component_meta),
@@ -46,15 +43,6 @@ module Alephant
 
           private
 
-          def opts
-            {
-              :dimensions => {
-                :module   => "AlephantBrokerLoadStrategyS3",
-                :class    => "Base"
-              }
-            }
-          end
-
           def s3_path(component_meta)
             fail NotImplementedError
           end
@@ -73,10 +61,7 @@ module Alephant
             cached = false
             s3.get s3_path(component_meta)
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
-            logger.metric(
-              "S3InvalidCacheKey",
-              opts[:dimensions].merge(:function => "retrieve_object")
-            )
+            logger.metric "S3InvalidCacheKey"
             raise Alephant::Broker::Errors::ContentNotFound
           end
 

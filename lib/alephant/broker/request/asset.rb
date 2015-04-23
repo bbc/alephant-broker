@@ -17,7 +17,7 @@ module Alephant
             env.options
           )
         rescue InvalidAssetId
-          logger.metric("InvalidAssetId", opts)
+          logger.metric "InvalidAssetId"
           logger.error "Broker.Request.Asset.initialize: Exception raised (InvalidAssetId)"
         end
 
@@ -25,16 +25,6 @@ module Alephant
 
         def component_id(path)
           path.split('/')[2] || (raise InvalidAssetId.new 'No Asset ID specified')
-        end
-
-        def opts
-          {
-            :dimensions => {
-              :module   => "AlephantBrokerRequest",
-              :class    => "Asset",
-              :function => "initialize"
-            }
-          }
         end
       end
     end

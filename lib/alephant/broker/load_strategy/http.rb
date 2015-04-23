@@ -22,10 +22,7 @@ module Alephant
         def load(component_meta)
           cache_object(component_meta)
         rescue
-          logger.metric(
-            "CacheMiss",
-            opts[:dimensions].merge(:function => "load")
-          )
+          logger.metric "CacheMiss"
           cache.set(component_meta.cache_key, content(component_meta))
         end
 
@@ -59,17 +56,15 @@ module Alephant
 
           Faraday.get(url_for component_meta).tap do |r|
             unless r.success?
-              logger.metric(
-                "ContentNotFound",
-                opts[:dimensions].merge(:function => "request")
-              )
+              logger.metric "ContentNotFound"
               raise Alephant::Broker::Errors::ContentNotFound
             end
 
             request_time = Time.new - before
-            logger.metric("LoadComponentTime", opts.merge(
-              :unit  => "Seconds", :value => request_time,
-            ).tap { |h| h[:dimensions].merge!(:function => "request") })
+            logger.metric("LoadComponentTime",
+                          :unit  => "Seconds",
+                          :value => request_time
+                         )
           end
         end
 
@@ -78,15 +73,6 @@ module Alephant
             component_meta.id,
             component_meta.options
           )
-        end
-
-        def opts
-          {
-            :dimensions => {
-              :module   => "AlephantBrokerLoadStrategy",
-              :class    => "HTTP"
-            }
-          }
         end
       end
     end
