@@ -6,8 +6,8 @@ require 'alephant/broker/version'
 Gem::Specification.new do |spec|
   spec.name          = "alephant-broker"
   spec.version       = Alephant::Broker::VERSION
-  spec.authors       = ["Steven Jack"]
-  spec.email         = ["stevenmajack@gmail.com"]
+  spec.authors       = ["BBC News"]
+  spec.email         = ["FutureMediaNewsRubyGems@bbc.co.uk"]
   spec.summary       = "Brokers requests for alephant components"
   spec.description   = "Brokers requests for alephant components"
   spec.homepage      = "https://github.com/BBC-News/alephant-broker"
