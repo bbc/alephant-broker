@@ -16,7 +16,7 @@ module Alephant
         end
 
         def setup
-          @content = JSON.generate({
+          @content = ::JSON.generate({
             'batch_id' => batch_id,
             'components' => json
           })
@@ -41,4 +41,3 @@ module Alephant
     end
   end
 end
-
