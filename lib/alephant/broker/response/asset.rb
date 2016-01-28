@@ -12,7 +12,7 @@ module Alephant
         end
 
         def setup
-          @headers  = @component.headers
+          @headers.merge!(@component.headers)
           @content  = @component.content
           log if @component.is_a? Component
         end
