@@ -69,7 +69,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
         specify do
           expect do
             subject.load component_meta
-          end.to raise_error
+          end.to raise_error(RuntimeError)
         end
       end
 
@@ -83,7 +83,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
         specify do
           expect do
             subject.load component_meta
-          end.to raise_error
+          end.to raise_error(Alephant::Broker::Errors::ContentNotFound)
         end
       end
     end
