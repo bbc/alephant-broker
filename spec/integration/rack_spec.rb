@@ -74,8 +74,8 @@ describe Alephant::Broker::Application do
       specify { expect(last_response.status).to eql 200 }
       specify { expect(last_response.body).to eql "Test" }
       specify { expect(last_response.headers).to_not include("Cache-Control") }
-    specify { expect(last_response.headers).to_not include("Pragma") }
-    specify { expect(last_response.headers).to_not include("Expires") }
+      specify { expect(last_response.headers).to_not include("Pragma") }
+      specify { expect(last_response.headers).to_not include("Expires") }
     end
 
     context "for valid URL parameters in request" do
