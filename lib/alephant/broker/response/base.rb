@@ -35,7 +35,7 @@ module Alephant
         private
 
         def log_status
-          add_no_cache_headers if status !~ /200/
+          add_no_cache_headers if status != 200
         end
 
         def add_no_cache_headers
