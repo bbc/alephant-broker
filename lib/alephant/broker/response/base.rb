@@ -24,7 +24,7 @@ module Alephant
           @headers.merge!(Broker.config[:headers]) if Broker.config.has_key?(:headers)
           @status  = status
 
-          log_status
+          add_no_cache_headers if status != 200
           setup
         end
 
@@ -33,10 +33,6 @@ module Alephant
         def setup; end
 
         private
-
-        def log_status
-          add_no_cache_headers if status !~ /200/
-        end
 
         def add_no_cache_headers
           headers.merge!(
