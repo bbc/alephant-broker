@@ -21,7 +21,7 @@ module Alephant
         def initialize(status = 200, content_type = "text/html")
           @content = STATUS_CODE_MAPPING[status]
           @headers = { "Content-Type" => content_type }
-          @headers.merge!(Broker.config[:headers]) if Broker.config.has_key?(:headers)
+          @headers.merge!(Broker.config[:headers]) if Broker.config.key?(:headers)
           @status  = status
 
           add_no_cache_headers if status != 200

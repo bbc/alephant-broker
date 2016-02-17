@@ -3,7 +3,7 @@ module Alephant
     module Errors
       class ContentNotFound < StandardError
         def message
-          'Not Found'
+          "Not Found"
         end
       end
     end

@@ -1,4 +1,4 @@
-require 'alephant/broker/response'
+require "alephant/broker/response"
 
 module Alephant
   module Broker
@@ -28,4 +28,3 @@ module Alephant
     end
   end
 end
-

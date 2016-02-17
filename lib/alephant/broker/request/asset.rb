@@ -1,5 +1,5 @@
-require 'alephant/logger'
-require 'alephant/broker/errors/invalid_asset_id'
+require "alephant/logger"
+require "alephant/broker/errors/invalid_asset_id"
 
 module Alephant
   module Broker
@@ -24,10 +24,9 @@ module Alephant
         private
 
         def component_id(path)
-          path.split('/')[2] || (raise InvalidAssetId.new 'No Asset ID specified')
+          path.split("/")[2] || (fail InvalidAssetId.new "No Asset ID specified")
         end
       end
     end
   end
 end
-
