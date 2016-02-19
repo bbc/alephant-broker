@@ -34,7 +34,10 @@ module Alephant
               'content_type' => component.content_type,
               'body'         => component.content
             }
-          end.tap { logger.info "Broker: Batch load done (#{batch_id})" }
+          end.tap { 
+            logger.info "Broker: Batch load done (#{batch_id})" 
+            logger.metric "BrokerBatchLoadCount"
+          }
         end
 
       end

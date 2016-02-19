@@ -43,9 +43,6 @@ module Alephant
           log
         end
 
-        def log
-          logger.metric "BrokerResponse#{status}"
-        end
       end
     end
   end
