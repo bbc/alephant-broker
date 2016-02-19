@@ -45,7 +45,7 @@ module Alephant
 
         def log
           logger.metric "BrokerNon200Response#{status}"
-        en
+        end
 
       end
     end
