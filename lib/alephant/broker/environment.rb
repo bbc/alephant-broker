@@ -1,6 +1,6 @@
-require 'json'
-require 'alephant/logger'
-require 'rack'
+require "json"
+require "alephant/logger"
+require "rack"
 
 module Alephant
   module Broker
@@ -13,23 +13,23 @@ module Alephant
       end
 
       def method
-        settings['REQUEST_METHOD']
+        settings["REQUEST_METHOD"]
       end
 
       def post?
-        settings['REQUEST_METHOD'] == 'POST'
+        settings["REQUEST_METHOD"] == "POST"
       end
 
       def get?
-        settings['REQUEST_METHOD'] == 'GET'
+        settings["REQUEST_METHOD"] == "GET"
       end
 
       def query
-        settings['QUERY_STRING'] || ""
+        settings["QUERY_STRING"] || ""
       end
 
       def path
-        settings['PATH_INFO']
+        settings["PATH_INFO"]
       end
 
       def data
@@ -43,17 +43,15 @@ module Alephant
       private
 
       def rack_input
-        (settings['rack.input'].read).tap { settings['rack.input'].rewind }
+        (settings["rack.input"].read).tap { settings["rack.input"].rewind }
       end
 
       def parse(json)
-        begin
-          ::JSON.parse(json)
-        rescue ::JSON::ParserError => e
-          logger.warn "Broker.environment#data: ParserError"
-          logger.metric "JSONParserError"
-          nil
-        end
+        ::JSON.parse(json)
+      rescue ::JSON::ParserError => e
+        logger.warn "Broker.environment#data: ParserError"
+        logger.metric "JSONParserError"
+        nil
       end
     end
   end

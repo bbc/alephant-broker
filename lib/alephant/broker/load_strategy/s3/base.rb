@@ -33,8 +33,8 @@ module Alephant
 
           protected
 
-          def headers(component_meta)
-            Hash.new
+          def headers(_component_meta)
+            {}
           end
 
           def cache_key(component_meta)
@@ -43,7 +43,7 @@ module Alephant
 
           private
 
-          def s3_path(component_meta)
+          def s3_path(_component_meta)
             fail NotImplementedError
           end
 
@@ -84,10 +84,10 @@ module Alephant
             )
           end
 
-          def headers(component_meta)
+          def headers(_component_meta)
             {
-              'X-Cache-Version'    => Broker.config['elasticache_cache_version'].to_s,
-              'X-Cached'           => cached.to_s
+              "X-Cache-Version" => Broker.config["elasticache_cache_version"].to_s,
+              "X-Cached"        => cached.to_s
             }
           end
         end

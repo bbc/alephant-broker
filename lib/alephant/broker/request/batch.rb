@@ -1,6 +1,6 @@
-require 'alephant/logger'
-require 'alephant/broker/component'
-require 'pmap'
+require "alephant/logger"
+require "alephant/broker/component"
+require "pmap"
 
 module Alephant
   module Broker
@@ -13,7 +13,7 @@ module Alephant
         def initialize(component_factory, env)
           logger.info "Request::Batch#initialize: id: #{env.data['batch_id']}"
 
-          @batch_id          = env.data['batch_id']
+          @batch_id          = env.data["batch_id"]
           @component_factory = component_factory
           @components        = components_for env
         end
@@ -21,11 +21,11 @@ module Alephant
         private
 
         def components_for(env)
-          env.data['components'].pmap do |c|
+          env.data["components"].pmap do |c|
             @component_factory.create(
-              c['component'],
+              c["component"],
               batch_id,
-              c['options']
+              c["options"]
             )
           end
         end
@@ -33,4 +33,3 @@ module Alephant
     end
   end
 end
-

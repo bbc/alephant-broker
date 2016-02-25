@@ -1,4 +1,4 @@
-require 'alephant/logger'
+require "alephant/logger"
 
 module Alephant
   module Broker
@@ -12,14 +12,12 @@ module Alephant
           @components = components
           @batch_id   = batch_id
 
-          super(200, 'application/json')
+          super(200, "application/json")
         end
 
         def setup
-          @content = ::JSON.generate({
-            'batch_id' => batch_id,
-            'components' => json
-          })
+          @content = ::JSON.generate("batch_id"   => batch_id,
+                                     "components" => json)
         end
 
         private
@@ -28,18 +26,17 @@ module Alephant
           logger.info "Broker: Batch load started (#{batch_id})"
           components.map do |component|
             {
-              'component'    => component.id,
-              'options'      => component.options,
-              'status'       => component.status,
-              'content_type' => component.content_type,
-              'body'         => component.content
+              "component"    => component.id,
+              "options"      => component.options,
+              "status"       => component.status,
+              "content_type" => component.content_type,
+              "body"         => component.content
             }
           end.tap { 
             logger.info "Broker: Batch load done (#{batch_id})" 
             logger.metric "BrokerBatchLoadCount"
           }
         end
-
       end
     end
   end

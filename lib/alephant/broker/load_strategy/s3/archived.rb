@@ -7,7 +7,7 @@ module Alephant
         class Archived < Base
           def s3_path(component_meta)
             component_meta.id.tap do |location|
-              raise InvalidCacheKey if location.nil?
+              fail InvalidCacheKey if location.nil?
             end
           end
         end

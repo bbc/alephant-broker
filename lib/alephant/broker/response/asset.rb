@@ -1,4 +1,4 @@
-require 'alephant/logger'
+require "alephant/logger"
 
 module Alephant
   module Broker
@@ -20,7 +20,7 @@ module Alephant
         private
 
         def batched
-          @component.batch_id.nil? ? '' : 'batched'
+          @component.batch_id.nil? ? "" : "batched"
         end
 
         def details
@@ -36,4 +36,3 @@ module Alephant
     end
   end
 end
-
