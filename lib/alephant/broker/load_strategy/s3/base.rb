@@ -80,7 +80,8 @@ module Alephant
 
           def lookup
             @lookup ||= Alephant::Lookup.create(
-              Broker.config[:lookup_table_name]
+              Broker.config[:lookup_table_name],
+              Broker.config
             )
           end
 
