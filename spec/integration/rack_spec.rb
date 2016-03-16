@@ -40,7 +40,7 @@ describe Alephant::Broker::Application do
     )
   end
 
-  let(:s3_cache_double) { instance_double("Alephant::Cache", :get => content) }
+  let(:s3_double) { instance_double("Alephant::Storage", :get => content) }
 
   before do
     allow_any_instance_of(Logger).to receive(:info)
@@ -66,7 +66,7 @@ describe Alephant::Broker::Application do
 
   describe "Component endpoint '/component/...'" do
     before do
-      allow(Alephant::Cache).to receive(:new) { s3_cache_double }
+      allow(Alephant::Storage).to receive(:new) { s3_double }
       get "/component/test_component"
     end
 
@@ -95,7 +95,7 @@ describe Alephant::Broker::Application do
     end
 
     before do
-      allow(Alephant::Cache).to receive(:new) { s3_cache_double }
+      allow(Alephant::Storage).to receive(:new) { s3_double }
     end
 
     context "when using valid batch asset data" do
@@ -115,9 +115,9 @@ describe Alephant::Broker::Application do
         :meta    => {}
       )
     end
-    let(:s3_cache_double) do
+    let(:s3_double) do
       instance_double(
-        "Alephant::Cache",
+        "Alephant::Storage",
         :get => content
       )
     end
@@ -125,7 +125,7 @@ describe Alephant::Broker::Application do
     context "with 404 status code set" do
       before do
         content[:meta]["status"] = 404
-        allow(Alephant::Cache).to receive(:new) { s3_cache_double }
+        allow(Alephant::Storage).to receive(:new) { s3_double }
         get "/component/test_component"
       end
 
@@ -140,7 +140,7 @@ describe Alephant::Broker::Application do
           "head_header_without_dash" => "bar",
           "status"                   => 200
         }
-        allow(Alephant::Cache).to receive(:new) { s3_cache_double }
+        allow(Alephant::Storage).to receive(:new) { s3_double }
         get "/component/test_component"
       end
 
@@ -184,9 +184,9 @@ describe Alephant::Broker::Application do
         :get => "<p>Some data</p>"
       )
     end
-    let(:s3_cache_double) do
+    let(:s3_double) do
       instance_double(
-        "Alephant::Cache",
+        "Alephant::Storage",
         :get => "test_content"
       )
     end
@@ -194,7 +194,7 @@ describe Alephant::Broker::Application do
     context "which is old" do
       before do
         allow(Alephant::Broker::Cache::Client).to receive(:new) { cache_double }
-        allow(Alephant::Cache).to receive(:new) { s3_cache_double }
+        allow(Alephant::Storage).to receive(:new) { s3_double }
       end
       it "should update the cache (call `.set`)" do
         expect(cache_double).to receive(:set).once

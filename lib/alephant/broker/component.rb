@@ -1,5 +1,5 @@
 require "crimp"
-require "alephant/cache"
+require "alephant/storage"
 require "alephant/lookup"
 require "alephant/broker/errors/invalid_cache_key"
 require "alephant/sequencer"

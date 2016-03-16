@@ -15,7 +15,7 @@ module Alephant
               component_meta.options,
               sequence(component_meta)
             ).tap do |obj|
-              fail InvalidCacheKey if obj.location.nil?
+              fail InvalidStorageKey if obj.location.nil?
             end.location unless sequence(component_meta).nil?
           end
 
@@ -26,7 +26,7 @@ module Alephant
             )
           end
 
-          def cache_key(component_meta)
+          def storage_key(component_meta)
             "#{super(component_meta)}/#{sequence(component_meta)}"
           end
 

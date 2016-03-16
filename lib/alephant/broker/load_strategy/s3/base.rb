@@ -17,14 +17,14 @@ module Alephant
 
           def load(component_meta)
             add_s3_headers(
-              cache_object(component_meta),
+              fetch_object(component_meta),
               component_meta
             )
           rescue
             logger.metric "S3CacheMiss"
             add_s3_headers(
               cache.set(
-                cache_key(component_meta),
+                storage_key(component_meta),
                 retrieve_object(component_meta)
               ),
               component_meta
@@ -37,7 +37,7 @@ module Alephant
             Hash.new
           end
 
-          def cache_key(component_meta)
+          def storage_key(component_meta)
             component_meta.component_key
           end
 
@@ -65,14 +65,14 @@ module Alephant
             raise Alephant::Broker::Errors::ContentNotFound
           end
 
-          def cache_object(component_meta)
-            cache.get cache_key(component_meta) do
+          def fetch_object(component_meta)
+            cache.get storage_key(component_meta) do
               retrieve_object component_meta
             end
           end
 
           def s3
-            @s3 ||= Alephant::Cache.new(
+            @s3 ||= Alephant::Storage.new(
               Broker.config[:s3_bucket_id],
               Broker.config[:s3_object_path]
             )
