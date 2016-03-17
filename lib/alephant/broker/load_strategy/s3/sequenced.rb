@@ -22,7 +22,9 @@ module Alephant
           def sequencer
             @sequencer ||= Alephant::Sequencer.create(
               Broker.config[:sequencer_table_name],
-              Broker.config
+              {
+                :config => Broker.config
+              }
             )
           end
 
