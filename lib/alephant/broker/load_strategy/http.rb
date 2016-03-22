@@ -20,7 +20,7 @@ module Alephant
         end
 
         def load(component_meta)
-          cache_object(component_meta)
+          fetch_object(component_meta)
         rescue
           logger.metric "CacheMiss"
           cache.set(component_meta.cache_key, content(component_meta))
@@ -34,7 +34,7 @@ module Alephant
           @cache ||= Cache::Client.new
         end
 
-        def cache_object(component_meta)
+        def fetch_object(component_meta)
           cache.get(component_meta.cache_key) { content component_meta }
         end
 
