@@ -105,6 +105,14 @@ describe Alephant::Broker::Application do
 
       specify { expect(last_response.status).to eql 200 }
       specify { expect(last_response.body).to eq batch_compiled_json }
+      specify {
+        expect(last_response.headers).to eq({
+          "Content-Type"   => "application/json",
+          "ETag"           => "44eaafebcdd94ddac4c4f07ecf0cc80f",
+          "Last-Modified"  => nil,
+          "Content-Length" => "266"
+        })
+      }
     end
   end
 

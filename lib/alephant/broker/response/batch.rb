@@ -1,4 +1,5 @@
-require 'alephant/logger'
+require "alephant/logger"
+require "crimp"
 
 module Alephant
   module Broker
@@ -12,7 +13,7 @@ module Alephant
           @components = components
           @batch_id   = batch_id
 
-          super(200, 'application/json')
+          super(200, "application/json")
         end
 
         def setup
@@ -20,6 +21,8 @@ module Alephant
             'batch_id' => batch_id,
             'components' => json
           })
+
+          @headers.merge!(batch_response_headers)
         end
 
         private
@@ -28,18 +31,40 @@ module Alephant
           logger.info "Broker: Batch load started (#{batch_id})"
           components.map do |component|
             {
-              'component'    => component.id,
-              'options'      => component.options,
-              'status'       => component.status,
-              'content_type' => component.content_type,
-              'body'         => component.content
+              "component"    => component.id,
+              "options"      => component.options,
+              "status"       => component.status,
+              "content_type" => component.content_type,
+              "body"         => component.content
             }
-          end.tap { 
-            logger.info "Broker: Batch load done (#{batch_id})" 
+          end.tap {
+            logger.info "Broker: Batch load done (#{batch_id})"
             logger.metric "BrokerBatchLoadCount"
           }
         end
 
+        def batch_response_headers
+          {
+            "ETag"          => batch_response_etag,
+            "Last-Modified" => batch_response_last_modified
+          }
+        end
+
+        def batch_response_etag
+          etags = components.map do |component|
+            component.headers["ETag"] if component.headers["ETag"]
+          end
+
+          Crimp.signature(etags)
+        end
+
+        def batch_response_last_modified
+          last_modifieds  = components.map do |component|
+            component.headers["Last-Modified"] if component.headers["Last-Modified"]
+          end.compact
+
+          last_modifieds.max
+        end
       end
     end
   end
