@@ -14,6 +14,7 @@ module Alephant
 
         STATUS_CODE_MAPPING = {
           200 => "ok",
+          304 => "Not modified",
           404 => "Not found",
           500 => "Error retrieving content"
         }
@@ -41,6 +42,12 @@ module Alephant
             "Expires"       => Date.today.prev_year.httpdate
           )
           log
+        end
+
+        def component_not_modified(headers, request_env)
+          return false if headers["Last-Modified"].nil? && headers["ETag"].nil?
+
+          headers["Last-Modified"] == request_env.last_modified || headers["ETag"] == request_env.etag
         end
 
         def log

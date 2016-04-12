@@ -16,12 +16,12 @@ module Alephant
           Request::Factory.request_for(load_strategy, env)
         end
 
-        def self.response_for(request)
-          Response::Factory.response_for request
+        def self.response_for(request, env)
+          Response::Factory.response_for(request, env)
         end
 
         def self.process(load_strategy, env)
-          response_for request_for(load_strategy, env)
+          response_for(request_for(load_strategy, env), env)
         end
       end
     end
