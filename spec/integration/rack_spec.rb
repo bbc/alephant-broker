@@ -108,7 +108,7 @@ describe Alephant::Broker::Application do
       specify {
         expect(last_response.headers).to eq({
           "Content-Type"   => "application/json",
-          "ETag"           => "44eaafebcdd94ddac4c4f07ecf0cc80f",
+          "ETag"           => "7e0c33c476b1089500d5f172102ec03e",
           "Last-Modified"  => nil,
           "Content-Length" => "266"
         })

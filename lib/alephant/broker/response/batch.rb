@@ -52,15 +52,15 @@ module Alephant
 
         def batch_response_etag
           etags = components.map do |component|
-            component.headers["ETag"] if component.headers["ETag"]
-          end
+            component.headers["ETag"]
+          end.compact
 
           Crimp.signature(etags)
         end
 
         def batch_response_last_modified
           last_modifieds  = components.map do |component|
-            component.headers["Last-Modified"] if component.headers["Last-Modified"]
+            component.headers["Last-Modified"]
           end.compact
 
           last_modifieds.max
