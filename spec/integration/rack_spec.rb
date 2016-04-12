@@ -20,7 +20,10 @@ describe Alephant::Broker::Application do
     AWS::Core::Data.new(
       :content_type => "test/content",
       :content      => "Test",
-      :meta         => {}
+      :meta         => {
+        "head_ETag" => "123",
+        "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
+      }
     )
   end
   let(:sequencer_double) do
@@ -76,6 +79,8 @@ describe Alephant::Broker::Application do
       specify { expect(last_response.headers).to_not include("Cache-Control") }
       specify { expect(last_response.headers).to_not include("Pragma") }
       specify { expect(last_response.headers).to_not include("Expires") }
+      specify { expect(last_response.headers["ETag"]).to eq("123") }
+      specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
     end
 
     context "for valid URL parameters in request" do
@@ -95,16 +100,44 @@ describe Alephant::Broker::Application do
     end
 
     before do
+      allow(s3_double).to receive(:get).and_return(
+        content,
+        AWS::Core::Data.new(
+          :content_type => "test/content",
+          :content      => "Test",
+          :meta         => {
+            "head_ETag" => "abc",
+            "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+          }
+        )
+      )
+
       allow(Alephant::Storage).to receive(:new) { s3_double }
     end
 
     context "when using valid batch asset data" do
       let(:path) { "/components/batch" }
       let(:content_type) { "application/json" }
+
       before { post path, batch_json, "CONTENT_TYPE" => content_type }
 
       specify { expect(last_response.status).to eql 200 }
       specify { expect(last_response.body).to eq batch_compiled_json }
+
+      describe "response should have headers" do
+        it "should have content headers" do
+          expect(last_response.headers["Content-Type"]).to eq("application/json")
+          expect(last_response.headers["Content-Length"]).to eq("266")
+        end
+
+        it "should have ETag cache header" do
+          expect(last_response.headers["ETag"]).to eq("34774567db979628363e6e865127623f")
+        end
+
+        it "should have most recent Last-Modified header" do
+          expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+      end
     end
   end
 

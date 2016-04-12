@@ -51,7 +51,10 @@ module Alephant
       end
 
       def header_key(key)
-        key.gsub(HEADER_PREFIX, "").split("-").map(&:capitalize).join("-")
+        key = key.gsub(HEADER_PREFIX, "")
+        return key if key == "ETag"
+
+        key.split("-").map(&:capitalize).join("-")
       end
 
       def symbolize(hash)
