@@ -123,14 +123,21 @@ describe Alephant::Broker::Application do
 
       specify { expect(last_response.status).to eql 200 }
       specify { expect(last_response.body).to eq batch_compiled_json }
-      specify {
-        expect(last_response.headers).to eq({
-          "Content-Type"   => "application/json",
-          "ETag"           => "34774567db979628363e6e865127623f",
-          "Last-Modified"  => "Mon, 11 Apr 2016 10:39:57 GMT",
-          "Content-Length" => "266"
-        })
-      }
+
+      describe "response should have headers" do
+        it "should have content headers" do
+          expect(last_response.headers["Content-Type"]).to eq("application/json")
+          expect(last_response.headers["Content-Length"]).to eq("266")
+        end
+
+        it "should have ETag cache header" do
+          expect(last_response.headers["ETag"]).to eq("34774567db979628363e6e865127623f")
+        end
+
+        it "should have most recent Last-Modified header" do
+          expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+      end
     end
   end
 
