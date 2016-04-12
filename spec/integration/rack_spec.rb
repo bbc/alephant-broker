@@ -20,7 +20,10 @@ describe Alephant::Broker::Application do
     AWS::Core::Data.new(
       :content_type => "test/content",
       :content      => "Test",
-      :meta         => {}
+      :meta         => {
+        "head_ETag" => "123",
+        "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
+      }
     )
   end
   let(:sequencer_double) do
@@ -76,6 +79,8 @@ describe Alephant::Broker::Application do
       specify { expect(last_response.headers).to_not include("Cache-Control") }
       specify { expect(last_response.headers).to_not include("Pragma") }
       specify { expect(last_response.headers).to_not include("Expires") }
+      specify { expect(last_response.headers["ETag"]).to eq("123") }
+      specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
     end
 
     context "for valid URL parameters in request" do
@@ -108,8 +113,8 @@ describe Alephant::Broker::Application do
       specify {
         expect(last_response.headers).to eq({
           "Content-Type"   => "application/json",
-          "ETag"           => "7e0c33c476b1089500d5f172102ec03e",
-          "Last-Modified"  => nil,
+          "ETag"           => "685f7ccf4a31c7c150d396df1baa3de7",
+          "Last-Modified"  => "Mon, 11 Apr 2016 10:39:57 GMT",
           "Content-Length" => "266"
         })
       }
