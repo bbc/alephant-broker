@@ -100,12 +100,25 @@ describe Alephant::Broker::Application do
     end
 
     before do
+      allow(s3_double).to receive(:get).and_return(
+        content,
+        AWS::Core::Data.new(
+          :content_type => "test/content",
+          :content      => "Test",
+          :meta         => {
+            "head_ETag" => "abc",
+            "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+          }
+        )
+      )
+
       allow(Alephant::Storage).to receive(:new) { s3_double }
     end
 
     context "when using valid batch asset data" do
       let(:path) { "/components/batch" }
       let(:content_type) { "application/json" }
+
       before { post path, batch_json, "CONTENT_TYPE" => content_type }
 
       specify { expect(last_response.status).to eql 200 }
@@ -113,7 +126,7 @@ describe Alephant::Broker::Application do
       specify {
         expect(last_response.headers).to eq({
           "Content-Type"   => "application/json",
-          "ETag"           => "685f7ccf4a31c7c150d396df1baa3de7",
+          "ETag"           => "34774567db979628363e6e865127623f",
           "Last-Modified"  => "Mon, 11 Apr 2016 10:39:57 GMT",
           "Content-Length" => "266"
         })
