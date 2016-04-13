@@ -13,11 +13,7 @@ module Alephant
           @components = components
           @batch_id   = batch_id
 
-          if component_not_modified(batch_response_headers, request_env)
-            @status = 304
-          else
-            @status = 200
-          end
+          @status = component_not_modified(batch_response_headers, request_env) ? 304 : 200
 
           super(@status, "application/json")
 
