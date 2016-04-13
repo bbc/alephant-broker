@@ -88,26 +88,27 @@ describe Alephant::Broker::Application do
       specify { expect(last_response.status).to eq 200 }
       specify { expect(last_response.body).to eq "Test" }
     end
+  end
 
-    context "for an unmodified response" do
-      before do
-        get(
-          "/component/test_component",
-          {},
-          {
-            "HTTP_IF_MODIFIED_SINCE" => "Mon, 11 Apr 2016 10:39:57 GMT"
-          }
-        )
-      end
-
-      specify { expect(last_response.status).to eql 304 }
-      specify { expect(last_response.body).to eql "" }
-      specify { expect(last_response.headers).to_not include("Cache-Control") }
-      specify { expect(last_response.headers).to_not include("Pragma") }
-      specify { expect(last_response.headers).to_not include("Expires") }
-      specify { expect(last_response.headers["ETag"]).to eq("123") }
-      specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
+  describe "single component not modified response" do
+    before do
+      allow(Alephant::Storage).to receive(:new) { s3_double }
+      get(
+        "/component/test_component",
+        {},
+        {
+          "IF_MODIFIED_SINCE" => "Mon, 11 Apr 2016 10:39:57 GMT"
+        }
+      )
     end
+
+    specify { expect(last_response.status).to eql 304 }
+    specify { expect(last_response.body).to eql "" }
+    specify { expect(last_response.headers).to_not include("Cache-Control") }
+    specify { expect(last_response.headers).to_not include("Pragma") }
+    specify { expect(last_response.headers).to_not include("Expires") }
+    specify { expect(last_response.headers["ETag"]).to eq("123") }
+    specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
   end
 
   describe "Components endpoint '/components'" do
@@ -191,9 +192,9 @@ describe Alephant::Broker::Application do
         end
 
         it "shoud not have no cache headers" do
-          specify { expect(last_response.headers).to_not include("Cache-Control") }
-          specify { expect(last_response.headers).to_not include("Pragma") }
-          specify { expect(last_response.headers).to_not include("Expires") }
+          expect(last_response.headers).to_not include("Cache-Control")
+          expect(last_response.headers).to_not include("Pragma")
+          expect(last_response.headers).to_not include("Expires")
         end
       end
     end
