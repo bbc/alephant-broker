@@ -119,9 +119,10 @@ describe Alephant::Broker::Application do
     let(:batch_compiled_json) do
       IO.read("#{fixture_path}/batch_compiled.json").strip
     end
+    let(:s3_double_batch) { instance_double("Alephant::Storage") }
 
     before do
-      allow(s3_double).to receive(:get).and_return(
+      allow(s3_double_batch).to receive(:get).and_return(
         content,
         AWS::Core::Data.new(
           :content_type => "test/content",
@@ -133,7 +134,7 @@ describe Alephant::Broker::Application do
         )
       )
 
-      allow(Alephant::Storage).to receive(:new) { s3_double }
+      allow(Alephant::Storage).to receive(:new) { s3_double_batch }
     end
 
     context "when using valid batch asset data" do
@@ -159,6 +160,33 @@ describe Alephant::Broker::Application do
           expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
         end
       end
+    end
+  end
+
+  describe "Components unmodified '/components' response" do
+    let(:fixture_path) { "#{File.dirname(__FILE__)}/../fixtures/json" }
+    let(:batch_json) do
+      IO.read("#{fixture_path}/batch.json").strip
+    end
+    let(:batch_compiled_json) do
+      IO.read("#{fixture_path}/batch_compiled.json").strip
+    end
+    let(:s3_double_with_etag) { instance_double("Alephant::Storage") }
+
+    before do
+      allow(s3_double_with_etag).to receive(:get).and_return(
+        content,
+        AWS::Core::Data.new(
+          :content_type => "test/content",
+          :content      => "Test",
+          :meta         => {
+            "head_ETag" => "abc",
+            "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+          }
+        )
+      )
+
+      allow(Alephant::Storage).to receive(:new) { s3_double_with_etag }
     end
 
     context "when requesting an unmodified response" do

@@ -14,7 +14,7 @@ module Alephant
 
         STATUS_CODE_MAPPING = {
           200 => "ok",
-          304 => nil,
+          304 => "",
           404 => "Not found",
           500 => "Error retrieving content"
         }

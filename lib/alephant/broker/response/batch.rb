@@ -59,7 +59,7 @@ module Alephant
         def batch_response_etag
           etags = components.map do |component|
             component.headers["ETag"]
-          end.compact
+          end.compact.sort
 
           Crimp.signature(etags)
         end
