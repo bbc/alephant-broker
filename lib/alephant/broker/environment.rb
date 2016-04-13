@@ -33,11 +33,11 @@ module Alephant
       end
 
       def etag
-        settings["HTTP_IF_NONE_MATCH"]
+        settings["IF_NONE_MATCH"]
       end
 
       def last_modified
-        settings["HTTP_IF_MODIFIED_SINCE"]
+        settings["IF_MODIFIED_SINCE"]
       end
 
       def data
