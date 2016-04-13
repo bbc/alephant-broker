@@ -88,6 +88,26 @@ describe Alephant::Broker::Application do
       specify { expect(last_response.status).to eq 200 }
       specify { expect(last_response.body).to eq "Test" }
     end
+
+    context "for an unmodified response" do
+      before do
+        get(
+          "/component/test_component",
+          {},
+          {
+            "HTTP_IF_MODIFIED_SINCE" => "Mon, 11 Apr 2016 10:39:57 GMT"
+          }
+        )
+      end
+
+      specify { expect(last_response.status).to eql 304 }
+      specify { expect(last_response.body).to eql "" }
+      specify { expect(last_response.headers).to_not include("Cache-Control") }
+      specify { expect(last_response.headers).to_not include("Pragma") }
+      specify { expect(last_response.headers).to_not include("Expires") }
+      specify { expect(last_response.headers["ETag"]).to eq("123") }
+      specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
+    end
   end
 
   describe "Components endpoint '/components'" do
@@ -136,6 +156,44 @@ describe Alephant::Broker::Application do
 
         it "should have most recent Last-Modified header" do
           expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+      end
+    end
+
+    context "when requesting an unmodified response" do
+      let(:path) { "/components/batch" }
+      let(:content_type) { "application/json" }
+
+      before {
+        post(path,
+        batch_json,
+        {
+          "CONTENT_TYPE" => content_type,
+          "IF_NONE_MATCH" => "34774567db979628363e6e865127623f"
+        })
+      }
+
+      specify { expect(last_response.status).to eql 304 }
+      specify { expect(last_response.body).to eq "" }
+
+      describe "response should have headers" do
+        it "should have content headers" do
+          expect(last_response.headers["Content-Type"]).to eq("application/json")
+          expect(last_response.headers["Content-Length"]).to eq("266")
+        end
+
+        it "should have ETag cache header" do
+          expect(last_response.headers["ETag"]).to eq("34774567db979628363e6e865127623f")
+        end
+
+        it "should have most recent Last-Modified header" do
+          expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+
+        it "shoud not have no cache headers" do
+          specify { expect(last_response.headers).to_not include("Cache-Control") }
+          specify { expect(last_response.headers).to_not include("Pragma") }
+          specify { expect(last_response.headers).to_not include("Expires") }
         end
       end
     end

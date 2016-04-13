@@ -14,7 +14,7 @@ module Alephant
 
         STATUS_CODE_MAPPING = {
           200 => "ok",
-          304 => "Not modified",
+          304 => nil,
           404 => "Not found",
           500 => "Error retrieving content"
         }
@@ -25,8 +25,8 @@ module Alephant
           @headers.merge!(Broker.config[:headers]) if Broker.config.has_key?(:headers)
           @status  = status
 
-          add_no_cache_headers if status != 200
-          setup
+          add_no_cache_headers if should_add_no_cache_headers?(status)
+          setup if status == 200
         end
 
         protected
@@ -34,6 +34,10 @@ module Alephant
         def setup; end
 
         private
+
+        def should_add_no_cache_headers?(status)
+          status != 200 && status != 304
+        end
 
         def add_no_cache_headers
           headers.merge!(

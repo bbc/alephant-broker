@@ -8,18 +8,19 @@ module Alephant
 
         def initialize(component, env)
           @component = component
-          @env = env
-          super component.status
+
+          if component_not_modified(@component.headers, env)
+            @status = 304
+          else
+            @status = component.status
+          end
+
+          super @status
+
+          @headers.merge!(@component.headers)
         end
 
         def setup
-          @headers.merge!(@component.headers)
-
-          if component_not_modified(@component.headers, @env)
-            @status = 304
-            return
-          end
-
           @content  = @component.content
           log if @component.is_a? Component
         end

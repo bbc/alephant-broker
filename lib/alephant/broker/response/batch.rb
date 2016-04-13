@@ -12,19 +12,19 @@ module Alephant
         def initialize(components, batch_id, env)
           @components = components
           @batch_id   = batch_id
-          @env = env
 
-          super(200, "application/json")
+          if component_not_modified(batch_response_headers, env)
+            @status = 304
+          else
+            @status = 200
+          end
+
+          super(@status, "application/json")
+
+          @headers.merge!(batch_response_headers)
         end
 
         def setup
-          @headers.merge!(batch_response_headers)
-
-          if component_not_modified(batch_response_headers, @env)
-            @status = 304
-            return
-          end
-
           @content = ::JSON.generate({
             'batch_id' => batch_id,
             'components' => json
