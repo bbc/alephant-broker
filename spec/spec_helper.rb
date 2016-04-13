@@ -9,6 +9,10 @@ require "alephant/broker/load_strategy/http"
 require "alephant/broker/cache"
 require "alephant/broker/errors/content_not_found"
 
-require 'rack/test'
+require "rack/test"
 
-ENV['RACK_ENV'] = 'test'
+ENV['RACK_ENV'] = "test"
+
+RSpec.configure do |config|
+  config.order = "random"
+end
