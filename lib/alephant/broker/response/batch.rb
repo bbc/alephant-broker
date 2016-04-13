@@ -9,11 +9,11 @@ module Alephant
 
         attr_reader :components, :batch_id
 
-        def initialize(components, batch_id, env)
+        def initialize(components, batch_id, request_env)
           @components = components
           @batch_id   = batch_id
 
-          if component_not_modified(batch_response_headers, env)
+          if component_not_modified(batch_response_headers, request_env)
             @status = 304
           else
             @status = 200

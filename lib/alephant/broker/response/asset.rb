@@ -6,14 +6,10 @@ module Alephant
       class Asset < Base
         include Logger
 
-        def initialize(component, env)
+        def initialize(component, request_env)
           @component = component
 
-          if component_not_modified(@component.headers, env)
-            @status = 304
-          else
-            @status = component.status
-          end
+          @status = component_not_modified(@component.headers, request_env) ? 304 : component.status
 
           super @status
 

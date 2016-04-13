@@ -51,7 +51,7 @@ module Alephant
         def component_not_modified(headers, request_env)
           return false if headers["Last-Modified"].nil? && headers["ETag"].nil?
 
-          headers["Last-Modified"] == request_env.last_modified || headers["ETag"] == request_env.etag
+          headers["Last-Modified"] == request_env.if_modified_since || headers["ETag"] == request_env.if_none_match
         end
 
         def log

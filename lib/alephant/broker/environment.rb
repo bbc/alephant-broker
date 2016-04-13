@@ -32,11 +32,11 @@ module Alephant
         settings['PATH_INFO']
       end
 
-      def etag
+      def if_none_match
         settings["IF_NONE_MATCH"]
       end
 
-      def last_modified
+      def if_modified_since
         settings["IF_MODIFIED_SINCE"]
       end
 
