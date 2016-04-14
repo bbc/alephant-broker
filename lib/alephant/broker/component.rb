@@ -45,7 +45,7 @@ module Alephant
       def meta_data_headers
         @meta_data_headers ||= data[:meta].to_h.reduce({}) do |accum, (k, v)|
           accum.tap do |a|
-            a[header_key(k)] = v.to_s if k.start_with?(HEADER_PREFIX)
+            a[header_key(k.to_s)] = v.to_s if k.to_s.start_with?(HEADER_PREFIX)
           end
         end
       end
