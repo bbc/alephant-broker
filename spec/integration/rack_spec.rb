@@ -21,8 +21,8 @@ describe Alephant::Broker::Application do
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {
-        "head_ETag" => "123",
-        "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
+        :head_ETag            => "123",
+        :"head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
       }
     )
   end
@@ -106,8 +106,8 @@ describe Alephant::Broker::Application do
           :content_type => "test/content",
           :content      => "Test",
           :meta         => {
-            "head_ETag" => "abc",
-            "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+            :head_ETag            => "abc",
+            :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
           }
         )
       )
