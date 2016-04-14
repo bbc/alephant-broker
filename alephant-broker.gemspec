@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rack-test"
 
   spec.add_runtime_dependency "alephant-lookup"
-  spec.add_runtime_dependency "alephant-storage", ">= 1.1.0"
+  spec.add_runtime_dependency "alephant-storage", ">= 1.1.1"
   spec.add_runtime_dependency "alephant-logger", "1.2.0"
   spec.add_runtime_dependency 'alephant-sequencer'
   spec.add_runtime_dependency "dalli-elasticache"
