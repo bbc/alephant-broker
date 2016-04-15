@@ -1,7 +1,9 @@
 require_relative "spec_helper"
+require "alephant/broker"
 
 describe Alephant::Broker::Application do
   include Rack::Test::Methods
+
   let(:options) do
     {
       :lookup_table_name => "test_table",
@@ -16,16 +18,18 @@ describe Alephant::Broker::Application do
       options
     )
   end
+
   let(:content) do
     AWS::Core::Data.new(
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {
-        :head_ETag            => "123",
-        :"head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
+        "head_ETag"          => "123",
+        "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
       }
     )
   end
+
   let(:sequencer_double) do
     instance_double(
       "Alephant::Sequencer::Sequencer",
@@ -164,13 +168,9 @@ describe Alephant::Broker::Application do
   end
 
   describe "Components unmodified '/components' response" do
-    let(:fixture_path) { "#{File.dirname(__FILE__)}/../fixtures/json" }
-    let(:batch_json) do
-      IO.read("#{fixture_path}/batch.json").strip
-    end
-    let(:batch_compiled_json) do
-      IO.read("#{fixture_path}/batch_compiled.json").strip
-    end
+    let(:fixture_path)        { "#{File.dirname(__FILE__)}/../fixtures/json" }
+    let(:batch_json)          { IO.read("#{fixture_path}/batch.json").strip }
+    let(:batch_compiled_json) { IO.read("#{fixture_path}/batch_compiled.json").strip }
     let(:s3_double_with_etag) { instance_double("Alephant::Storage") }
 
     before do
@@ -180,7 +180,7 @@ describe Alephant::Broker::Application do
           :content_type => "test/content",
           :content      => "Test",
           :meta         => {
-            "head_ETag" => "abc",
+            "head_ETag"          => "abc",
             "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
           }
         )
@@ -190,29 +190,26 @@ describe Alephant::Broker::Application do
     end
 
     context "when requesting an unmodified response" do
-      let(:path) { "/components/batch" }
+      let(:path)         { "/components/batch" }
       let(:content_type) { "application/json" }
+      let(:etag)         { "34774567db979628363e6e865127623f" }
 
-      before {
-        post(path,
-        batch_json,
-        {
-          "CONTENT_TYPE" => content_type,
-          "IF_NONE_MATCH" => "34774567db979628363e6e865127623f"
-        })
-      }
+      before do
+        post(path, batch_json,
+          "CONTENT_TYPE"  => content_type,
+          "IF_NONE_MATCH" => etag)
+      end
 
       specify { expect(last_response.status).to eql 304 }
       specify { expect(last_response.body).to eq "" }
 
       describe "response should have headers" do
-        it "should have content headers" do
-          expect(last_response.headers["Content-Type"]).to eq("application/json")
-          expect(last_response.headers["Content-Length"]).to eq("266")
+        it "should NOT have a Content-Type header" do
+          expect(last_response.headers).to_not include("Content-Type")
         end
 
         it "should have ETag cache header" do
-          expect(last_response.headers["ETag"]).to eq("34774567db979628363e6e865127623f")
+          expect(last_response.headers["ETag"]).to eq(etag)
         end
 
         it "should have most recent Last-Modified header" do

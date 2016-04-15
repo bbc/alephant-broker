@@ -12,8 +12,7 @@ module Alephant
         def initialize(components, batch_id, request_env)
           @components = components
           @batch_id   = batch_id
-
-          @status = component_not_modified(batch_response_headers, request_env) ? 304 : 200
+          @status     = component_not_modified(batch_response_headers, request_env) ? 304 : 200
 
           super(@status, "application/json")
 
