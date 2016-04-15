@@ -12,7 +12,7 @@ module Alephant
         def initialize
           unless config_endpoint.nil?
             @elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, { :expires_in => ttl })
-            @client ||= @@elasticache.client
+            @client ||= @elasticache.client
           else
             logger.debug "Broker::Cache::Client#initialize: No config endpoint, NullClient used"
             logger.metric "NoConfigEndpoint"
