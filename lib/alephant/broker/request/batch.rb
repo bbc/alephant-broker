@@ -1,6 +1,5 @@
 require "alephant/logger"
 require "alephant/broker/component"
-require "parallel"
 
 module Alephant
   module Broker
@@ -21,7 +20,7 @@ module Alephant
         private
 
         def components_for(env)
-          Parallel.map(env.data["components"], in_threads: 4) do |c|
+          env.data["components"].map do |c|
             @component_factory.create(
               c["component"],
               batch_id,
