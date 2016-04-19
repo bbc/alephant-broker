@@ -172,19 +172,33 @@ describe Alephant::Broker::Application do
     let(:batch_json)          { IO.read("#{fixture_path}/batch.json").strip }
     let(:batch_compiled_json) { IO.read("#{fixture_path}/batch_compiled.json").strip }
     let(:s3_double_with_etag) { instance_double("Alephant::Storage") }
+    let(:lookup_location_double_for_options_request) do
+      instance_double("Alephant::Lookup::Location", :location => "test/location/with/options")
+    end
 
     before do
-      allow(s3_double_with_etag).to receive(:get).and_return(
-        content,
-        AWS::Core::Data.new(
-          :content_type => "test/content",
-          :content      => "Test",
-          :meta         => {
-            "head_ETag"          => "abc",
-            "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
-          }
+      allow(lookup_helper_double).to receive(:read)
+        .with("ni_council_results_table", { :foo => "bar" }, "111")
+        .and_return(lookup_location_double_for_options_request)
+
+      allow(s3_double_with_etag).to receive(:get)
+        .with("test/location")
+        .and_return(
+          content
         )
-      )
+
+      allow(s3_double_with_etag).to receive(:get)
+        .with("test/location/with/options")
+        .and_return(
+          AWS::Core::Data.new(
+            :content_type => "test/content",
+            :content      => "Test",
+            :meta         => {
+              "head_ETag"          => "abc",
+              "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+            }
+          )
+        )
 
       allow(Alephant::Storage).to receive(:new) { s3_double_with_etag }
     end
