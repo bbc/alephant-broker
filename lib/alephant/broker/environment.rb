@@ -33,11 +33,11 @@ module Alephant
       end
 
       def if_none_match
-        settings["IF_NONE_MATCH"]
+        settings["HTTP_IF_NONE_MATCH"]
       end
 
       def if_modified_since
-        settings["IF_MODIFIED_SINCE"]
+        settings["HTTP_IF_MODIFIED_SINCE"]
       end
 
       def data
