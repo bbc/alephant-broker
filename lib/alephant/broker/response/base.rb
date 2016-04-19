@@ -49,9 +49,14 @@ module Alephant
         end
 
         def component_not_modified(headers, request_env)
-          return false if headers["Last-Modified"].nil? && headers["ETag"].nil?
+          return false if request_env.if_modified_since.nil? && request_env.if_none_match.nil?
 
-          headers["Last-Modified"] == request_env.if_modified_since || headers["ETag"] == request_env.if_none_match
+          !request_env.if_modified_since.nil? && headers["Last-Modified"] == request_env.if_modified_since ||
+            !request_env.if_none_match.nil? && unquote_etag(headers["ETag"]) == unquote_etag(request_env.if_none_match)
+        end
+
+        def unquote_etag(etag)
+          etag.to_s.gsub(/\A"|"\Z/, '')
         end
 
         def log

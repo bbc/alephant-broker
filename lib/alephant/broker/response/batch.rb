@@ -53,10 +53,10 @@ module Alephant
 
         def batch_response_etag
           etags = components.map do |component|
-            component.headers["ETag"]
+            unquote_etag(component.headers["ETag"])
           end.compact.sort
 
-          Crimp.signature(etags)
+          "\"#{Crimp.signature(etags)}\""
         end
 
         def batch_response_last_modified

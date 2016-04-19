@@ -132,7 +132,7 @@ describe Alephant::Broker::Application do
           :content_type => "test/content",
           :content      => "Test",
           :meta         => {
-            :head_ETag            => "abc",
+            :head_ETag            => "\"abc\"",
             :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
           }
         )
@@ -157,7 +157,7 @@ describe Alephant::Broker::Application do
         end
 
         it "should have ETag cache header" do
-          expect(last_response.headers["ETag"]).to eq("34774567db979628363e6e865127623f")
+          expect(last_response.headers["ETag"]).to eq('"34774567db979628363e6e865127623f"')
         end
 
         it "should have most recent Last-Modified header" do
@@ -206,7 +206,7 @@ describe Alephant::Broker::Application do
     context "when requesting an unmodified response" do
       let(:path)         { "/components/batch" }
       let(:content_type) { "application/json" }
-      let(:etag)         { "34774567db979628363e6e865127623f" }
+      let(:etag)         { '"34774567db979628363e6e865127623f"' }
 
       before do
         post(path, batch_json,
