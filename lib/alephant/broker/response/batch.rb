@@ -9,11 +9,14 @@ module Alephant
 
         attr_reader :components, :batch_id
 
-        def initialize(components, batch_id)
+        def initialize(components, batch_id, request_env)
           @components = components
           @batch_id   = batch_id
+          @status     = component_not_modified(batch_response_headers, request_env) ? 304 : 200
 
-          super(200, "application/json")
+          super(@status, "application/json")
+
+          @headers.merge!(batch_response_headers)
         end
 
         def setup
@@ -21,8 +24,6 @@ module Alephant
             'batch_id' => batch_id,
             'components' => json
           })
-
-          @headers.merge!(batch_response_headers)
         end
 
         private
@@ -53,7 +54,7 @@ module Alephant
         def batch_response_etag
           etags = components.map do |component|
             component.headers["ETag"]
-          end.compact
+          end.compact.sort
 
           Crimp.signature(etags)
         end

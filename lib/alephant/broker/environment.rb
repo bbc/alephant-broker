@@ -32,6 +32,14 @@ module Alephant
         settings['PATH_INFO']
       end
 
+      def if_none_match
+        settings["IF_NONE_MATCH"]
+      end
+
+      def if_modified_since
+        settings["IF_MODIFIED_SINCE"]
+      end
+
       def data
         parse(rack_input) if post?
       end

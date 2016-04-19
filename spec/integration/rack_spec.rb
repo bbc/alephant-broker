@@ -1,7 +1,9 @@
 require_relative "spec_helper"
+require "alephant/broker"
 
 describe Alephant::Broker::Application do
   include Rack::Test::Methods
+
   let(:options) do
     {
       :lookup_table_name => "test_table",
@@ -16,16 +18,18 @@ describe Alephant::Broker::Application do
       options
     )
   end
+
   let(:content) do
     AWS::Core::Data.new(
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {
-        :head_ETag            => "123",
-        :"head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
+        "head_ETag"          => "123",
+        "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
       }
     )
   end
+
   let(:sequencer_double) do
     instance_double(
       "Alephant::Sequencer::Sequencer",
@@ -90,6 +94,27 @@ describe Alephant::Broker::Application do
     end
   end
 
+  describe "single component not modified response" do
+    before do
+      allow(Alephant::Storage).to receive(:new) { s3_double }
+      get(
+        "/component/test_component",
+        {},
+        {
+          "IF_MODIFIED_SINCE" => "Mon, 11 Apr 2016 10:39:57 GMT"
+        }
+      )
+    end
+
+    specify { expect(last_response.status).to eql 304 }
+    specify { expect(last_response.body).to eql "" }
+    specify { expect(last_response.headers).to_not include("Cache-Control") }
+    specify { expect(last_response.headers).to_not include("Pragma") }
+    specify { expect(last_response.headers).to_not include("Expires") }
+    specify { expect(last_response.headers["ETag"]).to eq("123") }
+    specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
+  end
+
   describe "Components endpoint '/components'" do
     let(:fixture_path) { "#{File.dirname(__FILE__)}/../fixtures/json" }
     let(:batch_json) do
@@ -98,9 +123,10 @@ describe Alephant::Broker::Application do
     let(:batch_compiled_json) do
       IO.read("#{fixture_path}/batch_compiled.json").strip
     end
+    let(:s3_double_batch) { instance_double("Alephant::Storage") }
 
     before do
-      allow(s3_double).to receive(:get).and_return(
+      allow(s3_double_batch).to receive(:get).and_return(
         content,
         AWS::Core::Data.new(
           :content_type => "test/content",
@@ -112,7 +138,7 @@ describe Alephant::Broker::Application do
         )
       )
 
-      allow(Alephant::Storage).to receive(:new) { s3_double }
+      allow(Alephant::Storage).to receive(:new) { s3_double_batch }
     end
 
     context "when using valid batch asset data" do
@@ -136,6 +162,78 @@ describe Alephant::Broker::Application do
 
         it "should have most recent Last-Modified header" do
           expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+      end
+    end
+  end
+
+  describe "Components unmodified '/components' response" do
+    let(:fixture_path)        { "#{File.dirname(__FILE__)}/../fixtures/json" }
+    let(:batch_json)          { IO.read("#{fixture_path}/batch.json").strip }
+    let(:batch_compiled_json) { IO.read("#{fixture_path}/batch_compiled.json").strip }
+    let(:s3_double_with_etag) { instance_double("Alephant::Storage") }
+    let(:lookup_location_double_for_options_request) do
+      instance_double("Alephant::Lookup::Location", :location => "test/location/with/options")
+    end
+
+    before do
+      allow(lookup_helper_double).to receive(:read)
+        .with("ni_council_results_table", { :foo => "bar" }, "111")
+        .and_return(lookup_location_double_for_options_request)
+
+      allow(s3_double_with_etag).to receive(:get)
+        .with("test/location")
+        .and_return(
+          content
+        )
+
+      allow(s3_double_with_etag).to receive(:get)
+        .with("test/location/with/options")
+        .and_return(
+          AWS::Core::Data.new(
+            :content_type => "test/content",
+            :content      => "Test",
+            :meta         => {
+              "head_ETag"          => "abc",
+              "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+            }
+          )
+        )
+
+      allow(Alephant::Storage).to receive(:new) { s3_double_with_etag }
+    end
+
+    context "when requesting an unmodified response" do
+      let(:path)         { "/components/batch" }
+      let(:content_type) { "application/json" }
+      let(:etag)         { "34774567db979628363e6e865127623f" }
+
+      before do
+        post(path, batch_json,
+          "CONTENT_TYPE"  => content_type,
+          "IF_NONE_MATCH" => etag)
+      end
+
+      specify { expect(last_response.status).to eql 304 }
+      specify { expect(last_response.body).to eq "" }
+
+      describe "response should have headers" do
+        it "should NOT have a Content-Type header" do
+          expect(last_response.headers).to_not include("Content-Type")
+        end
+
+        it "should have ETag cache header" do
+          expect(last_response.headers["ETag"]).to eq(etag)
+        end
+
+        it "should have most recent Last-Modified header" do
+          expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+
+        it "shoud not have no cache headers" do
+          expect(last_response.headers).to_not include("Cache-Control")
+          expect(last_response.headers).to_not include("Pragma")
+          expect(last_response.headers).to_not include("Expires")
         end
       end
     end

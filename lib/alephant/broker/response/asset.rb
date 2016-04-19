@@ -6,13 +6,17 @@ module Alephant
       class Asset < Base
         include Logger
 
-        def initialize(component)
+        def initialize(component, request_env)
           @component = component
-          super component.status
+
+          @status = component_not_modified(@component.headers, request_env) ? 304 : component.status
+
+          super @status
+
+          @headers.merge!(@component.headers)
         end
 
         def setup
-          @headers.merge!(@component.headers)
           @content  = @component.content
           log if @component.is_a? Component
         end

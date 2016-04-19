@@ -4,12 +4,12 @@ module Alephant
   module Broker
     module Response
       class Factory
-        def self.response_for(request)
+        def self.response_for(request, request_env)
           case request
           when Request::Asset
-            Asset.new(request.component)
+            Asset.new(request.component, request_env)
           when Request::Batch
-            Batch.new(request.components, request.batch_id)
+            Batch.new(request.components, request.batch_id, request_env)
           when Request::Status
             Status.new
           else

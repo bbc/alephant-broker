@@ -12,16 +12,16 @@ module Alephant
       class Handler
         extend Logger
 
-        def self.request_for(load_strategy, env)
-          Request::Factory.request_for(load_strategy, env)
+        def self.request_for(load_strategy, request_env)
+          Request::Factory.request_for(load_strategy, request_env)
         end
 
-        def self.response_for(request)
-          Response::Factory.response_for request
+        def self.response_for(request, request_env)
+          Response::Factory.response_for(request, request_env)
         end
 
-        def self.process(load_strategy, env)
-          response_for request_for(load_strategy, env)
+        def self.process(load_strategy, request_env)
+          response_for(request_for(load_strategy, request_env), request_env)
         end
       end
     end
