@@ -54,8 +54,10 @@ module Alephant
         def component_not_modified(headers, request_env)
           return false if request_env.if_modified_since.nil? && request_env.if_none_match.nil?
 
-          !request_env.if_modified_since.nil? && headers["Last-Modified"] == request_env.if_modified_since ||
-            !request_env.if_none_match.nil? && unquote_etag(headers["ETag"]) == unquote_etag(request_env.if_none_match)
+          last_modified_match = !request_env.if_modified_since.nil? && headers["Last-Modified"] == request_env.if_modified_since
+          etag_match          = !request_env.if_none_match.nil? && unquote_etag(headers["ETag"]) == unquote_etag(request_env.if_none_match)
+
+          last_modified_match || etag_match
         end
 
         def unquote_etag(etag)
