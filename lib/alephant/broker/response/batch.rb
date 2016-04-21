@@ -12,7 +12,7 @@ module Alephant
         def initialize(components, batch_id, request_env)
           @components = components
           @batch_id   = batch_id
-          @status     = component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
+          @status     = Alephant::Broker::Response::Base.component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
 
           super(@status, "application/json")
 
@@ -55,7 +55,7 @@ module Alephant
 
         def batch_response_etag
           etags = components.map do |component|
-            unquote_etag(component.headers["ETag"])
+            Alephant::Broker::Response::Base.unquote_etag(component.headers["ETag"])
           end.compact.sort
 
           "\"#{Crimp.signature(etags)}\""
