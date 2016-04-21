@@ -49,6 +49,8 @@ describe Alephant::Broker::Application do
 
   let(:s3_double) { instance_double("Alephant::Storage", :get => content) }
 
+  let(:not_modified_status_code) { 202 }
+
   before do
     allow_any_instance_of(Logger).to receive(:info)
     allow_any_instance_of(Logger).to receive(:debug)
@@ -106,7 +108,7 @@ describe Alephant::Broker::Application do
       )
     end
 
-    specify { expect(last_response.status).to eql 304 }
+    specify { expect(last_response.status).to eql not_modified_status_code }
     specify { expect(last_response.body).to eql "" }
     specify { expect(last_response.headers).to_not include("Cache-Control") }
     specify { expect(last_response.headers).to_not include("Pragma") }
@@ -214,12 +216,12 @@ describe Alephant::Broker::Application do
           "HTTP_IF_NONE_MATCH" => etag)
       end
 
-      specify { expect(last_response.status).to eql 304 }
+      specify { expect(last_response.status).to eql not_modified_status_code }
       specify { expect(last_response.body).to eq "" }
 
       describe "response should have headers" do
-        it "should NOT have a Content-Type header" do
-          expect(last_response.headers).to_not include("Content-Type")
+        it "should have a Content-Type header" do
+          expect(last_response.headers).to include("Content-Type")
         end
 
         it "should have ETag cache header" do

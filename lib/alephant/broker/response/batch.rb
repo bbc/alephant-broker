@@ -12,7 +12,7 @@ module Alephant
         def initialize(components, batch_id, request_env)
           @components = components
           @batch_id   = batch_id
-          @status     = component_not_modified(batch_response_headers, request_env) ? 304 : 200
+          @status     = component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
 
           super(@status, "application/json")
 
@@ -45,6 +45,8 @@ module Alephant
         end
 
         def batch_response_headers
+          return {} unless components.count
+
           {
             "ETag"          => batch_response_etag,
             "Last-Modified" => batch_response_last_modified

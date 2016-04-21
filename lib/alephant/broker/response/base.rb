@@ -14,21 +14,25 @@ module Alephant
 
         STATUS_CODE_MAPPING = {
           200 => "ok",
-          304 => "",
+          202 => "",
           404 => "Not found",
           500 => "Error retrieving content"
         }
+
+        NOT_MODIFIED_STATUS_CODE = 202
 
         def initialize(status = 200, content_type = "text/html")
           @content = STATUS_CODE_MAPPING[status]
           @headers = {
             "Content-Type"                  => content_type,
-            "Access-Control-Allow-Headers"  => "If-None-Match"
+            "Access-Control-Allow-Headers"  => "If-None-Match",
+            "Access-Control-Allow-Origin"   => "*"
           }
           headers.merge!(Broker.config[:headers]) if Broker.config.has_key?(:headers)
           @status  = status
 
           add_no_cache_headers if should_add_no_cache_headers?(status)
+          add_etag_allow_header if headers.has_key?("ETag")
           setup if status == 200
         end
 
@@ -39,7 +43,7 @@ module Alephant
         private
 
         def should_add_no_cache_headers?(status)
-          status != 200 && status != 304
+          status != 200 && status != NOT_MODIFIED_STATUS_CODE
         end
 
         def add_no_cache_headers
@@ -49,6 +53,12 @@ module Alephant
             "Expires"       => Date.today.prev_year.httpdate
           )
           log
+        end
+
+        def add_etag_allow_header
+          headers.merge!({
+            "Access-Control-Expose-Headers" => "ETag"
+          })
         end
 
         def component_not_modified(headers, request_env)
