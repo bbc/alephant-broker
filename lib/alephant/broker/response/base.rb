@@ -29,7 +29,6 @@ module Alephant
           @status  = status
 
           add_no_cache_headers if should_add_no_cache_headers?(status)
-          add_etag_allow_header if headers.has_key?(:ETag)
           setup if status == 200
         end
 
@@ -50,10 +49,6 @@ module Alephant
             "Expires"       => Date.today.prev_year.httpdate
           )
           log
-        end
-
-        def add_etag_allow_header
-          headers.merge!("Access-Control-Expose-Headers" => "ETag")
         end
 
         def component_not_modified(headers, request_env)
