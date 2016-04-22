@@ -9,7 +9,7 @@ module Alephant
         def initialize(component, request_env)
           @component = component
 
-          @status = Alephant::Broker::Response::Base.component_not_modified(@component.headers, request_env) ? NOT_MODIFIED_STATUS_CODE : component.status
+          @status = self.class.component_not_modified(@component.headers, request_env) ? NOT_MODIFIED_STATUS_CODE : component.status
 
           super @status
 
