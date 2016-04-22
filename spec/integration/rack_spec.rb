@@ -49,7 +49,7 @@ describe Alephant::Broker::Application do
 
   let(:s3_double) { instance_double("Alephant::Storage", :get => content) }
 
-  let(:not_modified_status_code) { 202 }
+  let(:not_modified_status_code) { Alephant::Broker::Response::Base::NOT_MODIFIED_STATUS_CODE }
 
   before do
     allow_any_instance_of(Logger).to receive(:info)

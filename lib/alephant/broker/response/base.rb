@@ -12,14 +12,14 @@ module Alephant
 
         attr_reader :content, :headers, :status
 
-        STATUS_CODE_MAPPING = {
-          200 => "ok",
-          202 => "",
-          404 => "Not found",
-          500 => "Error retrieving content"
-        }
-
         NOT_MODIFIED_STATUS_CODE = 202
+
+        STATUS_CODE_MAPPING = {
+          200                      => "ok",
+          NOT_MODIFIED_STATUS_CODE => "",
+          404                      => "Not found",
+          500                      => "Error retrieving content"
+        }
 
         def initialize(status = 200, content_type = "text/html")
           @content = STATUS_CODE_MAPPING[status]
@@ -66,7 +66,7 @@ module Alephant
 
           last_modified_match = !request_env.if_modified_since.nil? && headers["Last-Modified"] == request_env.if_modified_since
           etag_match          = !request_env.if_none_match.nil? &&
-            Alephant::Broker::Response::Base.unquote_etag(headers["ETag"]) == Alephant::Broker::Response::Base.unquote_etag(request_env.if_none_match)
+            unquote_etag(headers["ETag"]) == unquote_etag(request_env.if_none_match)
 
           last_modified_match || etag_match
         end
