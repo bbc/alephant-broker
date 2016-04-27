@@ -12,7 +12,7 @@ module Alephant
         def initialize(component_factory, env)
           if env.data
             @batch_id        = env.data["batch_id"]
-          elsif
+          else
             @batch_id        = env.options.fetch("batch_id", nil)
           end
 
