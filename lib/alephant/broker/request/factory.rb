@@ -6,18 +6,18 @@ module Alephant
     module Request
       class Factory
         def self.request_type_from(env)
-          env.path.split('/')[1]
+          env.path.split("/")[1]
         end
 
         def self.request_for(load_strategy, env)
           component_factory = ComponentFactory.new load_strategy
 
           case request_type_from(env)
-          when 'component'
+          when "component"
             Asset.new(component_factory, env)
-          when 'components'
+          when "components"
             Batch.new(component_factory, env)
-          when 'status'
+          when "status"
             Status.new
           else
             NotFound.new
