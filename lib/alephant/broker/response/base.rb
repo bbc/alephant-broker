@@ -12,7 +12,7 @@ module Alephant
 
         attr_reader :content, :headers, :status
 
-        NOT_MODIFIED_STATUS_CODE = 202
+        NOT_MODIFIED_STATUS_CODE = 304
 
         STATUS_CODE_MAPPING = {
           200                      => "ok",
@@ -62,6 +62,7 @@ module Alephant
         end
 
         def self.component_not_modified(headers, request_env)
+          return false if request_env.post?
           return false if request_env.if_modified_since.nil? && request_env.if_none_match.nil?
 
           last_modified_match = !request_env.if_modified_since.nil? && headers["Last-Modified"] == request_env.if_modified_since
