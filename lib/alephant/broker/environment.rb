@@ -13,23 +13,23 @@ module Alephant
       end
 
       def method
-        settings['REQUEST_METHOD']
+        settings["REQUEST_METHOD"]
       end
 
       def post?
-        settings['REQUEST_METHOD'] == 'POST'
+        settings["REQUEST_METHOD"] == "POST"
       end
 
       def get?
-        settings['REQUEST_METHOD'] == 'GET'
+        settings["REQUEST_METHOD"] == "GET"
       end
 
       def query
-        settings['QUERY_STRING'] || ""
+        settings["QUERY_STRING"] || ""
       end
 
       def path
-        settings['PATH_INFO']
+        settings["PATH_INFO"]
       end
 
       def if_none_match
@@ -51,7 +51,7 @@ module Alephant
       private
 
       def rack_input
-        (settings['rack.input'].read).tap { settings['rack.input'].rewind }
+        (settings["rack.input"].read).tap { settings["rack.input"].rewind }
       end
 
       def parse(json)
