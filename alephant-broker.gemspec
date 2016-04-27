@@ -38,4 +38,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "dalli-elasticache"
   spec.add_runtime_dependency "faraday"
   spec.add_runtime_dependency "crimp"
+  spec.add_runtime_dependency "listen", "~> 3.0.0"
 end
