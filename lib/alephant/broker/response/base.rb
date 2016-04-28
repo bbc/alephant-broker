@@ -62,7 +62,7 @@ module Alephant
         end
 
         def self.component_not_modified(headers, request_env)
-          return false unless allow_modified_response_status
+          return false unless allow_not_modified_response_status
           return false if request_env.post?
           return false if request_env.if_modified_since.nil? && request_env.if_none_match.nil?
 
@@ -77,8 +77,8 @@ module Alephant
           etag.to_s.gsub(/\A"|"\Z/, '')
         end
 
-        def self.allow_modified_response_status
-          Broker.config[:allow_modified_response_status] || false
+        def self.allow_not_modified_response_status
+          Broker.config[:allow_not_modified_response_status] || false
         end
 
         def log

@@ -6,10 +6,10 @@ describe Alephant::Broker::Application do
 
   let(:options) do
     {
-      :lookup_table_name              => "test_table",
-      :bucket_id                      => "test_bucket",
-      :path                           => "bucket_path",
-      :allow_modified_response_status => true
+      :lookup_table_name                  => "test_table",
+      :bucket_id                          => "test_bucket",
+      :path                               => "bucket_path",
+      :allow_not_modified_response_status => true
     }
   end
 
