@@ -25,7 +25,7 @@ module Alephant
           @content = STATUS_CODE_MAPPING[status]
           @headers = {
             "Content-Type"                  => content_type,
-            "Access-Control-Allow-Headers"  => "If-None-Match",
+            "Access-Control-Allow-Headers"  => "If-None-Match, If-Modified-Since",
             "Access-Control-Allow-Origin"   => "*"
           }
           headers.merge!(Broker.config[:headers]) if Broker.config.has_key?(:headers)
@@ -62,6 +62,7 @@ module Alephant
         end
 
         def self.component_not_modified(headers, request_env)
+          return false unless allow_modified_response_status
           return false if request_env.post?
           return false if request_env.if_modified_since.nil? && request_env.if_none_match.nil?
 
@@ -74,6 +75,10 @@ module Alephant
 
         def self.unquote_etag(etag)
           etag.to_s.gsub(/\A"|"\Z/, '')
+        end
+
+        def self.allow_modified_response_status
+          Broker.config[:allow_modified_response_status] || false
         end
 
         def log
