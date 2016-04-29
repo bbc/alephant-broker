@@ -10,9 +10,10 @@ module Alephant
         attr_reader :components, :batch_id
 
         def initialize(components, batch_id, request_env)
-          @components = components
-          @batch_id   = batch_id
-          @status     = self.class.component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
+          @components  = components
+          @request_env = request_env
+          @batch_id    = batch_id
+          @status      = self.class.component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
 
           super(@status, "application/json")
 
@@ -20,10 +21,14 @@ module Alephant
         end
 
         def setup
-          @content = ::JSON.generate({
-            'batch_id' => batch_id,
-            'components' => json
-          })
+          if @request_env.options?
+            @content = ""
+          else
+            @content = ::JSON.generate({
+              'batch_id' => batch_id,
+              'components' => json
+            })
+          end
         end
 
         private

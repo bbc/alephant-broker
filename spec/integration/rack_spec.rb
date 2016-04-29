@@ -4,7 +4,7 @@ require "alephant/broker"
 describe Alephant::Broker::Application do
   include Rack::Test::Methods
 
-  let(:options) do
+  let(:config) do
     {
       :lookup_table_name => "test_table",
       :bucket_id         => "test_bucket",
@@ -15,7 +15,7 @@ describe Alephant::Broker::Application do
   let(:app) do
     described_class.new(
       Alephant::Broker::LoadStrategy::S3::Sequenced.new,
-      options
+      config
     )
   end
 
@@ -73,7 +73,7 @@ describe Alephant::Broker::Application do
     specify { expect(last_response.headers).to include("Expires") }
   end
 
-  describe "Component endpoint '/component/...'" do
+  describe "Component endpoint '/component/...' GET" do
     before do
       allow(Alephant::Storage).to receive(:new) { s3_double }
       get "/component/test_component"
@@ -93,6 +93,33 @@ describe Alephant::Broker::Application do
       before { get "/component/test_component?variant=test_variant" }
       specify { expect(last_response.status).to eq 200 }
       specify { expect(last_response.body).to eq "Test" }
+    end
+  end
+
+  describe "Component endpoint '/component/...' OPTIONS" do
+    before do
+      allow(Alephant::Storage).to receive(:new) { s3_double }
+      options "/component/test_component"
+    end
+
+    context "for a valid component ID" do
+      specify { expect(last_response.status).to eql 200 }
+      specify { expect(last_response.body).to eql "" }
+      specify { expect(last_response.headers).to_not include("Cache-Control") }
+      specify { expect(last_response.headers).to_not include("Pragma") }
+      specify { expect(last_response.headers).to_not include("Expires") }
+      specify { expect(last_response.headers["ETag"]).to eq("123") }
+      specify { expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT") }
+      specify { expect(last_response.headers["Content-Type"]).to eq("test/content") }
+      specify { expect(last_response.headers["Content-Length"]).to eq("0") }
+    end
+
+    context "for valid URL parameters in request" do
+      before { options "/component/test_component?variant=test_variant" }
+      specify { expect(last_response.status).to eq 200 }
+      specify { expect(last_response.body).to eq "" }
+      specify { expect(last_response.headers["Content-Type"]).to eq("test/content") }
+      specify { expect(last_response.headers["Content-Length"]).to eq("0") }
     end
   end
 
@@ -184,6 +211,52 @@ describe Alephant::Broker::Application do
         it "should have content headers" do
           expect(last_response.headers["Content-Type"]).to eq("application/json")
           expect(last_response.headers["Content-Length"]).to eq("266")
+        end
+
+        it "should have ETag cache header" do
+          expect(last_response.headers["ETag"]).to eq('"34774567db979628363e6e865127623f"')
+        end
+
+        it "should have most recent Last-Modified header" do
+          expect(last_response.headers["Last-Modified"]).to eq("Mon, 11 Apr 2016 10:39:57 GMT")
+        end
+      end
+    end
+  end
+
+  describe "Components endpoint '/components' OPTIONS" do
+    let(:fixture_path)        { "#{File.dirname(__FILE__)}/../fixtures/json" }
+    let(:s3_double_batch) { instance_double("Alephant::Storage") }
+
+    before do
+      allow(s3_double_batch).to receive(:get).and_return(
+        content,
+        AWS::Core::Data.new(
+          :content_type => "test/content",
+          :content      => "Test",
+          :meta         => {
+            :head_ETag            => "\"abc\"",
+            :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+          }
+        )
+      )
+
+      allow(Alephant::Storage).to receive(:new) { s3_double_batch }
+    end
+
+    context "when using valid batch asset data" do
+      let(:path)         { "/components/batch?batch_id=baz&components[ni_council_results_table][component]=ni_council_results_table&components[ni_council_results_table][options][foo]=bar&components[ni_council_results_table_no_options][component]=ni_council_results_table" }
+      let(:content_type) { "application/json" }
+
+      before { options path, {}, "CONTENT_TYPE" => content_type }
+
+      specify { expect(last_response.status).to eql 200 }
+      specify { expect(last_response.body).to eq "" }
+
+      describe "response should have headers" do
+        it "should have content headers" do
+          expect(last_response.headers["Content-Type"]).to eq("application/json")
+          expect(last_response.headers["Content-Length"]).to eq("0")
         end
 
         it "should have ETag cache header" do

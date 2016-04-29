@@ -24,6 +24,10 @@ module Alephant
         settings["REQUEST_METHOD"] == "GET"
       end
 
+      def options?
+        settings["REQUEST_METHOD"] == "OPTIONS"
+      end
+
       def query
         settings["QUERY_STRING"] || ""
       end

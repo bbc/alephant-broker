@@ -8,6 +8,7 @@ module Alephant
 
         def initialize(component, request_env)
           @component = component
+          @request_env = request_env
 
           @status = self.class.component_not_modified(@component.headers, request_env) ? NOT_MODIFIED_STATUS_CODE : component.status
 
@@ -17,7 +18,7 @@ module Alephant
         end
 
         def setup
-          @content  = @component.content
+          @content  = (@request_env.options?) ? "" : @component.content
           log if @component.is_a? Component
         end
 
