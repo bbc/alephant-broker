@@ -21,7 +21,7 @@ module Alephant
           500                      => "Error retrieving content"
         }
 
-        def initialize(status = 200, content_type = "text/html")
+        def initialize(status = 200, content_type = "text/html", request_env = nil)
           @content = STATUS_CODE_MAPPING[status]
           @headers = {
             "Content-Type"                  => content_type,
@@ -34,6 +34,8 @@ module Alephant
           add_no_cache_headers if should_add_no_cache_headers?(status)
           add_etag_allow_header if headers.has_key?("ETag")
           setup if status == 200
+
+          @content = "" if self.class.options?(request_env)
         end
 
         protected
@@ -59,6 +61,10 @@ module Alephant
           headers.merge!({
             "Access-Control-Expose-Headers" => "ETag"
           })
+        end
+
+        def self.options?(request_env)
+          request_env && request_env.respond_to?(:options?) && request_env.options?
         end
 
         def self.component_not_modified(headers, request_env)

@@ -11,24 +11,19 @@ module Alephant
 
         def initialize(components, batch_id, request_env)
           @components  = components
-          @request_env = request_env
           @batch_id    = batch_id
           @status      = self.class.component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
 
-          super(@status, "application/json")
+          super(@status, "application/json", request_env)
 
           @headers.merge!(batch_response_headers)
         end
 
         def setup
-          if @request_env.options?
-            @content = ""
-          else
-            @content = ::JSON.generate({
-              'batch_id' => batch_id,
-              'components' => json
-            })
-          end
+          @content = ::JSON.generate({
+            'batch_id' => batch_id,
+            'components' => json
+          })
         end
 
         private
