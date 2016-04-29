@@ -10,11 +10,11 @@ module Alephant
         attr_reader :components, :batch_id
 
         def initialize(components, batch_id, request_env)
-          @components = components
-          @batch_id   = batch_id
-          @status     = self.class.component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
+          @components  = components
+          @batch_id    = batch_id
+          @status      = self.class.component_not_modified(batch_response_headers, request_env) ? NOT_MODIFIED_STATUS_CODE : 200
 
-          super(@status, "application/json")
+          super(@status, "application/json", request_env)
 
           @headers.merge!(batch_response_headers)
         end

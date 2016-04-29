@@ -11,7 +11,7 @@ module Alephant
 
           @status = self.class.component_not_modified(@component.headers, request_env) ? NOT_MODIFIED_STATUS_CODE : component.status
 
-          super @status
+          super(@status, component.content_type, request_env)
 
           @headers.merge!(@component.headers)
         end
