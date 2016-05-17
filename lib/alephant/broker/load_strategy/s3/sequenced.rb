@@ -15,16 +15,13 @@ module Alephant
               component_meta.options,
               sequence(component_meta)
             ).tap do |obj|
-              fail InvalidCacheKey if obj.location.nil?
+              raise InvalidCacheKey if obj.location.nil?
             end.location unless sequence(component_meta).nil?
           end
 
           def sequencer
             @sequencer ||= Alephant::Sequencer.create(
-              Broker.config[:sequencer_table_name],
-              {
-                :config => Broker.config
-              }
+              Broker.config[:sequencer_table_name], :config => Broker.config
             )
           end
 

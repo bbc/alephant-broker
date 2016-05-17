@@ -10,11 +10,11 @@ module Alephant
         attr_reader :batch_id, :components, :load_strategy
 
         def initialize(component_factory, env)
-          if env.data
-            @batch_id        = env.data["batch_id"]
-          else
-            @batch_id        = env.options.fetch("batch_id", nil)
-          end
+          @batch_id = if env.data
+                        env.data["batch_id"]
+                      else
+                        env.options.fetch("batch_id", nil)
+                      end
 
           logger.info "Request::Batch#initialize: id: #{batch_id}"
 
@@ -45,4 +45,3 @@ module Alephant
     end
   end
 end
-

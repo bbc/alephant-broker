@@ -12,25 +12,25 @@ module Alephant
       end
 
       def content_type
-        headers['Content-Type']
+        headers["Content-Type"]
       end
 
       def headers
         {
-          'Content-Type' => 'text/plain'
+          "Content-Type" => "text/plain"
         }
       end
 
       private
 
       def content_for(exception)
-        "#{exception.message}".tap do |msg|
+        exception.message.to_s.tap do |msg|
           msg << "\n#{exception.backtrace.join('\n')}" if debug?
         end
       end
 
       def debug?
-        Broker.config.fetch('debug', false)
+        Broker.config.fetch("debug", false)
       end
     end
   end

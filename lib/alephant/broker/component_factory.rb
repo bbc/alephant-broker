@@ -1,7 +1,7 @@
-require 'alephant/broker/component_meta'
-require 'alephant/broker/errors/content_not_found'
-require 'alephant/broker/error_component'
-require 'alephant/logger'
+require "alephant/broker/component_meta"
+require "alephant/broker/errors/content_not_found"
+require "alephant/broker/error_component"
+require "alephant/logger"
 
 module Alephant
   module Broker

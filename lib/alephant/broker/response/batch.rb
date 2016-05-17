@@ -20,10 +20,8 @@ module Alephant
         end
 
         def setup
-          @content = ::JSON.generate({
-            'batch_id' => batch_id,
-            'components' => json
-          })
+          @content = ::JSON.generate("batch_id"   => batch_id,
+                                     "components" => json)
         end
 
         private
@@ -38,10 +36,10 @@ module Alephant
               "content_type" => component.content_type,
               "body"         => component.content
             }
-          end.tap {
+          end.tap do
             logger.info "Broker: Batch load done (#{batch_id})"
             logger.metric "BrokerBatchLoadCount"
-          }
+          end
         end
 
         def batch_response_headers
@@ -62,7 +60,7 @@ module Alephant
         end
 
         def batch_response_last_modified
-          last_modifieds  = components.map do |component|
+          last_modifieds = components.map do |component|
             component.headers["Last-Modified"]
           end.compact
 

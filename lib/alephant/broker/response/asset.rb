@@ -1,4 +1,4 @@
-require 'alephant/logger'
+require "alephant/logger"
 
 module Alephant
   module Broker
@@ -17,14 +17,14 @@ module Alephant
         end
 
         def setup
-          @content  = @component.content
+          @content = @component.content
           log if @component.is_a? Component
         end
 
         private
 
         def batched
-          @component.batch_id.nil? ? '' : 'batched'
+          @component.batch_id.nil? ? "" : "batched"
         end
 
         def details
@@ -40,4 +40,3 @@ module Alephant
     end
   end
 end
-

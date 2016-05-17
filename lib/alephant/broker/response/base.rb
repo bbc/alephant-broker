@@ -19,20 +19,20 @@ module Alephant
           NOT_MODIFIED_STATUS_CODE => "",
           404                      => "Not found",
           500                      => "Error retrieving content"
-        }
+        }.freeze
 
         def initialize(status = 200, content_type = "text/html", request_env = nil)
           @content = STATUS_CODE_MAPPING[status]
           @headers = {
-            "Content-Type"                  => content_type,
-            "Access-Control-Allow-Headers"  => "If-None-Match, If-Modified-Since",
-            "Access-Control-Allow-Origin"   => "*"
+            "Content-Type"                 => content_type,
+            "Access-Control-Allow-Headers" => "If-None-Match, If-Modified-Since",
+            "Access-Control-Allow-Origin"  => "*"
           }
-          headers.merge!(Broker.config[:headers]) if Broker.config.has_key?(:headers)
-          @status  = status
+          headers.merge!(Broker.config[:headers]) if Broker.config.key?(:headers)
+          @status = status
 
           add_no_cache_headers if should_add_no_cache_headers?(status)
-          add_etag_allow_header if headers.has_key?("ETag")
+          add_etag_allow_header if headers.key?("ETag")
           setup if status == 200
 
           @content = "" if self.class.options?(request_env)
@@ -58,9 +58,7 @@ module Alephant
         end
 
         def add_etag_allow_header
-          headers.merge!({
-            "Access-Control-Expose-Headers" => "ETag"
-          })
+          headers.merge!("Access-Control-Expose-Headers" => "ETag")
         end
 
         def self.options?(request_env)
@@ -74,13 +72,13 @@ module Alephant
 
           last_modified_match = !request_env.if_modified_since.nil? && headers["Last-Modified"] == request_env.if_modified_since
           etag_match          = !request_env.if_none_match.nil? &&
-            unquote_etag(headers["ETag"]) == unquote_etag(request_env.if_none_match)
+                                unquote_etag(headers["ETag"]) == unquote_etag(request_env.if_none_match)
 
           last_modified_match || etag_match
         end
 
         def self.unquote_etag(etag)
-          etag.to_s.gsub(/\A"|"\Z/, '')
+          etag.to_s.gsub(/\A"|"\Z/, "")
         end
 
         def self.allow_not_modified_response_status
@@ -90,7 +88,6 @@ module Alephant
         def log
           logger.metric "BrokerNon200Response#{status}"
         end
-
       end
     end
   end

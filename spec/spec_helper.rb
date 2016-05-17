@@ -1,23 +1,23 @@
-$: << File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH << File.join(File.dirname(__FILE__), "..", "lib")
 
-require 'simplecov'
+require "simplecov"
 
 SimpleCov.start do
-  add_filter '/spec/'
+  add_filter "/spec/"
 end
 
-require 'pry'
-require 'json'
-require 'alephant/broker'
-require 'alephant/broker/load_strategy/s3/sequenced'
-require 'alephant/broker/load_strategy/s3/archived'
+require "pry"
+require "json"
+require "alephant/broker"
+require "alephant/broker/load_strategy/s3/sequenced"
+require "alephant/broker/load_strategy/s3/archived"
 require "alephant/broker/load_strategy/http"
 require "alephant/broker/cache"
 require "alephant/broker/errors/content_not_found"
 
 require "rack/test"
 
-ENV['RACK_ENV'] = "test"
+ENV["RACK_ENV"] = "test"
 
 RSpec.configure do |config|
   config.order = "random"
