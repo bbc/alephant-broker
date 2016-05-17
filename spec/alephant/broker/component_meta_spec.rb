@@ -1,4 +1,4 @@
-require_relative "spec_helper"
+require "spec_helper"
 
 describe Alephant::Broker::ComponentMeta do
   let(:id) { "foo" }
