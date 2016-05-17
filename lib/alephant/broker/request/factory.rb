@@ -1,5 +1,5 @@
-require 'alephant/broker/request'
-require 'alephant/broker/component_factory'
+require "alephant/broker/request"
+require "alephant/broker/component_factory"
 
 module Alephant
   module Broker

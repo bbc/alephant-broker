@@ -65,9 +65,7 @@ describe Alephant::Broker::Application do
       get(
         "/component/test_component",
         {},
-        {
-          "HTTP_IF_MODIFIED_SINCE" => "Mon, 11 Apr 2016 10:39:57 GMT"
-        }
+        "HTTP_IF_MODIFIED_SINCE" => "Mon, 11 Apr 2016 10:39:57 GMT"
       )
     end
 
@@ -123,7 +121,7 @@ describe Alephant::Broker::Application do
 
       before do
         post(path, batch_json,
-          "CONTENT_TYPE"  => content_type,
+          "CONTENT_TYPE"       => content_type,
           "HTTP_IF_NONE_MATCH" => etag)
       end
 
@@ -196,10 +194,8 @@ describe Alephant::Broker::Application do
         get(
           path,
           {},
-          {
-            "CONTENT_TYPE"  => content_type,
-            "HTTP_IF_NONE_MATCH" => etag
-          }
+          "CONTENT_TYPE"       => content_type,
+          "HTTP_IF_NONE_MATCH" => etag
         )
       end
 

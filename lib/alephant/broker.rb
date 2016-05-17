@@ -1,11 +1,10 @@
-require 'alephant/broker/version'
-require 'alephant/broker/request'
-require 'alephant/broker/environment'
-require 'alephant/broker'
+require "alephant/broker/version"
+require "alephant/broker/request"
+require "alephant/broker/environment"
+require "alephant/broker"
 
 module Alephant
   module Broker
-
     def self.handle(load_strategy, env)
       Request::Handler.process(load_strategy, env)
     end

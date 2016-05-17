@@ -10,7 +10,7 @@ module Alephant
     class Component
       attr_reader :id, :batch_id, :options, :content, :opts_hash
 
-      HEADER_PREFIX = "head_"
+      HEADER_PREFIX = "head_".freeze
 
       def initialize(meta, data)
         @id        = meta.id

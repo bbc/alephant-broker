@@ -5,19 +5,19 @@ describe Alephant::Broker::LoadStrategy::HTTP do
 
   let(:component_meta) do
     double(
-      'Alephant::Broker::ComponentMeta',
-      cache_key: 'cache_key',
-      id: 'test',
-      options: {}
+      "Alephant::Broker::ComponentMeta",
+      :cache_key => "cache_key",
+      :id        => "test",
+      :options   => {}
     )
   end
-  let(:url_generator) { double(generate: "http://foo.bar") }
-  let(:cache) { double('Alephant::Broker::Cache::Client') }
-  let(:body) { '<h1>Batman!</h1>' }
+  let(:url_generator) { double(:generate => "http://foo.bar") }
+  let(:cache) { double("Alephant::Broker::Cache::Client") }
+  let(:body) { "<h1>Batman!</h1>" }
   let(:content) do
     {
-      :content => body,
-      :content_type => 'text/html'
+      :content      => body,
+      :content_type => "text/html"
     }
   end
 
@@ -32,7 +32,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       end
 
       it "gets from cache" do
-        expect(subject.load component_meta).to eq content
+        expect(subject.load(component_meta)).to eq content
       end
     end
 
@@ -43,21 +43,22 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       end
 
       context "and available over HTTP" do
-        let(:env) { double('env', response_headers: response_headers) }
-        let(:response_headers) { {'content-type' => 'text/html; test'} }
+        let(:env) { double("env", :response_headers => response_headers) }
+        let(:response_headers) { { "content-type" => "text/html; test" } }
 
         before :each do
           allow(Faraday).to receive(:get) do
             instance_double(
-              'Faraday::Response',
-              body: body,
+              "Faraday::Response",
+              :body       => body,
               :'success?' => true,
-              env: env)
+              :env        => env
+            )
           end
-         end
+        end
 
         it "gets from HTTP" do
-         expect(subject.load component_meta).to eq content
+          expect(subject.load(component_meta)).to eq content
         end
       end
 
@@ -76,7 +77,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
       context "and HTTP request 404s" do
         before :each do
           allow(Faraday).to receive(:get) do
-            instance_double('Faraday::Response', body: body, :'success?' => false)
+            instance_double("Faraday::Response", :body => body, :'success?' => false)
           end
         end
 

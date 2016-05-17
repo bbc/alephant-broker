@@ -123,11 +123,11 @@ describe Alephant::Broker::Application do
     end
 
     context "for invalid URL parameters in request" do
-      before {
+      before do
         content[:meta]["status"] = 404
         allow(Alephant::Storage).to receive(:new) { s3_double }
         options "/component/invalid_component"
-      }
+      end
       specify { expect(last_response.status).to eq 404 }
       specify { expect(last_response.body).to eq "" }
       specify { expect(last_response.headers["Content-Type"]).to eq("test/content") }

@@ -1,7 +1,7 @@
-require 'alephant/broker/cache'
-require 'alephant/broker/errors/content_not_found'
-require 'alephant/logger'
-require 'faraday'
+require "alephant/broker/cache"
+require "alephant/broker/errors/content_not_found"
+require "alephant/logger"
+require "faraday"
 
 module Alephant
   module Broker
@@ -41,20 +41,20 @@ module Alephant
         def content(component_meta)
           resp = request component_meta
           {
-            :content => resp.body,
+            :content      => resp.body,
             :content_type => extract_content_type_from(resp.env.response_headers)
           }
         end
 
         def extract_content_type_from(headers)
-          headers['content-type'].split(';').first
+          headers["content-type"].split(";").first
         end
 
         def request(component_meta)
           before = Time.new
           component_meta.cached = false
 
-          Faraday.get(url_for component_meta).tap do |r|
+          Faraday.get(url_for(component_meta)).tap do |r|
             unless r.success?
               logger.metric "ContentNotFound"
               raise Alephant::Broker::Errors::ContentNotFound
@@ -62,9 +62,8 @@ module Alephant
 
             request_time = Time.new - before
             logger.metric("LoadComponentTime",
-                          :unit  => "Seconds",
-                          :value => request_time
-                         )
+              :unit  => "Seconds",
+              :value => request_time)
           end
         end
 
