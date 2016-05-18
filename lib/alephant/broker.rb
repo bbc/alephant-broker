@@ -2,6 +2,9 @@ require "alephant/broker/version"
 require "alephant/broker/request"
 require "alephant/broker/environment"
 require "alephant/broker/application"
+require "alephant/broker/cache"
+require "alephant/broker/load_strategy"
+require "alephant/broker/errors"
 
 module Alephant
   module Broker
