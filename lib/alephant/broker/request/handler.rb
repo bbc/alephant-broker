@@ -2,8 +2,6 @@ require "alephant/logger"
 
 require "alephant/broker/request"
 require "alephant/broker/response"
-require "alephant/broker/request/factory"
-require "alephant/broker/response/factory"
 require "alephant/broker/errors/content_not_found"
 
 module Alephant
