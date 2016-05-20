@@ -1,15 +1,15 @@
-require 'alephant/logger'
+require "alephant/logger"
 
 module Alephant
   module Broker
-    module LoadStrategy
-      class CacheObject
+    module Cache
+      class CachedObject
         include Logger
         attr_reader :ttl, :updated, :content, :validating, :last_validate, :content_type
 
         VALIDIATE_TIMEOUT = 30
 
-        def initialize(content, content_type = 'text/plain', ttl = 10)
+        def initialize(content, content_type = "text/plain", ttl = 10)
           @content      = content
           @ttl          = ttl
           @validating   = false
@@ -33,13 +33,13 @@ module Alephant
 
         def validating?
           logger.info "Checking if validated: #{validating} #{last_validate}"
-          validating || (last_validate && last_validate + VALIDIATE_TIMEOUT < Time.now)
+          return false unless validating
+          last_validate && ((last_validate + VALIDIATE_TIMEOUT) > Time.now)
         end
 
         def expired?
           updated && updated + ttl < Time.now
         end
-
       end
     end
   end
