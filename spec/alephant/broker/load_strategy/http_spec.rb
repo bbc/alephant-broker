@@ -4,6 +4,7 @@ describe Alephant::Broker::LoadStrategy::HTTP do
   subject { described_class.new(url_generator) }
 
   let(:component_meta) do
+    # FIXME: ComponentMeta doesn't have a #cache_key method???
     double(
       "Alephant::Broker::ComponentMeta",
       :cache_key => "cache_key",
