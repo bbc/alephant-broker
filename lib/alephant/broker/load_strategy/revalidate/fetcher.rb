@@ -18,7 +18,8 @@ module Alephant
 
             Alephant::Broker::Cache::CachedObject.new(
               content[:content],
-              content[:content_type]
+              content[:content_type],
+              content.fetch(:meta, {}).fetch(:ttl) || 10
             )
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
             logger.metric "S3InvalidCacheKey"

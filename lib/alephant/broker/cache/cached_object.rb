@@ -7,6 +7,7 @@ module Alephant
         include Logger
         attr_reader :ttl, :updated, :content, :content_type
 
+        # FIXME: the `updated` attr should be configured on initialize from S3 meta
         def initialize(content, content_type = "text/plain", ttl = 10)
           @content      = content
           @content_type = content_type
