@@ -18,7 +18,16 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
 
   describe "#fetch" do
     context "when there is something in DynamoDB & S3" do
-      let(:content) { double(:content) }
+      let(:content_body) { "<h1>w00t</h1>" }
+      let(:content_type) { "text/html" }
+
+      let(:content) do
+        {
+          content:      content_body,
+          content_type: content_type,
+          meta:         { :ttl => 30 }
+        }
+      end
 
       before do
         allow(lookup_double)
@@ -31,8 +40,10 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
           .and_return(content)
       end
 
-      it "fetches and returns the content" do
-        expect(subject.fetch).to eq(content)
+      it "fetches and returns the content as a CachedObject" do
+        returned_data = subject.fetch
+        expect(returned_data.content).to eq(content_body)
+        expect(returned_data.content_type).to eq(content_type)
       end
     end
 

@@ -24,10 +24,6 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
         expect(subject.updated).to eq(Time.now)
       end
     end
-
-    it "sets #validating as false" do
-      expect(subject.validating).to be false
-    end
   end
 
   describe "#update" do
@@ -61,63 +57,6 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
           .to change { subject.updated }
           .from(original_time)
           .to(new_time)
-      end
-    end
-
-    it "resets #validating as false" do
-      subject.now_validating
-
-      expect { subject.update(new_content) }
-        .to change { subject.validating }
-        .from(true)
-        .to(false)
-    end
-  end
-
-  describe "#now_validating" do
-    it "sets #validating as true" do
-      expect { subject.now_validating }
-        .to change { subject.validating }
-        .from(false)
-        .to(true)
-    end
-
-    it "sets #last_validate as now" do
-      Timecop.freeze do
-        expect { subject.now_validating }
-          .to change { subject.last_validate }
-          .from(nil)
-          .to(Time.now)
-      end
-    end
-  end
-
-  describe "#validating?" do
-    context "when the object has NOT been told to validate" do
-      it "should be false" do
-        expect(subject.validating?).to be false
-      end
-    end
-
-    context "when the object has been told to validate" do
-      context 'and the object is "young" enough' do
-        it "should be true" do
-          Timecop.freeze do
-            subject.now_validating
-            expect(subject.validating?).to be true
-          end
-        end
-      end
-
-      context 'and the object has "expired"' do
-        it "should be false" do
-          subject.now_validating
-          new_time = Time.now + described_class::VALIDIATE_TIMEOUT + 100
-
-          Timecop.freeze(new_time) do
-            expect(subject.validating?).to be false
-          end
-        end
       end
     end
   end

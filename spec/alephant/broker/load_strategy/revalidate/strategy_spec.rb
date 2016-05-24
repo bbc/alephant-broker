@@ -37,7 +37,6 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
       context "which is still fresh" do
         before do
           allow(cached_obj).to receive(:expired?).and_return(false)
-          allow(cached_obj).to receive(:validating?).and_return(true)
         end
 
         it "gets fetched from the cache and returned" do
@@ -55,7 +54,6 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
       context "which has expired" do
         before do
           allow(cached_obj).to receive(:expired?).and_return(true)
-          allow(cached_obj).to receive(:validating?).and_return(false)
           expect(Alephant::Broker::LoadStrategy::Revalidate::Refresher)
             .to receive(:new)
             .with(component_meta)
@@ -76,7 +74,8 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
     context "when there is NOT content in the cache" do
       before do
-        allow(cache_double).to receive(:get).and_yield
+        expect(cache_double).to receive(:get).and_yield
+        expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
         expect(Alephant::Broker::LoadStrategy::Revalidate::Fetcher)
           .to receive(:new)
           .with(component_meta)
@@ -88,8 +87,6 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
       end
 
       it "uses the fetcher to get the data" do
-        expect(fetcher_double).to receive(:fetch).and_return(content)
-
         subject.load(component_meta)
       end
     end

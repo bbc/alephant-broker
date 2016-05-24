@@ -30,7 +30,7 @@ module Alephant
           def load(component_meta)
             loaded_content = cached_object(component_meta)
 
-            if loaded_content.expired? && !loaded_content.validating?
+            if loaded_content.expired?
               Thread.new do
                 logger.info "Loading new content from thread"
                 Refresher.new(component_meta).refresh
@@ -54,8 +54,7 @@ module Alephant
           def cached_object(component_meta)
             cache.get(component_meta.component_key) do
               logger.info "No cache so loading and adding cache object"
-              content = Fetcher.new(component_meta).fetch
-              Alephant::Broker::Cache::CachedObject.new(content[:content], content[:content_type])
+              Fetcher.new(component_meta).fetch
             end
           end
         end
