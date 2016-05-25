@@ -6,8 +6,8 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   let(:cache_double)   { instance_double("Alephant::Broker::Cache::Client") }
   let(:lookup_double)  { instance_double("Alephant::Lookup::LookupHelper") }
   let(:storage_double) { instance_double("Alephant::Storage") }
-  let(:refresher_double) { instance_double("Alephant::Broker::LoadStrategy::Revalidate::Refresher", refresh: nil) }
-  let(:fetcher_double) { instance_double("Alephant::Broker::LoadStrategy::Revalidate::Fetcher", fetch: content) }
+  let(:refresher_double) { instance_double("Alephant::Broker::LoadStrategy::Revalidate::Refresher", :refresh => nil) }
+  let(:fetcher_double) { instance_double("Alephant::Broker::LoadStrategy::Revalidate::Fetcher", :fetch => content) }
 
   let(:content_body) { "<h1>w00t!</h1>" }
   let(:content_type) { "text/html" }
@@ -75,7 +75,6 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
     context "when there is NOT content in the cache" do
       before do
         expect(cache_double).to receive(:get).and_yield
-        expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
         expect(Alephant::Broker::LoadStrategy::Revalidate::Fetcher)
           .to receive(:new)
           .with(component_meta)
@@ -83,11 +82,33 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
       end
 
       it "returns the data as expected" do
+        expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
         expect(subject.load(component_meta)).to eq(content)
       end
 
       it "uses the fetcher to get the data" do
+        expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
         subject.load(component_meta)
+      end
+
+      context "and there is nothing returned from the fetcher" do
+        before do
+          expect(fetcher_double)
+            .to receive(:fetch)
+            .and_raise(Alephant::Broker::Errors::ContentNotFound)
+
+          expect(Alephant::Broker::LoadStrategy::Revalidate::Refresher)
+            .to receive(:new)
+            .with(component_meta)
+            .and_return(refresher_double)
+        end
+
+        it "raises a Alephant::Broker::Errors::ContentNotFound error, ",
+          "and kicks off a refresh of the content" do
+          expect(refresher_double).to receive(:refresh)
+          expect { subject.load(component_meta) }
+            .to raise_error(Alephant::Broker::Errors::ContentNotFound)
+        end
       end
     end
   end
