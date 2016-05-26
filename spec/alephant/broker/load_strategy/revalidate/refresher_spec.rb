@@ -51,14 +51,19 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Refresher do
 
       it "adds a message to the SQS queue, ",
         "and puts a 'inflight' message in the cache" do
-        expect(cache_double)
-          .to receive(:set)
-          .with(inflight_cache_key, true)
-
-        expect(sqs_queue_double)
-          .to receive(:send_message)
+        expect(cache_double).to receive(:set).with(inflight_cache_key, true)
+        expect(sqs_queue_double).to receive(:send_message)
 
         subject.refresh
+      end
+
+      context "there was a problem pushing a message onto the queue" do
+        it "does NOT put an 'inflight' message in the cache" do
+          expect(cache_double).to_not receive(:set)
+          expect(sqs_queue_double).to receive(:send_message).and_raise
+
+          expect { subject.refresh }.to raise_error
+        end
       end
     end
   end
