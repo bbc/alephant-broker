@@ -3,11 +3,11 @@ require "spec_helper"
 RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   subject { described_class.new }
 
-  let(:cache_double)   { instance_double("Alephant::Broker::Cache::Client") }
-  let(:lookup_double)  { instance_double("Alephant::Lookup::LookupHelper") }
-  let(:storage_double) { instance_double("Alephant::Storage") }
-  let(:refresher_double) { instance_double("Alephant::Broker::LoadStrategy::Revalidate::Refresher", :refresh => nil) }
-  let(:fetcher_double) { instance_double("Alephant::Broker::LoadStrategy::Revalidate::Fetcher", :fetch => content) }
+  let(:cache_double)   { instance_double(Alephant::Broker::Cache::Client) }
+  let(:lookup_double)  { instance_double(Alephant::Lookup::LookupHelper) }
+  let(:storage_double) { instance_double(Alephant::Storage) }
+  let(:refresher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Refresher, :refresh => nil) }
+  let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher, :fetch => content) }
 
   let(:content_body) { "<h1>w00t!</h1>" }
   let(:content_type) { "text/html" }

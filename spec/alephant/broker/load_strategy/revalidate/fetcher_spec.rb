@@ -7,8 +7,8 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
     Alephant::Broker::ComponentMeta.new("test", "test_batch", {})
   end
 
-  let(:lookup_double)  { instance_double("Alephant::Lookup::LookupHelper") }
-  let(:storage_double) { instance_double("Alephant::Storage") }
+  let(:lookup_double)  { instance_double(Alephant::Lookup::LookupHelper) }
+  let(:storage_double) { instance_double(Alephant::Storage) }
 
   before do
     allow(Alephant::Lookup).to receive(:create) { lookup_double }
