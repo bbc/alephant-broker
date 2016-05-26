@@ -23,20 +23,20 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
 
       let(:content) do
         {
-          content:      content_body,
-          content_type: content_type,
-          meta:         { :ttl => 30 }
+          :content      => content_body,
+          :content_type => content_type,
+          :meta         => { :ttl => 30 }
         }
       end
 
       before do
         allow(lookup_double)
           .to receive(:read)
-          .and_return(spy(location: '/foo/bar'))
+          .and_return(spy(:location => "/foo/bar"))
 
         allow(storage_double)
           .to receive(:get)
-          .with('/foo/bar')
+          .with("/foo/bar")
           .and_return(content)
       end
 
@@ -51,7 +51,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
       before do
         allow(lookup_double)
           .to receive(:read)
-          .and_return(spy(location: nil))
+          .and_return(spy(:location => nil))
       end
 
       it "raises an Alephant::Broker::Errors::ContentNotFound error" do
@@ -64,7 +64,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
       before do
         allow(lookup_double)
           .to receive(:read)
-          .and_return(spy(:location => '/foo/bar'))
+          .and_return(spy(:location => "/foo/bar"))
       end
 
       context "but there is NO content in S3" do
