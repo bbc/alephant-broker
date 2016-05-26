@@ -21,6 +21,18 @@ module Alephant
         "#{id}/#{opts_hash}"
       end
 
+      def as_json
+        {
+          :id       => id,
+          :batch_id => batch_id,
+          :options  => options
+        }
+      end
+
+      def to_json
+        JSON.generate(as_json)
+      end
+
       private
 
       def convert_keys(hash)
