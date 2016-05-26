@@ -103,6 +103,12 @@ class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
 end
 ```
 
+##### Revalidate Strategy
+
+```ruby
+
+```
+
 ### Rack App
 
 Create **config.ru** using example below, and then run:
@@ -144,6 +150,3 @@ This version is added as a header to the response in the following format:
 5. Create a new [Pull Request](https://github.com/BBC-News/alephant-broker/pulls).
 
 Feel free to create a new [issue](https://github.com/BBC-News/alephant-broker/issues/new) if you find a bug.
-
-
-
