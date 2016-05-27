@@ -16,6 +16,7 @@ module Alephant
 
         STATUS_CODE_MAPPING = {
           200                      => "ok",
+          202                      => "Accepted",
           NOT_MODIFIED_STATUS_CODE => "",
           404                      => "Not found",
           500                      => "Error retrieving content"
@@ -28,7 +29,7 @@ module Alephant
             "Access-Control-Allow-Headers" => "If-None-Match, If-Modified-Since",
             "Access-Control-Allow-Origin"  => "*"
           }
-          headers.merge!(Broker.config[:headers]) if Broker.config.key?(:headers)
+          @headers.merge!(Broker.config[:headers]) if Broker.config.key?(:headers)
           @status = status
 
           add_no_cache_headers if should_add_no_cache_headers?(status)

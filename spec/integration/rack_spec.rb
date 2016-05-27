@@ -1,5 +1,4 @@
 require_relative "spec_helper"
-require "alephant/broker"
 
 describe Alephant::Broker::Application do
   include Rack::Test::Methods
