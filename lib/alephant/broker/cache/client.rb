@@ -25,7 +25,10 @@ module Alephant
           result = @client.get(versioned_key)
           logger.info("Broker::Cache::Client#get key: #{versioned_key} - #{result ? 'hit' : 'miss'}")
           logger.metric("GetKeyMiss") unless result
-          result ? result : set(key, block.call)
+
+          return result if result
+
+          set(key, block.call) if block_given?
         rescue StandardError => e
           yield if block_given?
         end
