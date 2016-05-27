@@ -11,9 +11,10 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
   let(:storage_double) { instance_double(Alephant::Storage) }
 
   before do
-    allow(Alephant::Lookup).to receive(:create) { lookup_double }
-    allow(Alephant::Storage).to receive(:new)   { storage_double }
-    allow(Alephant::Broker).to receive(:config) { Hash.new }
+    allow(Alephant::Lookup).to receive(:create).and_return(lookup_double)
+    allow(Alephant::Storage).to receive(:new).and_return(storage_double)
+    allow(Alephant::Broker).to receive(:config).and_return({})
+    allow_any_instance_of(Logger).to receive(:info)
   end
 
   describe "#fetch" do
@@ -22,11 +23,15 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
       let(:content_type) { "text/html" }
 
       let(:content) do
-        {
-          :content      => content_body,
-          :content_type => content_type,
-          :meta         => { :ttl => 30 }
-        }
+        AWS::Core::Data.new(
+          :content_type => "test/content",
+          :content      => "Test",
+          :meta         => {
+            "ttl"                => 30,
+            "head_ETag"          => "123",
+            "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
+          }
+        )
       end
 
       before do
@@ -42,8 +47,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
 
       it "fetches and returns the content as a CachedObject" do
         returned_data = subject.fetch
-        expect(returned_data.content).to eq(content_body)
-        expect(returned_data.content_type).to eq(content_type)
+        expect(returned_data.s3_obj).to eq(content)
       end
     end
 

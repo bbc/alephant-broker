@@ -3,18 +3,25 @@ require "spec_helper"
 RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   subject { described_class.new }
 
-  let(:cache_double)   { instance_double(Alephant::Broker::Cache::Client) }
   let(:lookup_double)  { instance_double(Alephant::Lookup::LookupHelper) }
   let(:storage_double) { instance_double(Alephant::Storage) }
   let(:refresher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Refresher, :refresh => nil) }
   let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher, :fetch => content) }
 
-  let(:content_body) { "<h1>w00t!</h1>" }
-  let(:content_type) { "text/html" }
-  let(:content) { { :content => content_body, :content_type => content_type } }
+  let(:content) do
+    AWS::Core::Data.new(
+      :content_type => "test/content",
+      :content      => "Test",
+      :meta         => {
+        "ttl"                => 100,
+        "head_ETag"          => "123",
+        "head_Last-Modified" => Time.now.to_s
+      }
+    )
+  end
 
   let(:cached_obj) do
-    Alephant::Broker::Cache::CachedObject.new(content_body, content_type)
+    Alephant::Broker::Cache::CachedObject.new(content)
   end
 
   let(:component_meta) do
@@ -24,14 +31,16 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   before do
     allow_any_instance_of(Logger).to receive(:info)
     allow_any_instance_of(Logger).to receive(:debug)
-    allow(Alephant::Broker::Cache::Client).to receive(:new) { cache_double }
+    allow(Alephant::Broker).to receive(:config).and_return({})
     allow(Thread).to receive(:new).and_yield
   end
 
   describe "#load" do
     context "when there is content in the cache" do
+      let(:cache) { subject.send(:cache) }
+
       before do
-        allow(cache_double).to receive(:get).and_return(cached_obj)
+        allow(cache).to receive(:get).and_return(cached_obj)
       end
 
       context "which is still fresh" do
@@ -74,7 +83,6 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
     context "when there is NOT content in the cache" do
       before do
-        expect(cache_double).to receive(:get).and_yield
         expect(Alephant::Broker::LoadStrategy::Revalidate::Fetcher)
           .to receive(:new)
           .with(component_meta)
@@ -103,11 +111,19 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
             .and_return(refresher_double)
         end
 
-        it "raises a Alephant::Broker::Errors::ContentNotFound error, ",
-          "and kicks off a refresh of the content" do
+        it "kicks off a refresh of the content" do
           expect(refresher_double).to receive(:refresh)
-          expect { subject.load(component_meta) }
-            .to raise_error(Alephant::Broker::Errors::ContentNotFound)
+          subject.load(component_meta)
+        end
+
+        it "returns a response that will invoke a 202 (HTTP) response" do
+          expected_response = {
+            :content      => "",
+            :content_type => "text/html",
+            :meta         => { "status" => 202 }
+          }
+
+          expect(subject.load(component_meta)).to eq(expected_response)
         end
       end
     end
