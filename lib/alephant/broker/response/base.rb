@@ -12,14 +12,12 @@ module Alephant
 
         attr_reader :content, :headers, :status
 
-        NOT_MODIFIED_STATUS_CODE = 304
-
         STATUS_CODE_MAPPING = {
-          200                      => "ok",
-          202                      => "Accepted",
-          NOT_MODIFIED_STATUS_CODE => "",
-          404                      => "Not found",
-          500                      => "Error retrieving content"
+          200 => "ok",
+          202 => "Accepted",
+          304 => "",
+          404 => "Not found",
+          500 => "Error retrieving content"
         }.freeze
 
         def initialize(status = 200, content_type = "text/html", request_env = nil)
@@ -46,7 +44,7 @@ module Alephant
         private
 
         def should_add_no_cache_headers?(status)
-          status != 200 && status != NOT_MODIFIED_STATUS_CODE
+          status != 200 && status != 304
         end
 
         def add_no_cache_headers

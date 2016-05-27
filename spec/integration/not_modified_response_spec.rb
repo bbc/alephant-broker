@@ -50,8 +50,6 @@ describe Alephant::Broker::Application do
 
   let(:s3_double) { instance_double("Alephant::Storage", :get => content) }
 
-  let(:not_modified_status_code) { Alephant::Broker::Response::Base::NOT_MODIFIED_STATUS_CODE }
-
   before do
     allow_any_instance_of(Logger).to receive(:info)
     allow_any_instance_of(Logger).to receive(:debug)
@@ -69,8 +67,8 @@ describe Alephant::Broker::Application do
       )
     end
 
-    specify { expect(last_response.status).to eql not_modified_status_code }
-    specify { expect(last_response.body).to eql "" }
+    specify { expect(last_response.status).to eql(304) }
+    specify { expect(last_response.body).to eql("") }
     specify { expect(last_response.headers).to_not include("Cache-Control") }
     specify { expect(last_response.headers).to_not include("Pragma") }
     specify { expect(last_response.headers).to_not include("Expires") }
@@ -199,8 +197,8 @@ describe Alephant::Broker::Application do
         )
       end
 
-      specify { expect(last_response.status).to eql not_modified_status_code }
-      specify { expect(last_response.body).to eq "" }
+      specify { expect(last_response.status).to eql(304) }
+      specify { expect(last_response.body).to eq("") }
 
       describe "response should have headers" do
         it "should not have a Content-Type header" do
