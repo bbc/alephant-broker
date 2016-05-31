@@ -1,6 +1,8 @@
 require "alephant/broker/cache"
 require "alephant/broker/errors"
 require "alephant/logger"
+require "alephant/broker/load_strategy/revalidate/refresher"
+require "alephant/broker/load_strategy/revalidate/fetcher"
 require "faraday"
 
 module Alephant
