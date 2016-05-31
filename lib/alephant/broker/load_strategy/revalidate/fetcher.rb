@@ -26,14 +26,10 @@ module Alephant
             lookup.read(
               component_meta.id,
               component_meta.options,
-              batch_id
+              component_meta.batch_id
             ).tap do |obj|
               raise InvalidCacheKey if obj.location.nil?
             end.location
-          end
-
-          def batch_id
-            "1" # do we care about sequence/batch_id?
           end
 
           def s3
