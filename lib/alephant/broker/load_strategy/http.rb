@@ -23,7 +23,7 @@ module Alephant
           fetch_object(component_meta)
         rescue
           logger.metric "CacheMiss"
-          cache.set(component_meta.cache_key, content(component_meta))
+          cache.set(component_meta.component_key, content(component_meta))
         end
 
         private
@@ -35,7 +35,7 @@ module Alephant
         end
 
         def fetch_object(component_meta)
-          cache.get(component_meta.cache_key) { content component_meta }
+          cache.get(component_meta.component_key) { content component_meta }
         end
 
         def content(component_meta)
@@ -52,7 +52,6 @@ module Alephant
 
         def request(component_meta)
           before = Time.new
-          component_meta.cached = false
 
           Faraday.get(url_for(component_meta)).tap do |r|
             unless r.success?

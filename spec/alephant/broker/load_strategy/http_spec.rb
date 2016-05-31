@@ -4,16 +4,14 @@ describe Alephant::Broker::LoadStrategy::HTTP do
   subject { described_class.new(url_generator) }
 
   let(:component_meta) do
-    # FIXME: ComponentMeta doesn't have a #cache_key method???
-    double(
-      "Alephant::Broker::ComponentMeta",
-      :cache_key => "cache_key",
-      :id        => "test",
-      :options   => {}
+    instance_double(Alephant::Broker::ComponentMeta,
+      :id            => "test",
+      :options       => {},
+      :component_key => "cache_key"
     )
   end
   let(:url_generator) { double(:generate => "http://foo.bar") }
-  let(:cache) { double("Alephant::Broker::Cache::Client") }
+  let(:cache) { instance_double(Alephant::Broker::Cache::Client) }
   let(:body) { "<h1>Batman!</h1>" }
   let(:content) do
     {
@@ -40,7 +38,6 @@ describe Alephant::Broker::LoadStrategy::HTTP do
     context "content not in cache" do
       before :each do
         allow(cache).to receive(:get).and_yield
-        allow(component_meta).to receive(:'cached=').with(false) { false }
       end
 
       context "and available over HTTP" do
