@@ -3,6 +3,7 @@ require "spec_helper"
 RSpec.describe Alephant::Broker::Cache::CachedObject do
   subject { described_class.new(s3_obj) }
 
+  let(:config)        { {} }
   let(:last_modified) { Time.parse("Mon, 11 Apr 2016 10:39:57 GMT") }
   let(:ttl)           { 15 }
 
@@ -20,45 +21,48 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
 
   before do
     allow_any_instance_of(Logger).to receive(:info)
+    allow(Alephant::Broker).to receive(:config).and_return(config)
   end
 
-  describe "#initialize" do
-    it "populates #s3_obj" do
-      expect(subject.s3_obj).to eq(s3_obj)
-    end
-
-    it "extracts the #updated time" do
+  describe "#updated" do
+    it "extracts the #updated time from the S3 object" do
       Timecop.freeze do
         expect(subject.updated).to eq(last_modified)
       end
     end
 
-    context "there is no TTL on the S3 object" do
-      let(:s3_obj) do
-        AWS::Core::Data.new(
-          :content_type => "test/content",
-          :content      => "Test",
-          :meta         => {}
-        )
-      end
-
-      it "sets the #ttl to a default value" do
-        expect(subject.ttl).to eq(described_class::DEFAULT_TTL)
-      end
-    end
-
-    context "there is no Last-Modified on the S3 object" do
-      let(:s3_obj) do
-        AWS::Core::Data.new(
-          :content_type => "test/content",
-          :content      => "Test",
-          :meta         => {}
-        )
-      end
+    context "when there is no Last-Modified on the S3 object" do
+      let(:last_modified) { nil }
 
       it "sets #updated to now" do
-        Timecop.freeze(last_modified) do
-          expect(subject.updated).to eq(last_modified)
+        now = Time.parse("Mon, 31 May 2016 12:00:00 GMT")
+
+        Timecop.freeze(now) do
+          expect(subject.updated).to eq(now)
+        end
+      end
+    end
+  end
+
+  describe "#ttl" do
+    it "extracts the #ttl from the S3 object" do
+      expect(subject.ttl).to eq(ttl)
+    end
+
+    context "when there is no TTL on the S3 object" do
+      let(:ttl) { nil }
+
+      context "and a default cache TTL has been configured" do
+        let(:config) { { :revalidate_cache_ttl => 100 } }
+
+        it "sets the #ttl to the configured value" do
+          expect(subject.ttl).to eq(100)
+        end
+      end
+
+      context "and a default cache TTL has NOT been configured" do
+        it "sets the #ttl to a default (in code) value" do
+          expect(subject.ttl).to eq(described_class::DEFAULT_TTL)
         end
       end
     end
@@ -82,51 +86,6 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
         .to change { subject.s3_obj }
         .from(s3_obj)
         .to(new_content)
-    end
-
-    it "reloads the #updated time" do
-      expect { subject.update(new_content) }
-        .to change { subject.updated }
-        .from(last_modified)
-        .to(last_modified + 100)
-    end
-
-    context "there is no TTL on the S3 object" do
-      let(:new_content) do
-        AWS::Core::Data.new(
-          :content_type => "test/content",
-          :content      => "Test - NEW",
-          :meta         => {}
-        )
-      end
-
-      it "sets the #ttl to a default value" do
-        expect { subject.update(new_content) }
-          .to change { subject.ttl }
-          .from(ttl)
-          .to(described_class::DEFAULT_TTL)
-      end
-    end
-
-    context "there is no Last-Modified on the S3 object" do
-      let(:new_content) do
-        AWS::Core::Data.new(
-          :content_type => "test/content",
-          :content      => "Test - NEW",
-          :meta         => {}
-        )
-      end
-
-      it "sets #updated to now" do
-        new_time = Time.parse("Mon, 27 Apr 2016 10:39:57 GMT")
-
-        Timecop.freeze(new_time) do
-          expect { subject.update(new_content) }
-            .to change { subject.updated }
-            .from(last_modified)
-            .to(new_time)
-        end
-      end
     end
   end
 

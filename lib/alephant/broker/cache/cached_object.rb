@@ -35,7 +35,7 @@ module Alephant
           delta = s3_obj.meta["ttl"]
           Integer(delta)
         rescue TypeError
-          DEFAULT_TTL
+          Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL
         end
 
         def expired?
