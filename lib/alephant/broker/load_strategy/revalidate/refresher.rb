@@ -21,12 +21,12 @@ module Alephant
           private
 
           def queue
-            @queue ||= begin
+            @queue ||= proc do
               client = AWS::SQS.new
               url    = client.queues.url_for(Broker.config[:sqs_queue_name], queue_options)
 
               client.queues[url]
-            end
+            end.call
           end
 
           def queue_options
