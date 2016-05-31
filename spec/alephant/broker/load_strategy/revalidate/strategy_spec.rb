@@ -9,15 +9,23 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher, :fetch => content) }
 
   let(:content) do
-    AWS::Core::Data.new(
+    instance_double(AWS::S3::S3Object,
       :content_type => "test/content",
-      :content      => "Test",
-      :meta         => {
+      :read         => "Test",
+      :metadata     => {
         "ttl"                => 100,
         "head_ETag"          => "123",
         "head_Last-Modified" => Time.now.to_s
       }
     )
+  end
+
+  let(:expected_content) do
+    {
+      :content      => content.read,
+      :content_type => content.content_type,
+      :meta         => content.metadata
+    }
   end
 
   let(:cached_obj) do
@@ -49,7 +57,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
         end
 
         it "gets fetched from the cache and returned" do
-          expect(subject.load(component_meta)).to eq(content)
+          expect(subject.load(component_meta)).to eq(expected_content)
         end
 
         it "does NOT try to refresh the content" do
@@ -70,7 +78,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
         end
 
         it "gets fetched from the cache and returned" do
-          expect(subject.load(component_meta)).to eq(content)
+          expect(subject.load(component_meta)).to eq(expected_content)
         end
 
         it "kicks off a refresh of the content" do
@@ -91,7 +99,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
       it "returns the data as expected" do
         expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
-        expect(subject.load(component_meta)).to eq(content)
+        expect(subject.load(component_meta)).to eq(expected_content)
       end
 
       it "uses the fetcher to get the data" do

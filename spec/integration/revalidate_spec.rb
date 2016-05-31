@@ -21,10 +21,10 @@ describe Alephant::Broker::Application do
   end
 
   let(:content) do
-    AWS::Core::Data.new(
+    instance_double(AWS::S3::S3Object,
       :content_type => "test/content",
-      :content      => "Test",
-      :meta         => {
+      :read         => "Test",
+      :metadata     => {
         "ttl"                => "35",
         "head_ETag"          => "123",
         "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
@@ -102,12 +102,12 @@ describe Alephant::Broker::Application do
         .to receive(:get)
         .and_return(
           content,
-          AWS::Core::Data.new(
+          instance_double(AWS::S3::S3Object,
             :content_type => "test/content",
-            :content      => "Test",
-            :meta         => {
-              :head_ETag            => "\"abc\"",
-              :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
+            :read         => "Test",
+            :metadata     => {
+              "head_ETag"          => "\"abc\"",
+              "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
             }
           )
       )

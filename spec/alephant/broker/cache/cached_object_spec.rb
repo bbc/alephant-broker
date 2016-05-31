@@ -8,10 +8,10 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
   let(:ttl)           { 15 }
 
   let(:s3_obj) do
-    AWS::Core::Data.new(
+    instance_double(AWS::S3::S3Object,
       :content_type => "test/content",
-      :content      => "Test",
-      :meta         => {
+      :read         => "Test",
+      :metadata     => {
         "ttl"                => ttl,
         "head_ETag"          => "123",
         "head_Last-Modified" => last_modified.to_s
@@ -72,8 +72,8 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
     let(:new_content) do
       AWS::Core::Data.new(
         :content_type => "test/content",
-        :content      => "Test - NEW",
-        :meta         => {
+        :read         => "Test - NEW",
+        :metadata     => {
           "ttl"                => ttl,
           "head_ETag"          => "123",
           "head_Last-Modified" => (last_modified + 100).to_s
