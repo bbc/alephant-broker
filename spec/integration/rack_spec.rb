@@ -173,7 +173,7 @@ describe Alephant::Broker::Application do
       describe "response should have headers" do
         it "should have content headers" do
           expect(last_response.headers["Content-Type"]).to eq("application/json")
-          expect(last_response.headers["Content-Length"]).to eq("296")
+          expect(last_response.headers["Content-Length"]).to eq("306")
         end
 
         it "should have ETag cache header" do
@@ -222,7 +222,7 @@ describe Alephant::Broker::Application do
       describe "response should have headers" do
         it "should have content headers" do
           expect(last_response.headers["Content-Type"]).to eq("application/json")
-          expect(last_response.headers["Content-Length"]).to eq("296")
+          expect(last_response.headers["Content-Length"]).to eq("306")
         end
 
         it "should have ETag cache header" do

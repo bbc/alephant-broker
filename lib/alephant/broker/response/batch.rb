@@ -36,7 +36,7 @@ module Alephant
               "content_type" => component.content_type,
               "body"         => component.content
             }.tap do |headers|
-              headers["seq_id"] = component.headers["X-Sequence"] if component.headers["X-Sequence"]
+              headers["sequence_id"] = component.headers["X-Sequence"] if component.headers["X-Sequence"]
             end
           end.tap do
             logger.info "Broker: Batch load done (#{batch_id})"
