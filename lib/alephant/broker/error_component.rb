@@ -30,7 +30,7 @@ module Alephant
       end
 
       def debug?
-        Broker.config.fetch("debug", false)
+        Broker.config[:debug] || Broker.config["debug"] || false
       end
     end
   end

@@ -58,7 +58,7 @@ module Alephant
           end
 
           def retrieve_object(component_meta)
-            cached = false
+            @cached = false
             s3.get s3_path(component_meta)
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
             logger.metric "S3InvalidCacheKey"
@@ -87,7 +87,7 @@ module Alephant
 
           def headers(_component_meta)
             {
-              "X-Cache-Version" => Broker.config["elasticache_cache_version"].to_s,
+              "X-Cache-Version" => (Broker.config[:elasticache_cache_version] || Broker.config["elasticache_cache_version"]).to_s,
               "X-Cached"        => cached.to_s
             }
           end

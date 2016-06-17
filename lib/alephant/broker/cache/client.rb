@@ -29,7 +29,7 @@ module Alephant
           return result if result
 
           set(key, block.call) if block_given?
-        rescue StandardError => e
+        rescue StandardError
           yield if block_given?
         end
 
@@ -40,11 +40,11 @@ module Alephant
         private
 
         def config_endpoint
-          Broker.config["elasticache_config_endpoint"]
+          Broker.config[:elasticache_config_endpoint] || Broker.config["elasticache_config_endpoint"]
         end
 
         def ttl
-          Broker.config["elasticache_ttl"] || DEFAULT_TTL
+          Broker.config[:elasticache_ttl] || Broker.config["elasticache_ttl"] || DEFAULT_TTL
         end
 
         def versioned(key)
@@ -52,7 +52,7 @@ module Alephant
         end
 
         def cache_version
-          Broker.config["elasticache_cache_version"]
+          Broker.config[:elasticache_cache_version] || Broker.config["elasticache_cache_version"]
         end
       end
     end
