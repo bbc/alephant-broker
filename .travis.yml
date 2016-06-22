@@ -11,6 +11,10 @@ rvm:
   - ruby
   - jruby
 
+# Environment variables
+env:
+  - RUBYOPT="-W0"
+
 # Ensure we don't build for *every* commit (doesn't apply to PR builds)
 branches:
   only:
