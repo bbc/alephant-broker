@@ -95,7 +95,7 @@ describe Alephant::Broker::Application do
   describe "`/components`" do
     let(:fixture_path) { "#{File.dirname(__FILE__)}/../fixtures/json" }
     let(:batch_json) { IO.read("#{fixture_path}/batch.json").strip }
-    let(:batch_compiled_json) { IO.read("#{fixture_path}/batch_compiled.json").strip }
+    let(:batch_compiled_json) { IO.read("#{fixture_path}/batch_compiled_no_sequence.json").strip }
 
     before do
       allow(storage_double)
