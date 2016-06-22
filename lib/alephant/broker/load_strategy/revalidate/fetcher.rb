@@ -26,7 +26,7 @@ module Alephant
             lookup.read(
               component_meta.id,
               component_meta.options,
-              component_meta.batch_id
+              component_meta.batch_id || 1
             ).tap do |obj|
               raise InvalidCacheKey if obj.location.nil?
             end.location
