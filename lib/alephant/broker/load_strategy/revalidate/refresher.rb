@@ -33,9 +33,9 @@ module Alephant
             opts = {}
             opts[:queue_owner_aws_account_id] = aws_acc_id if aws_acc_id
 
-            logger.info("event"   => "SQSQueueOptionsConfigured",
-                        "options" => opts,
-                        "method"  => "#{self.class}#queue_options")
+            logger.info(event:   'SQSQueueOptionsConfigured',
+                        options: opts,
+                        method:  "#{self.class}#queue_options")
 
             opts
           end

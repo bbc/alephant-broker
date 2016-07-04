@@ -1,4 +1,4 @@
-require "alephant/broker/errors"
+require 'alephant/broker/errors'
 
 module Alephant
   module Broker
@@ -16,20 +16,18 @@ module Alephant
           def fetch
             Alephant::Broker::Cache::CachedObject.new(s3.get(s3_path))
           rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
-            logger.metric "S3InvalidCacheKey"
+            logger.metric 'S3InvalidCacheKey'
             raise Alephant::Broker::Errors::ContentNotFound
           end
 
           private
 
           def s3_path
-            lookup.read(
-              component_meta.id,
-              component_meta.options,
-              component_meta.batch_id || 1
-            ).tap do |obj|
-              raise InvalidCacheKey if obj.location.nil?
-            end.location
+            lookup_read = lookup.read(component_meta.id, component_meta.options, 1)
+
+            raise InvalidCacheKey if lookup_read.location.nil?
+
+            lookup_read.location
           end
 
           def s3

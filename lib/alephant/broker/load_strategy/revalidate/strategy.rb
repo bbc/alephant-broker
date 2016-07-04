@@ -1,9 +1,9 @@
-require "alephant/broker/cache"
-require "alephant/broker/errors"
-require "alephant/logger"
-require "alephant/broker/load_strategy/revalidate/refresher"
-require "alephant/broker/load_strategy/revalidate/fetcher"
-require "faraday"
+require 'alephant/broker/cache'
+require 'alephant/broker/errors'
+require 'alephant/logger'
+require 'alephant/broker/load_strategy/revalidate/refresher'
+require 'alephant/broker/load_strategy/revalidate/fetcher'
+require 'faraday'
 
 module Alephant
   module Broker
@@ -18,15 +18,15 @@ module Alephant
             refresh_content(component_meta) if loaded_content.expired?
 
             data = loaded_content.to_h
-            data.fetch(:meta, {})["status"] = 200
+            data.fetch(:meta, {})['status'] = 200
             data
           rescue Alephant::Broker::Errors::ContentNotFound
             refresh_content(component_meta)
 
             {
-              :content      => "",
-              :content_type => "text/html",
-              :meta         => { "status" => 202 }
+              content:      '',
+              content_type: 'text/html',
+              meta:         { status: 202 }
             }
           end
 
