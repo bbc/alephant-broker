@@ -1,30 +1,30 @@
-require "spec_helper"
+require 'spec_helper'
 
 RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   subject { described_class.new }
 
   let(:lookup_double)  { instance_double(Alephant::Lookup::LookupHelper) }
   let(:storage_double) { instance_double(Alephant::Storage) }
-  let(:refresher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Refresher, :refresh => nil) }
-  let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher, :fetch => content) }
+  let(:refresher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Refresher, refresh: nil) }
+  let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher, fetch: content) }
 
   let(:content) do
-    instance_double(AWS::S3::S3Object,
-      :content_type => "test/content",
-      :read         => "Test",
-      :metadata     => {
-        "ttl"                => 100,
-        "head_ETag"          => "123",
-        "head_Last-Modified" => Time.now.to_s
+    {
+      content:      'Test',
+      content_type: 'test/content',
+      meta:         {
+        'ttl'                => 100,
+        'head_ETag'          => '123',
+        'head_Last-Modified' => Time.now.to_s
       }
-    )
+    }
   end
 
   let(:expected_content) do
     {
-      :content      => content.read,
-      :content_type => content.content_type,
-      :meta         => content.metadata
+      content:      content[:content],
+      content_type: content[:content_type],
+      meta:         content[:meta]
     }
   end
 
@@ -33,7 +33,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   end
 
   let(:component_meta) do
-    Alephant::Broker::ComponentMeta.new("test", "test_batch", {})
+    Alephant::Broker::ComponentMeta.new('test', 'test_batch', {})
   end
 
   before do
@@ -43,24 +43,24 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
     allow(Thread).to receive(:new).and_yield
   end
 
-  describe "#load" do
-    context "when there is content in the cache" do
+  describe '#load' do
+    context 'when there is content in the cache' do
       let(:cache) { subject.send(:cache) }
 
       before do
         allow(cache).to receive(:get).and_return(cached_obj)
       end
 
-      context "which is still fresh" do
+      context 'which is still fresh' do
         before do
           allow(cached_obj).to receive(:expired?).and_return(false)
         end
 
-        it "gets fetched from the cache and returned" do
+        it 'gets fetched from the cache and returned' do
           expect(subject.load(component_meta)).to eq(expected_content)
         end
 
-        it "does NOT try to refresh the content" do
+        it 'does NOT try to refresh the content' do
           expect(Alephant::Broker::LoadStrategy::Revalidate::Refresher)
             .to_not receive(:new)
 
@@ -68,7 +68,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
         end
       end
 
-      context "which has expired" do
+      context 'which has expired' do
         before do
           allow(cached_obj).to receive(:expired?).and_return(true)
           expect(Alephant::Broker::LoadStrategy::Revalidate::Refresher)
@@ -77,11 +77,11 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
             .and_return(refresher_double)
         end
 
-        it "gets fetched from the cache and returned" do
+        it 'gets fetched from the cache and returned' do
           expect(subject.load(component_meta)).to eq(expected_content)
         end
 
-        it "kicks off a refresh of the content" do
+        it 'kicks off a refresh of the content' do
           expect(refresher_double).to receive(:refresh)
 
           subject.load(component_meta)
@@ -89,7 +89,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
       end
     end
 
-    context "when there is NOT content in the cache" do
+    context 'when there is NOT content in the cache' do
       before do
         expect(Alephant::Broker::LoadStrategy::Revalidate::Fetcher)
           .to receive(:new)
@@ -97,17 +97,17 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
           .and_return(fetcher_double)
       end
 
-      it "returns the data as expected" do
+      it 'returns the data as expected' do
         expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
         expect(subject.load(component_meta)).to eq(expected_content)
       end
 
-      it "uses the fetcher to get the data" do
+      it 'uses the fetcher to get the data' do
         expect(fetcher_double).to receive(:fetch).and_return(cached_obj)
         subject.load(component_meta)
       end
 
-      context "and there is nothing returned from the fetcher" do
+      context 'and there is nothing returned from the fetcher' do
         before do
           expect(fetcher_double)
             .to receive(:fetch)
@@ -119,16 +119,16 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
             .and_return(refresher_double)
         end
 
-        it "kicks off a refresh of the content" do
+        it 'kicks off a refresh of the content' do
           expect(refresher_double).to receive(:refresh)
           subject.load(component_meta)
         end
 
-        it "returns a response that will invoke a 202 (HTTP) response" do
+        it 'returns a response that will invoke a 202 (HTTP) response' do
           expected_response = {
-            :content      => "",
-            :content_type => "text/html",
-            :meta         => { "status" => 202 }
+            content:      '',
+            content_type: 'text/html',
+            meta:         { 'status' => 202 }
           }
 
           expect(subject.load(component_meta)).to eq(expected_response)

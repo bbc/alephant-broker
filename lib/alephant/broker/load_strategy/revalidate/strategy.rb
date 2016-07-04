@@ -26,7 +26,7 @@ module Alephant
             {
               content:      '',
               content_type: 'text/html',
-              meta:         { status: 202 }
+              meta:         { 'status' => 202 }
             }
           end
 
@@ -40,14 +40,14 @@ module Alephant
 
           def refresh_content(component_meta)
             Thread.new do
-              logger.info("#{self.class}#refresh_content - Loading new content from thread")
+              logger.info(msg: "#{self.class}#refresh_content - Loading new content from thread")
               Refresher.new(component_meta).refresh
             end
           end
 
           def cached_object(component_meta)
             cache.get(component_meta.component_key) do
-              logger.info("#{self.class}#cached_object - No cache so loading and adding cache object")
+              logger.info(msg: "#{self.class}#cached_object - No cache so loading and adding cache object")
               Fetcher.new(component_meta).fetch
             end
           end
