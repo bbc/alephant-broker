@@ -23,7 +23,10 @@ module Alephant
           private
 
           def message
-            component_meta.to_json
+            JSON.generate(id:        component_meta.id,
+                          batch_id:  component_meta.batch_id,
+                          options:   component_meta.options,
+                          timestamp: Time.now.to_s)
           end
 
           def queue
