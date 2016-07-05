@@ -10,32 +10,49 @@ module Alephant
 
         DEFAULT_TTL = 10
 
-        def initialize(s3_obj)
-          logger.info(event: 'SettingCachedObject', content: s3_obj)
-          @s3_obj = s3_obj
+        def initialize(obj)
+          logger.info(event:   'SettingCachedObject',
+                      content: obj,
+                      method:  "#{self.class}#initialize")
+
+          @s3_obj = obj
         end
 
-        def update(s3_obj)
-          logger.info(event: 'UpdatingCachedObject', old_content: @s3_obj, new_content: s3_obj)
-          @s3_obj = s3_obj
+        def update(obj)
+          logger.info(event:       'UpdatingCachedObject',
+                      old_content: @s3_obj,
+                      new_content: obj,
+                      method:      "#{self.class}#update")
+
+          @s3_obj = obj
         end
 
         def updated
-          time = metadata['head_Last-Modified']
+          time = metadata[:'head_Last-Modified']
           Time.parse(time)
-        rescue TypeError, ArgumentError
+        rescue TypeError, ArgumentError => error
+          logger.error(method: "#{self.class}#updated", error: error)
           Time.now
         end
 
         def ttl
-          delta = metadata['ttl']
-          Integer(delta)
+          Integer(metadata['ttl'])
         rescue TypeError
-          Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL
+          Integer(Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL)
         end
 
         def expired?
-          (updated + Integer(ttl)) < Time.now
+          result = (updated + ttl) < Time.now
+
+          logger.info(event:            'Expired?',
+                      updated:          updated,
+                      ttl:              ttl,
+                      updated_plus_ttl: (updated + ttl),
+                      now:              Time.now,
+                      result:           result,
+                      method:           "#{self.class}#expired?")
+
+          result
         end
 
         def to_h(obj = nil)

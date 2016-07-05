@@ -14,11 +14,17 @@ module Alephant
           def refresh
             return if cache.get(inflight_cache_key)
 
-            queue.send_message(component_meta.to_json)
+            logger.info(event: 'QueueMessage', message: message, method: "#{self.class}#refresh")
+
+            queue.send_message(message)
             cache.set(inflight_cache_key, true)
           end
 
           private
+
+          def message
+            component_meta.to_json
+          end
 
           def queue
             @queue ||= proc do
@@ -33,9 +39,7 @@ module Alephant
             opts = {}
             opts[:queue_owner_aws_account_id] = aws_acc_id if aws_acc_id
 
-            logger.info(event:   'SQSQueueOptionsConfigured',
-                        options: opts,
-                        method:  "#{self.class}#queue_options")
+            logger.info(event: 'SQSQueueOptionsConfigured', options: opts, method: "#{self.class}#queue_options")
 
             opts
           end
