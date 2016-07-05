@@ -35,7 +35,9 @@ module Alephant
       end
 
       def status
-        data[:meta].key?("status") ? data[:meta]["status"] : 200
+        meta = data.fetch(:meta, {})
+
+        meta[:status] || meta['status'] || 200
       end
 
       private

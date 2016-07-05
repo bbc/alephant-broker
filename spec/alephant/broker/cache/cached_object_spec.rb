@@ -12,9 +12,9 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
       content:      'Test',
       content_type: 'test/content',
       meta:         {
-        'ttl'                => ttl,
-        'head_ETag'          => '123',
-        'head_Last-Modified' => last_modified.to_s
+        :ttl                  => ttl,
+        :head_ETag            => '123',
+        :'head_Last-Modified' => last_modified.to_s
       }
     }
   end
@@ -70,15 +70,15 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
 
   describe '#update' do
     let(:new_content) do
-      AWS::Core::Data.new(
+      {
+        content:      'Test - NEW',
         content_type: 'test/content',
-        read:         'Test - NEW',
-        metadata:     {
-          'ttl'                => ttl,
-          'head_ETag'          => '123',
-          'head_Last-Modified' => (last_modified + 100).to_s
+        meta:         {
+          :ttl                  => ttl,
+          :head_ETag            => '123',
+          :'head_Last-Modified' => (last_modified + 100).to_s
         }
-      )
+      }
     end
 
     it 'updates #s3_obj' do

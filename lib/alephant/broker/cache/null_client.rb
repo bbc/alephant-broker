@@ -11,7 +11,7 @@ module Alephant
 
           return data if data
 
-          set(key, block.call) if block_given?
+          set(key, yield) if block_given?
         end
 
         def set(key, value, _ttl = nil)

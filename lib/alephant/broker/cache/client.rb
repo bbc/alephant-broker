@@ -30,7 +30,8 @@ module Alephant
           return result if result
 
           set(key, yield) if block_given?
-        rescue StandardError
+        rescue StandardError => error
+          logger.info(event: 'ErrorCaught', method: "#{self.class}#get", error: error)
           yield if block_given?
         end
 
@@ -38,7 +39,7 @@ module Alephant
           versioned_key = versioned(key)
           set_ttl       = custom_ttl || ttl
 
-          logger.info("#{self.class}#set - key: #{versioned_key}, ttl: #{set_ttl}, value: #{value}")
+          logger.info("#{self.class}#set - key: #{versioned_key}, value: #{value}, ttl: #{set_ttl}")
 
           @client.set(versioned_key, value, set_ttl)
 

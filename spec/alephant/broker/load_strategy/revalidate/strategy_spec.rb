@@ -5,17 +5,17 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
   let(:lookup_double)  { instance_double(Alephant::Lookup::LookupHelper) }
   let(:storage_double) { instance_double(Alephant::Storage) }
-  let(:refresher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Refresher, refresh: nil) }
-  let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher, fetch: content) }
+  let(:refresher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Refresher) }
+  let(:fetcher_double) { instance_double(Alephant::Broker::LoadStrategy::Revalidate::Fetcher) }
 
   let(:content) do
     {
       content:      'Test',
       content_type: 'test/content',
       meta:         {
-        'ttl'                => 100,
-        'head_ETag'          => '123',
-        'head_Last-Modified' => Time.now.to_s
+        :ttl                  => 100,
+        :head_ETag            => '123',
+        :'head_Last-Modified' => Time.now.to_s
       }
     }
   end
@@ -71,10 +71,14 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
       context 'which has expired' do
         before do
           allow(cached_obj).to receive(:expired?).and_return(true)
+
           expect(Alephant::Broker::LoadStrategy::Revalidate::Refresher)
             .to receive(:new)
             .with(component_meta)
             .and_return(refresher_double)
+
+          allow(refresher_double)
+            .to receive(:refresh)
         end
 
         it 'gets fetched from the cache and returned' do
@@ -91,7 +95,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
     context 'when there is NOT content in the cache' do
       before do
-        expect(Alephant::Broker::LoadStrategy::Revalidate::Fetcher)
+        allow(Alephant::Broker::LoadStrategy::Revalidate::Fetcher)
           .to receive(:new)
           .with(component_meta)
           .and_return(fetcher_double)
@@ -109,7 +113,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
       context 'and there is nothing returned from the fetcher' do
         before do
-          expect(fetcher_double)
+          allow(fetcher_double)
             .to receive(:fetch)
             .and_raise(Alephant::Broker::Errors::ContentNotFound)
 
@@ -117,6 +121,9 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
             .to receive(:new)
             .with(component_meta)
             .and_return(refresher_double)
+
+          allow(refresher_double)
+            .to receive(:refresh)
         end
 
         it 'kicks off a refresh of the content' do
@@ -128,7 +135,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
           expected_response = {
             content:      '',
             content_type: 'text/html',
-            meta:         { 'status' => 202 }
+            meta:         { status: 202 }
           }
 
           expect(subject.load(component_meta)).to eq(expected_response)

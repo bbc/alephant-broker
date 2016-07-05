@@ -25,9 +25,9 @@ describe Alephant::Broker::Application do
       content:      'Test',
       content_type: 'test/content',
       meta:         {
-        'ttl'                => '35',
-        'head_ETag'          => '123',
-        'head_Last-Modified' => 'Mon, 11 Apr 2016 10:39:57 GMT'
+        :ttl                  => '35',
+        :head_ETag            => '123',
+        :'head_Last-Modified' => 'Mon, 11 Apr 2016 10:39:57 GMT'
       }
     }
   end
@@ -80,7 +80,7 @@ describe Alephant::Broker::Application do
 
     context 'when the content IS NOT available from S3/storage' do
       before do
-        expect(storage_double)
+        allow(storage_double)
           .to receive(:get)
           .and_raise(AWS::S3::Errors::NoSuchKey.new(nil, nil))
 
@@ -106,8 +106,8 @@ describe Alephant::Broker::Application do
             content:      'Test',
             content_type: 'test/content',
             meta:         {
-              'head_ETag'          => '"abc"',
-              'head_Last-Modified' => 'Mon, 11 Apr 2016 09:39:57 GMT'
+              :head_ETag            => '"abc"',
+              :'head_Last-Modified' => 'Mon, 11 Apr 2016 09:39:57 GMT'
             }
           }
         )

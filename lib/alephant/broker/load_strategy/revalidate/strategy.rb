@@ -18,7 +18,7 @@ module Alephant
             refresh_content(component_meta) if loaded_content.expired?
 
             data = loaded_content.to_h
-            data.fetch(:meta, {})['status'] = 200
+            data.fetch(:meta, {})[:status] = 200
             data
           rescue Alephant::Broker::Errors::ContentNotFound
             refresh_content(component_meta)
@@ -26,7 +26,7 @@ module Alephant
             {
               content:      '',
               content_type: 'text/html',
-              meta:         { 'status' => 202 }
+              meta:         { status: 202 }
             }
           end
 
