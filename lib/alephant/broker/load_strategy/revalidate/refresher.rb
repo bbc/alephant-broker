@@ -5,6 +5,8 @@ module Alephant
         class Refresher
           include Logger
 
+          INFLIGHT_CACHE_TTL = 120 # expire the inflight key after 2 minutes
+
           attr_reader :component_meta
 
           def initialize(component_meta)
@@ -12,21 +14,25 @@ module Alephant
           end
 
           def refresh
-            return if cache.get(inflight_cache_key)
+            inflight = cache.get(inflight_cache_key)
+
+            logger.info(event: 'Inflight?', cache_val: inflight, method: "#{self.class}#refresh")
+
+            return if inflight
 
             logger.info(event: 'QueueMessage', message: message, method: "#{self.class}#refresh")
 
             queue.send_message(message)
-            cache.set(inflight_cache_key, true)
+            cache.set(inflight_cache_key, true, INFLIGHT_CACHE_TTL)
           end
 
           private
 
           def message
-            JSON.generate(id:        component_meta.id,
-                          batch_id:  component_meta.batch_id,
-                          options:   component_meta.options,
-                          timestamp: Time.now.to_s)
+            ::JSON.generate(id:        component_meta.id,
+                            batch_id:  component_meta.batch_id,
+                            options:   component_meta.options,
+                            timestamp: Time.now.to_s)
           end
 
           def queue
