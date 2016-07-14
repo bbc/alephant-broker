@@ -17,6 +17,8 @@ module Alephant
         Crimp.signature options
       end
 
+      # NOTE: This is in use in `alephant-publisher-queue` also, so if you
+      #       change this, you'll need to change this there also.
       def component_key
         "#{id}/#{opts_hash}"
       end

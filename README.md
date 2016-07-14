@@ -28,7 +28,6 @@ The **Broker** is capable of retrieving rendered templates from either [S3](http
 
 ```ruby
 require 'alephant/broker'
-require 'alephant/broker/load_strategy/s3'
 
 config = {
   :s3_bucket_id      => 'test_bucket',
@@ -55,7 +54,6 @@ end
 
 ```ruby
 require 'alephant/broker'
-require 'alephant/broker/load_strategy/http'
 
 class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
   def generate(id, options)
@@ -87,7 +85,7 @@ The HTML load strategy relies upon being given a URLGenerator, which is used to 
 * include a `#generate` method which takes `id` (string) and `options` (hash) as parameters.
 
 ```ruby
-require 'alephant/broker/load_strategy/http'
+require 'alephant/broker'
 require 'rack'
 
 class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
@@ -102,6 +100,40 @@ class UrlGenerator < Alephant::Broker::LoadStrategy::HTTP::URL
   end
 end
 ```
+
+##### Revalidate Strategy
+
+```ruby
+require 'alephant/broker'
+
+config = {
+  :s3_bucket_id                => 'test_bucket',
+  :s3_object_path              => 'foo',
+  :lookup_table_name           => 'test_lookup',
+  :sqs_queue_name              => 'test_queue',
+  :elasticache_config_endpoint => 'test_elisticache'
+  :revalidate_cache_ttl        => 30
+}
+
+Alephant::Broker::Application.new(
+  Alephant::Broker::LoadStrategy::Revalidate::Strategy.new,
+  config
+).call(request).tap do |response|
+  puts "status:  #{response.status}"
+  puts "content: #{response.content}"
+end
+```
+
+The "Revalidate" strategy uses the following process flow:
+
+![https://raw.githubusercontent.com/BBC-News/Documentation/master/Alephant/Diagrams/Alephant%20Revalidate%20Broker.png?token=AADB7YskdW22P6z-hDjfk12UiR7bZA8Jks5XkI7EwA%3D%3D](https://raw.githubusercontent.com/BBC-News/Documentation/master/Alephant/Diagrams/Alephant%20Revalidate%20Broker.png?token=AADB7YskdW22P6z-hDjfk12UiR7bZA8Jks5XkI7EwA%3D%3D)
+
+And uses the following AWS resources:
+
+* S3 - for storage of rendered components
+* DynamoDB - for recording S3 component locations
+* Elasticache - for caching S3 content and recording "inflight" messages
+* SQS - for communication between the broker and renderer
 
 ### Rack App
 
@@ -144,6 +176,3 @@ This version is added as a header to the response in the following format:
 5. Create a new [Pull Request](https://github.com/BBC-News/alephant-broker/pulls).
 
 Feel free to create a new [issue](https://github.com/BBC-News/alephant-broker/issues/new) if you find a bug.
-
-
-

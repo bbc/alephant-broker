@@ -26,13 +26,14 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-remote"
   spec.add_development_dependency "pry-nav"
   spec.add_development_dependency "rake-rspec", ">= 0.0.2"
-
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency 'rack', '< 2.0.0' # NOTE: rack 2.0 requires Ruby 2.2+
   spec.add_development_dependency "rack-test"
   spec.add_development_dependency "simplecov"
+  spec.add_development_dependency "timecop"
 
-  spec.add_runtime_dependency "alephant-lookup"
+  spec.add_runtime_dependency "alephant-lookup", ">= 2.0.2"
   spec.add_runtime_dependency "alephant-storage", ">= 1.1.1"
   spec.add_runtime_dependency "alephant-logger", "1.2.0"
   spec.add_runtime_dependency 'alephant-sequencer'

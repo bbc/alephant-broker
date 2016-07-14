@@ -2,12 +2,20 @@ module Alephant
   module Broker
     module Cache
       class NullClient
-        def get(_key)
-          yield
+        def initialize
+          @cache = {}
         end
 
-        def set(_key, value, _ttl = nil)
-          value
+        def get(key)
+          data = @cache[key]
+
+          return data if data
+
+          set(key, yield) if block_given?
+        end
+
+        def set(key, value, _ttl = nil)
+          @cache[key] = value
         end
       end
     end

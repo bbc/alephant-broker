@@ -9,7 +9,7 @@ module Alephant
         def initialize(component, request_env)
           @component = component
 
-          @status = self.class.component_not_modified(@component.headers, request_env) ? NOT_MODIFIED_STATUS_CODE : component.status
+          @status = self.class.component_not_modified(@component.headers, request_env) ? 304 : component.status
 
           super(@status, component.content_type, request_env)
 
