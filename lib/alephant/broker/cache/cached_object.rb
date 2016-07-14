@@ -36,7 +36,7 @@ module Alephant
         end
 
         def ttl
-          Integer(metadata[:ttl])
+          Integer(metadata[:ttl] || metadata['ttl'])
         rescue TypeError => error
           logger.info(event: 'ErrorCaught', method: "#{self.class}#ttl", error: error)
           Integer(Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL)
