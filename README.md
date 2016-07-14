@@ -126,7 +126,7 @@ end
 
 The "Revalidate" strategy uses the following process flow:
 
-![https://raw.githubusercontent.com/BBC-News/Documentation/master/Alephant/Diagrams/Alephant%20Revalidate%20Broker.png?token=AADB7cbaLv7i7NRaxP_3WmO-UvFY2dH6ks5XVu0IwA%3D%3D](https://raw.githubusercontent.com/BBC-News/Documentation/master/Alephant/Diagrams/Alephant%20Revalidate%20Broker.png?token=AADB7cbaLv7i7NRaxP_3WmO-UvFY2dH6ks5XVu0IwA%3D%3D)
+![https://raw.githubusercontent.com/BBC-News/Documentation/master/Alephant/Diagrams/Alephant%20Revalidate%20Broker.png?token=AADB7YskdW22P6z-hDjfk12UiR7bZA8Jks5XkI7EwA%3D%3D](https://raw.githubusercontent.com/BBC-News/Documentation/master/Alephant/Diagrams/Alephant%20Revalidate%20Broker.png?token=AADB7YskdW22P6z-hDjfk12UiR7bZA8Jks5XkI7EwA%3D%3D)
 
 And uses the following AWS resources:
 

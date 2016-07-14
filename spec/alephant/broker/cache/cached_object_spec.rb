@@ -73,11 +73,7 @@ RSpec.describe Alephant::Broker::Cache::CachedObject do
       {
         content:      'Test - NEW',
         content_type: 'test/content',
-        meta:         {
-          :ttl                  => ttl,
-          :head_ETag            => '123',
-          :'head_Last-Modified' => (last_modified + 100).to_s
-        }
+        meta:         {}
       }
     end
 
