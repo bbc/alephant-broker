@@ -13,22 +13,22 @@ module Alephant
         end
 
         def self.request_for(load_strategy, env)
-          component_factory = ComponentFactory.new load_strategy
+          component_factory = ComponentFactory.new(load_strategy)
 
-          logger.metric('RequestCount')
+          logger.increment('request_count')
 
           case request_type_from(env)
           when "component"
-            logger.metric('ActionableRequestCount')
+            logger.increment('actionable_request_count')
             Asset.new(component_factory, env)
           when "components"
-            logger.metric('ActionableRequestCount')
+            logger.increment('actionable_request_count')
             Batch.new(component_factory, env)
           when "status"
-            logger.metric('StatusRequest')
+            logger.increment('status_request')
             Status.new
           else
-            logger.metric('NotFoundRequest')
+            logger.increment('not_found_request')
             NotFound.new
           end
         end
