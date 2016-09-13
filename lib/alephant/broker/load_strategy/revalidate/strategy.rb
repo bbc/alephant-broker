@@ -21,6 +21,8 @@ module Alephant
 
             data = loaded_content.to_h
             data.fetch(:meta, {})[:status] = 200
+            add_revalidating_headers(data) if loaded_content.expired?
+
             data
           rescue *STORAGE_ERRORS
             update_content(component_meta)
@@ -57,6 +59,11 @@ module Alephant
                 refresh_content(component_meta)
               end
             end
+          end
+
+          def add_revalidating_headers(data)
+             data[:headers] ||= {}
+             data[:headers]['broker-cache'] = 'revalidating'
           end
 
           def fetch_stored_content(component_meta)
