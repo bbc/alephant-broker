@@ -28,6 +28,14 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
     }
   end
 
+  let(:expected_revalidating_content) do
+    revalidating_content = expected_content.clone
+    revalidating_content[:headers] = {
+      'broker-cache' => 'revalidating'
+    }
+    revalidating_content
+  end
+
   let(:cached_obj) do
     Alephant::Broker::Cache::CachedObject.new(content)
   end
@@ -66,6 +74,13 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
           subject.load(component_meta)
         end
+
+        it 'does NOT send the revalidating repsonse header' do
+          response = subject.load(component_meta)
+          response_headers = response[:headers] || {}
+
+          expect(response_headers['broker-cache']).to_not eq('revalidating')
+        end
       end
 
       context 'which has expired' do
@@ -88,7 +103,11 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
         end
 
         it 'it gets fetched from the cache and returned to the user' do
-          expect(subject.load(component_meta)).to eq(expected_content)
+          expect(subject.load(component_meta)).to eq(expected_revalidating_content)
+        end
+
+        it 'should contain a revalidating reponse header' do
+          expect(subject.load(component_meta)[:headers]['broker-cache']).to eq('revalidating')
         end
 
         context 'in the background...' do
