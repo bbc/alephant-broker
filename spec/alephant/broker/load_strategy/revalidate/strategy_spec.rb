@@ -31,6 +31,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
   let(:expected_revalidating_content) do
     revalidating_content = expected_content.clone
     revalidating_content[:headers] = {
+      'Access-Control-Expose-Headers' => 'broker-cache',
       'broker-cache' => 'revalidating'
     }
     revalidating_content
@@ -104,6 +105,10 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Strategy do
 
         it 'it gets fetched from the cache and returned to the user' do
           expect(subject.load(component_meta)).to eq(expected_revalidating_content)
+        end
+
+        it 'should expose the broker-cache header to AJAX clients' do
+          expect(subject.load(component_meta)[:headers]['Access-Control-Expose-Headers']).to eq('broker-cache')
         end
 
         it 'should contain a revalidating reponse header' do

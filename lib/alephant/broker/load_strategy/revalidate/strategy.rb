@@ -63,6 +63,7 @@ module Alephant
 
           def add_revalidating_headers(data)
              data[:headers] ||= {}
+             data[:headers]['Access-Control-Expose-Headers'] = 'broker-cache'
              data[:headers]['broker-cache'] = 'revalidating'
           end
 
