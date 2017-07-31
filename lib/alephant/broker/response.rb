@@ -1,9 +1,12 @@
+require "alephant/logger"
+
 module Alephant
   module Broker
     module Response
       require "alephant/broker/response/base"
       require "alephant/broker/response/asset"
       require "alephant/broker/response/batch"
+      require "alephant/broker/response/dials"
       require "alephant/broker/response/factory"
 
       class NotFound < Base
