@@ -8,6 +8,7 @@ module Alephant
 
       class NotFound; end
       class Status; end
+      class Dials; end
     end
   end
 end
