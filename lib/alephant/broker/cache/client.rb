@@ -39,7 +39,8 @@ module Alephant
           versioned_key = versioned(key)
           set_ttl       = custom_ttl || ttl
 
-          logger.info("#{self.class}#set - key: #{versioned_key}, value: #{value}, ttl: #{set_ttl}")
+          logger.debug("#{self.class}#set - key: #{versioned_key}, value: #{value}, ttl: #{set_ttl}")
+          logger.info("#{self.class}#set - key: #{versioned_key}, ttl: #{set_ttl}")
 
           @client.set(versioned_key, value, set_ttl)
 
