@@ -5,3 +5,6 @@ Gemfile.lock
 
 /pkg
 /coverage
+
+# test log
+app.log
