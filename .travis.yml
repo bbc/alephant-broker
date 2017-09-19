@@ -4,6 +4,11 @@ language: ruby
 
 # Ruby build matrix
 rvm:
+  - 2.0
+  - 2.1
+  - 2.2
+  - 2.3.0
+  - 2.3.1
   - jruby-1.7.25
 
 # Environment variables
