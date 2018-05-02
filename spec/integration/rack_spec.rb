@@ -19,14 +19,14 @@ describe Alephant::Broker::Application do
   end
 
   let(:content) do
-    AWS::Core::Data.new(
+    {
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {
         "head_ETag"          => "123",
         "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
       }
-    )
+    }
   end
 
   let(:sequencer_double) do
@@ -145,14 +145,14 @@ describe Alephant::Broker::Application do
     before do
       allow(s3_double_batch).to receive(:get).and_return(
         content,
-        AWS::Core::Data.new(
+        {
           :content_type => "test/content",
           :content      => "Test",
           :meta         => {
             :head_ETag            => "\"abc\"",
             :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
           }
-        )
+        }
       )
 
       allow(Alephant::Storage).to receive(:new) { s3_double_batch }
@@ -194,14 +194,14 @@ describe Alephant::Broker::Application do
     before do
       allow(s3_double_batch).to receive(:get).and_return(
         content,
-        AWS::Core::Data.new(
+        {
           :content_type => "test/content",
           :content      => "Test",
           :meta         => {
             :head_ETag            => "\"abc\"",
             :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
           }
-        )
+        }
       )
 
       allow(Alephant::Storage).to receive(:new) { s3_double_batch }
@@ -240,14 +240,14 @@ describe Alephant::Broker::Application do
     before do
       allow(s3_double_batch).to receive(:get).and_return(
         content,
-        AWS::Core::Data.new(
+        {
           :content_type => "test/content",
           :content      => "Test",
           :meta         => {
             :head_ETag            => "\"abc\"",
             :"head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
           }
-        )
+        }
       )
 
       allow(Alephant::Storage).to receive(:new) { s3_double_batch }
@@ -281,10 +281,10 @@ describe Alephant::Broker::Application do
 
   describe "S3 headers" do
     let(:content) do
-      AWS::Core::Data.new(
+      {
         :content => "missing_content",
         :meta    => {}
-      )
+      }
     end
     let(:s3_double) do
       instance_double(
@@ -352,13 +352,17 @@ describe Alephant::Broker::Application do
           :content      => "<p>Some data</p>",
           :meta         => {}
         },
-        :get => "<p>Some data</p>"
+        :get => "<p>Some data</p>" # @TODO: What should cache return?
       )
     end
     let(:s3_double) do
       instance_double(
         "Alephant::Storage",
-        :get => "test_content"
+        :get => {
+          :content_type => "test/html",
+          :content      => "<p>Some data</p>",
+          :meta         => {}
+        }
       )
     end
 

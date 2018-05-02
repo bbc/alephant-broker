@@ -21,14 +21,14 @@ describe Alephant::Broker::Application do
   end
 
   let(:content) do
-    AWS::Core::Data.new(
+    {
       :content_type => "test/content",
       :content      => "Test",
       :meta         => {
         "head_ETag"          => "123",
         "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
       }
-    )
+    }
   end
 
   let(:sequencer_double) do
@@ -99,14 +99,14 @@ describe Alephant::Broker::Application do
       allow(s3_double_with_etag).to receive(:get)
         .with("test/location/with/options")
         .and_return(
-          AWS::Core::Data.new(
+          {
             :content_type => "test/content",
             :content      => "Test",
             :meta         => {
               "head_ETag"          => "abc",
               "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
             }
-          )
+          }
         )
 
       allow(Alephant::Storage).to receive(:new) { s3_double_with_etag }
@@ -170,14 +170,14 @@ describe Alephant::Broker::Application do
       allow(s3_double_with_etag).to receive(:get)
         .with("test/location/with/options")
         .and_return(
-          AWS::Core::Data.new(
+          {
             :content_type => "test/content",
             :content      => "Test",
             :meta         => {
               "head_ETag"          => "abc",
               "head_Last-Modified" => "Mon, 11 Apr 2016 09:39:57 GMT"
             }
-          )
+          }
         )
 
       allow(Alephant::Storage).to receive(:new) { s3_double_with_etag }

@@ -15,7 +15,7 @@ module Alephant
 
           def fetch
             Alephant::Broker::Cache::CachedObject.new(s3.get(s3_path))
-          rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey => error
+          rescue Aws::S3::Errors::NoSuchKey, InvalidCacheKey => error
             logger.info(event: 'ErrorCaught', method: "#{self.class}#fetch", error: error)
             logger.metric('S3InvalidCacheKey')
             raise Alephant::Broker::Errors::ContentNotFound

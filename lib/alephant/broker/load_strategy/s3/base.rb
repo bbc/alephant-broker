@@ -60,7 +60,7 @@ module Alephant
           def retrieve_object(component_meta)
             @cached = false
             s3.get s3_path(component_meta)
-          rescue AWS::S3::Errors::NoSuchKey, InvalidCacheKey
+          rescue Aws::S3::Errors::NoSuchKey, InvalidCacheKey
             logger.metric "S3InvalidCacheKey"
             raise Alephant::Broker::Errors::ContentNotFound
           end

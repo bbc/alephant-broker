@@ -23,15 +23,15 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
       let(:content_type) { "text/html" }
 
       let(:content) do
-        instance_double(AWS::S3::S3Object,
+        {
           :content_type => "test/content",
-          :read         => "Test",
+          :body         => "Test",
           :metadata     => {
             "ttl"                => 30,
             "head_ETag"          => "123",
             "head_Last-Modified" => "Mon, 11 Apr 2016 10:39:57 GMT"
           }
-        )
+        }
       end
 
       before do
@@ -75,7 +75,7 @@ RSpec.describe Alephant::Broker::LoadStrategy::Revalidate::Fetcher do
         before do
           allow(storage_double)
             .to receive(:get)
-            .and_raise(AWS::S3::Errors::NoSuchKey.new(nil, nil))
+            .and_raise(Aws::S3::Errors::NoSuchKey.new(nil, nil))
         end
 
         it "raises an Alephant::Broker::Errors::ContentNotFound error" do
