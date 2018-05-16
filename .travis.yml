@@ -1,24 +1,10 @@
-sudo: false
-cache: bundler
 language: ruby
-
-# Ruby build matrix
 rvm:
-  - 2.0
-  - 2.1
-  - 2.2
-  - 2.3.0
-  - 2.3.1
-  - jruby-1.7.25
-
-# Environment variables
-env:
-  - RUBYOPT="-W0"
-
-# Ensure we don't build for *every* commit (doesn't apply to PR builds)
-branches:
-  only:
-  - master
-
-script:
-  - bundle exec rspec --format documentation
+  - "2.3"
+  - "jruby"
+notifications:
+  email:
+    recipients:
+      - D&ENewsFrameworksTeam@bbc.co.uk
+    on_failure: change
+    on_success: never

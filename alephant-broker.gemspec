@@ -33,10 +33,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "timecop"
 
-  spec.add_runtime_dependency "alephant-lookup", ">= 2.0.2"
-  spec.add_runtime_dependency "alephant-storage", ">= 1.1.1"
-  spec.add_runtime_dependency "alephant-logger", "~> 3.1.4"
+  spec.add_runtime_dependency "alephant-lookup"
+  spec.add_runtime_dependency "alephant-storage"
+  spec.add_runtime_dependency "alephant-logger"
   spec.add_runtime_dependency 'alephant-sequencer'
+  spec.add_runtime_dependency "aws-sdk-sqs"
+  spec.add_runtime_dependency "aws-sdk-s3"
   spec.add_runtime_dependency "dalli-elasticache"
   spec.add_runtime_dependency "faraday"
   spec.add_runtime_dependency "crimp"

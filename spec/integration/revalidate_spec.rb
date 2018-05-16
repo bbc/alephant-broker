@@ -35,9 +35,8 @@ describe Alephant::Broker::Application do
   let(:lookup_location_double) { instance_double(Alephant::Lookup::LookupLocation, location: 'test/location') }
   let(:lookup_helper_double)   { instance_double(Alephant::Lookup::LookupHelper, read: lookup_location_double) }
   let(:storage_double)         { instance_double(Alephant::Storage, get: content) }
-  let(:sqs_double)             { instance_double(AWS::SQS, queues: sqs_queues_double) }
-  let(:sqs_queue_double)       { instance_double(AWS::SQS::Queue, send_message: nil) }
-  let(:sqs_queues_double)      { instance_double(AWS::SQS::QueueCollection, :url_for => 'example.com', :[] => sqs_queue_double) }
+
+  let(:fake_client) { Aws::SQS::Client.new(stub_responses: true) }
 
   before do
     allow_any_instance_of(Logger).to receive(:info)
@@ -45,7 +44,8 @@ describe Alephant::Broker::Application do
     allow(Thread).to receive(:new).and_yield
     allow(Alephant::Lookup).to receive(:create).and_return(lookup_helper_double)
     allow(Alephant::Storage).to receive(:new).and_return(storage_double)
-    allow(AWS::SQS).to receive(:new).and_return(sqs_double)
+    allow_any_instance_of(Alephant::Broker::LoadStrategy::Revalidate::Refresher).to receive(:client).and_return(fake_client)
+    fake_client.stub_responses(:get_queue_url, { queue_url: 'http://sqs.aws.myqueue/id' })
   end
 
   describe 'GET `/status`' do
@@ -82,7 +82,7 @@ describe Alephant::Broker::Application do
       before do
         allow(storage_double)
           .to receive(:get)
-          .and_raise(AWS::S3::Errors::NoSuchKey.new(nil, nil))
+          .and_raise(Aws::S3::Errors::NoSuchKey.new(nil, nil))
 
         get('/component/test_component')
       end
@@ -128,7 +128,7 @@ describe Alephant::Broker::Application do
         before do
           allow(storage_double)
             .to receive(:get)
-            .and_raise(AWS::S3::Errors::NoSuchKey.new(nil, nil))
+            .and_raise(Aws::S3::Errors::NoSuchKey.new(nil, nil))
 
           post(path, batch_json, 'CONTENT_TYPE' => content_type)
         end
@@ -157,7 +157,7 @@ describe Alephant::Broker::Application do
         before do
           allow(storage_double)
             .to receive(:get)
-            .and_raise(AWS::S3::Errors::NoSuchKey.new(nil, nil))
+            .and_raise(Aws::S3::Errors::NoSuchKey.new(nil, nil))
 
           get(path, {}, 'CONTENT_TYPE' => content_type)
         end

@@ -1,6 +1,8 @@
 require "alephant/broker/errors/invalid_cache_key"
 require "alephant/logger"
-require "aws-sdk"
+require "aws-sdk-s3"
+require "aws-sdk-sqs"
+
 require "ostruct"
 require "date"
 
