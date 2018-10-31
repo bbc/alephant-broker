@@ -1,4 +1,4 @@
-require 'dalli-elasticache'
+require 'dalli'
 require 'alephant/logger'
 
 module Alephant
@@ -15,8 +15,7 @@ module Alephant
             logger.metric 'NoConfigEndpoint'
             @client = NullClient.new
           else
-            @elasticache ||= ::Dalli::ElastiCache.new(config_endpoint, expires_in: ttl)
-            @client ||= @elasticache.client
+            @client ||= Dalli::Client.new(config_endpoint, expires_in: ttl)
           end
         end
 
