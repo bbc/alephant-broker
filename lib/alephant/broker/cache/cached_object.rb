@@ -14,7 +14,6 @@ module Alephant
           logger.info(event:   'SettingCachedObject',
                       content: obj,
                       method:  "#{self.class}#initialize")
-
           @s3_obj = obj
         end
 
@@ -23,7 +22,6 @@ module Alephant
                       old_content: @s3_obj,
                       new_content: obj,
                       method:      "#{self.class}#update")
-
           @s3_obj = obj
         end
 
@@ -31,14 +29,14 @@ module Alephant
           time = metadata[:'head_Last-Modified']
           Time.parse(time)
         rescue TypeError, ArgumentError => error
-          logger.error(method: "#{self.class}#updated", error: error)
+          logger.error(event: 'updateError', method: "#{self.class}#updated", error: error)
           Time.now
         end
 
         def ttl
           Integer(metadata[:ttl] || metadata['ttl'])
         rescue TypeError => error
-          logger.error(method: "#{self.class}#ttl", error: error)
+          logger.error(event: 'ttlError', method: "#{self.class}#ttl", error: error)
           Integer(Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL)
         end
 
