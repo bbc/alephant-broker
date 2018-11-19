@@ -11,7 +11,7 @@ module Alephant
 
         def initialize
           if config_endpoint.nil?
-            logger.debug 'Broker::Cache::Client#initialize: No config endpoint, NullClient used'
+            logger.error 'Broker::Cache::Client#initialize: No config endpoint, NullClient used'
             logger.metric 'NoConfigEndpoint'
             @client = NullClient.new
           else
@@ -30,7 +30,7 @@ module Alephant
 
           set(key, yield) if block_given?
         rescue StandardError => error
-          logger.info(event: 'ErrorCaught', method: "#{self.class}#get", error: error)
+          logger.error(event: 'ErrorCaught', method: "#{self.class}#get", error: error)
           yield if block_given?
         end
 
