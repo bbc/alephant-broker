@@ -16,7 +16,10 @@ module Alephant
                         env.options.fetch("batch_id", nil)
                       end
 
-          logger.info "Request::Batch#initialize: id: #{batch_id}"
+          logger.info(
+            method:  "Request::Batch#initialize",
+            id:      batch_id,
+          )
 
           @component_factory = component_factory
 

@@ -34,7 +34,10 @@ module Alephant
 
         def log
           logger.metric "BrokerResponse#{status}"
-          logger.info "Broker: Component loaded! #{details} (200)"
+          logger.info(
+            message:  'Asset component loaded',
+            status:   status
+          )
         end
       end
     end
