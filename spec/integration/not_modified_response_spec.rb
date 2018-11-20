@@ -115,7 +115,7 @@ describe Alephant::Broker::Application do
     context "when requesting an unmodified response" do
       let(:path)         { "/components/batch" }
       let(:content_type) { "application/json" }
-      let(:etag)         { '"34774567db979628363e6e865127623f"' }
+      let(:etag)         { '"8d2f79a98b0e0c1fbcca34850f2c7f17"' }
 
       before do
         post(path, batch_json,
@@ -186,7 +186,7 @@ describe Alephant::Broker::Application do
     context "when requesting an unmodified response with GET" do
       let(:path)         { "/components/batch?batch_id=baz&components[ni_council_results_table][component]=ni_council_results_table&components[ni_council_results_table][options][foo]=bar&components[ni_council_results_table_no_options][component]=ni_council_results_table" }
       let(:content_type) { "application/json" }
-      let(:etag)         { '"34774567db979628363e6e865127623f"' }
+      let(:etag)         { '"8d2f79a98b0e0c1fbcca34850f2c7f17"' }
 
       before do
         get(

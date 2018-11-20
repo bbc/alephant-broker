@@ -27,7 +27,10 @@ module Alephant
         private
 
         def json
-          logger.info "Broker: Batch load started (#{batch_id})"
+          logger.info(
+            message:  'Broker: Batch load started',
+            batch_id:  batch_id
+          )
           components.map do |component|
             {
               "component"    => component.id,
@@ -39,7 +42,10 @@ module Alephant
               headers["sequence_id"] = component.headers["X-Sequence"] if component.headers["X-Sequence"]
             end
           end.tap do
-            logger.info "Broker: Batch load done (#{batch_id})"
+            logger.info(
+              message:  'Broker: Batch load completed',
+              batch_id:  batch_id
+            )
             logger.metric "BrokerBatchLoadCount"
           end
         end

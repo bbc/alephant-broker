@@ -61,7 +61,7 @@ module Alephant
             @cached = false
             s3.get s3_path(component_meta)
           rescue Aws::S3::Errors::NoSuchKey, InvalidCacheKey
-            logger.metric "S3InvalidCacheKey"
+            logger.metric 'S3NoSuchKey'
             raise Alephant::Broker::Errors::ContentNotFound
           end
 

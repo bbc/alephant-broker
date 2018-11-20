@@ -174,7 +174,7 @@ describe Alephant::Broker::Application do
         end
 
         it "should have ETag cache header" do
-          expect(last_response.headers["ETag"]).to eq('"34774567db979628363e6e865127623f"')
+          expect(last_response.headers["ETag"]).to eq('"8d2f79a98b0e0c1fbcca34850f2c7f17"')
         end
 
         it "should have most recent Last-Modified header" do
@@ -223,7 +223,7 @@ describe Alephant::Broker::Application do
         end
 
         it "should have ETag cache header" do
-          expect(last_response.headers["ETag"]).to eq('"34774567db979628363e6e865127623f"')
+          expect(last_response.headers["ETag"]).to eq('"8d2f79a98b0e0c1fbcca34850f2c7f17"')
         end
 
         it "should have most recent Last-Modified header" do
@@ -269,7 +269,7 @@ describe Alephant::Broker::Application do
         end
 
         it "should have ETag cache header" do
-          expect(last_response.headers["ETag"]).to eq('"34774567db979628363e6e865127623f"')
+          expect(last_response.headers["ETag"]).to eq('"8d2f79a98b0e0c1fbcca34850f2c7f17"')
         end
 
         it "should have most recent Last-Modified header" do

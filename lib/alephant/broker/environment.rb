@@ -60,8 +60,12 @@ module Alephant
 
       def parse(json)
         ::JSON.parse(json)
-      rescue ::JSON::ParserError => e
-        logger.warn "Broker.environment#data: ParserError"
+      rescue ::JSON::ParserError => error
+        logger.error(
+          method:  'Broker.environment#data',
+          message: 'ParserError',
+          error: error
+        )
         logger.metric "JSONParserError"
         nil
       end

@@ -21,8 +21,9 @@ module Alephant
 
         def load(component_meta)
           fetch_object(component_meta)
-        rescue
-          logger.metric "CacheMiss"
+        rescue StandardError => error
+          logger.error(method: "#{self.class}#load", error: error)
+          logger.metric 'HTTPCacheMiss'
           cache.set(component_meta.component_key, content(component_meta))
         end
 

@@ -31,14 +31,14 @@ module Alephant
           time = metadata[:'head_Last-Modified']
           Time.parse(time)
         rescue TypeError, ArgumentError => error
-          logger.info(event: 'ErrorCaught', method: "#{self.class}#updated", error: error)
+          logger.error(method: "#{self.class}#updated", error: error)
           Time.now
         end
 
         def ttl
           Integer(metadata[:ttl] || metadata['ttl'])
         rescue TypeError => error
-          logger.info(event: 'ErrorCaught', method: "#{self.class}#ttl", error: error)
+          logger.error(method: "#{self.class}#ttl", error: error)
           Integer(Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL)
         end
 
