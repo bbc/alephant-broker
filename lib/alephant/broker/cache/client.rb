@@ -36,9 +36,6 @@ module Alephant
           return result if result
 
           set(key, yield) if block_given?
-        rescue StandardError => error
-          logger.error(method: "#{self.class}#get", error: error)
-          yield if block_given?
         end
 
         def set(key, value, custom_ttl = nil)

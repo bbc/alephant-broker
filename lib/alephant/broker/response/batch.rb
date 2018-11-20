@@ -29,7 +29,7 @@ module Alephant
         def json
           logger.info(
             message:  'Broker: Batch load started',
-            batch_id:   batch_id
+            batch_id:  batch_id
           )
           components.map do |component|
             {
@@ -44,7 +44,7 @@ module Alephant
           end.tap do
             logger.info(
               message:  'Broker: Batch load completed',
-              batch_id:   batch_id
+              batch_id:  batch_id
             )
             logger.metric "BrokerBatchLoadCount"
           end
