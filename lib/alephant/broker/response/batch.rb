@@ -27,7 +27,7 @@ module Alephant
         private
 
         def json
-          logger.info(
+          logger.debug(
             message:  'Broker: Batch load started',
             batch_id:  batch_id
           )
@@ -42,7 +42,7 @@ module Alephant
               headers["sequence_id"] = component.headers["X-Sequence"] if component.headers["X-Sequence"]
             end
           end.tap do
-            logger.info(
+            logger.debug(
               message:  'Broker: Batch load completed',
               batch_id:  batch_id
             )

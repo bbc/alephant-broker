@@ -11,14 +11,14 @@ module Alephant
         DEFAULT_TTL = 10
 
         def initialize(obj)
-          logger.info(event:   'SettingCachedObject',
+          logger.debug(event:  'SettingCachedObject',
                       content: obj,
                       method:  "#{self.class}#initialize")
           @s3_obj = obj
         end
 
         def update(obj)
-          logger.info(event:       'UpdatingCachedObject',
+          logger.debug(event:      'UpdatingCachedObject',
                       old_content: @s3_obj,
                       new_content: obj,
                       method:      "#{self.class}#update")
@@ -43,7 +43,7 @@ module Alephant
         def expired?
           result = (updated + ttl) < Time.now
 
-          logger.info(event:            'Expired?',
+          logger.debug(event:           'Expired?',
                       updated:          updated,
                       ttl:              ttl,
                       updated_plus_ttl: (updated + ttl),
