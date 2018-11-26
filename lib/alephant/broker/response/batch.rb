@@ -10,9 +10,9 @@ module Alephant
         attr_reader :components, :batch_id
 
         def initialize(components, batch_id, request_env)
-          @components  = components
-          @batch_id    = batch_id
-          @status      = self.class.component_not_modified(batch_response_headers, request_env) ? 304 : 200
+          @components = components
+          @batch_id   = batch_id
+          @status     = self.class.component_not_modified(batch_response_headers, request_env) ? 304 : 200
 
           super(@status, "application/json", request_env)
 
@@ -27,9 +27,9 @@ module Alephant
         private
 
         def json
-          logger.info(
+          logger.debug(
             message:  'Broker: Batch load started',
-            batch_id:  batch_id
+            batch_id: batch_id
           )
           components.map do |component|
             {
@@ -42,7 +42,7 @@ module Alephant
               headers["sequence_id"] = component.headers["X-Sequence"] if component.headers["X-Sequence"]
             end
           end.tap do
-            logger.info(
+            logger.debug(
               message:  'Broker: Batch load completed',
               batch_id:  batch_id
             )

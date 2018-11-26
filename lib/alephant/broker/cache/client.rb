@@ -12,7 +12,7 @@ module Alephant
         def initialize
           if config_endpoint.nil?
             logger.error(
-              method: 'Broker::Cache::Client#initialize',
+              method:  'Broker::Cache::Client#initialize',
               message: 'No config endpoint, NullClient used'
             )
             logger.metric 'NoConfigEndpoint'
@@ -26,10 +26,10 @@ module Alephant
           versioned_key = versioned(key)
           result        = @client.get(versioned_key)
 
-          logger.info(
-            method:   'Broker::Cache::Client#get',
-            key:      versioned_key,
-            result:   result ? 'hit' : 'miss'
+          logger.debug(
+            method: 'Broker::Cache::Client#get',
+            key:    versioned_key,
+            result: result ? 'hit' : 'miss'
           )
           logger.metric('GetKeyMiss') unless result
 
@@ -42,10 +42,10 @@ module Alephant
           versioned_key = versioned(key)
           set_ttl       = custom_ttl || ttl
 
-          logger.info(
-            method:   "#{self.class}#set",
-            key:      versioned_key,
-            ttl:      set_ttl
+          logger.debug(
+            method: "#{self.class}#set",
+            key:    versioned_key,
+            ttl:    set_ttl
           )
 
           @client.set(versioned_key, value, set_ttl)
