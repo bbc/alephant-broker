@@ -11,7 +11,7 @@ module Alephant
         DEFAULT_TTL = 10
 
         def initialize(obj)
-          logger.info(event:   'SettingCachedObject',
+          logger.debug(event:  'SettingCachedObject',
                       content: obj,
                       method:  "#{self.class}#initialize")
 
@@ -19,7 +19,7 @@ module Alephant
         end
 
         def update(obj)
-          logger.info(event:       'UpdatingCachedObject',
+          logger.debug(event:      'UpdatingCachedObject',
                       old_content: @s3_obj,
                       new_content: obj,
                       method:      "#{self.class}#update")
@@ -31,14 +31,14 @@ module Alephant
           time = metadata[:'head_Last-Modified']
           Time.parse(time)
         rescue TypeError, ArgumentError => error
-          logger.error(method: "#{self.class}#updated", error: error)
+          logger.error(event: 'CachedObjectLastModifiedError', method: "#{self.class}#updated", error: error)
           Time.now
         end
 
         def ttl
           Integer(metadata[:ttl] || metadata['ttl'])
         rescue TypeError => error
-          logger.error(method: "#{self.class}#ttl", error: error)
+          logger.error(event: 'NonIntegerTTLError', method: "#{self.class}#ttl", error: error)
           Integer(Broker.config[:revalidate_cache_ttl] || DEFAULT_TTL)
         end
 

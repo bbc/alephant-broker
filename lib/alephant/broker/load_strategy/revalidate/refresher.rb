@@ -16,11 +16,11 @@ module Alephant
           def refresh
             inflight = cache.get(inflight_cache_key)
 
-            logger.info(event: 'Inflight?', cache_val: inflight, method: "#{self.class}#refresh")
+            logger.debug(event: 'Inflight?', cache_val: inflight, method: "#{self.class}#refresh")
 
             return if inflight
 
-            logger.info(event: 'QueueMessage', message: message, method: "#{self.class}#refresh")
+            logger.debug(event: 'QueueMessage', message: message, method: "#{self.class}#refresh")
 
             client.send_message(
               queue_url: queue_url,

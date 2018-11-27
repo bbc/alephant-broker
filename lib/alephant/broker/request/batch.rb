@@ -16,14 +16,14 @@ module Alephant
                         env.options.fetch("batch_id", nil)
                       end
 
-          logger.info(
-            method:  "Request::Batch#initialize",
-            id:      batch_id,
+          logger.debug(
+            method: "Request::Batch#initialize",
+            id:     batch_id,
           )
 
           @component_factory = component_factory
 
-          @components        = env.post? ? components_post(env) : components_get(env)
+          @components = env.post? ? components_post(env) : components_get(env)
         end
 
         private

@@ -44,9 +44,9 @@ module Alephant
 
           def cached_object(component_meta)
             cache.get(component_meta.component_key) do
-              logger.info(
-                method:   "#{self.class}#cached_object",
-                message:  'No cache so loading and adding cache object'
+              logger.debug(
+                method:  "#{self.class}#cached_object",
+                message: 'No cache so loading and adding cache object'
               )
               Fetcher.new(component_meta).fetch
             end
@@ -77,7 +77,7 @@ module Alephant
           end
 
           def cache_new_content(component_meta, new_content)
-            logger.info(
+            logger.debug(
               event:  'NewContentFromS3',
               key:    component_meta.component_key,
               val:    new_content,
@@ -88,9 +88,9 @@ module Alephant
           end
 
           def refresh_content(component_meta)            
-            logger.info(
-              method:    "#{self.class}#refresh_content",
-              message:   'Loading new content from thread',
+            logger.debug(
+              method:  "#{self.class}#refresh_content",
+              message: 'Loading new content from thread',
             )
 
             Refresher.new(component_meta).refresh
