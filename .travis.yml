@@ -1,9 +1,9 @@
 language: ruby
 rvm:
-  - "jruby-9.1.17.0"
-  - "jruby-1.7.23"
   - "2.3.0"
   - "2.5.1"
+  - "jruby-1.7.23"
+  - "jruby-9.1.17.0"
 notifications:
   email:
     recipients:
