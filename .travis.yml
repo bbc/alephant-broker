@@ -1,9 +1,9 @@
 language: ruby
 rvm:
+  - "jruby-9.1.17.0"
+  - "jruby-1.7.23"
   - "2.3.0"
   - "2.5.1"
-  - "jruby-1.7.23"
-  - "jruby-9.1.17.0"
 notifications:
   email:
     recipients:
@@ -11,5 +11,6 @@ notifications:
     on_failure: change
     on_success: never
 before_install:
-  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
   - gem install bundler -v '< 2'
+  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem uninstall -v '>= 2' -i $(rvm gemdir) -ax bundler || true
