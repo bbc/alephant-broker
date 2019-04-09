@@ -41,5 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "aws-sdk-s3"
   spec.add_runtime_dependency "dalli"
   spec.add_runtime_dependency "faraday"
-  spec.add_runtime_dependency "crimp", "= 0.2.0"
+  spec.add_runtime_dependency "crimp", "< 1.0"
 end
