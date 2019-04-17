@@ -10,3 +10,7 @@ notifications:
       - D&ENewsFrameworksTeam@bbc.co.uk
     on_failure: change
     on_success: never
+before_install:
+  - gem install bundler -v '< 2'
+  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem uninstall -v '>= 2' -i $(rvm gemdir) -ax bundler || true
