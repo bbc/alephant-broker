@@ -1,4 +1,4 @@
-require "alephant/broker/response"
+require 'alephant/broker/response'
 
 module Alephant
   module Broker
@@ -10,6 +10,8 @@ module Alephant
             Asset.new(request.component, request_env)
           when Request::Batch
             Batch.new(request.components, request.batch_id, request_env)
+          when Request::Dials
+            Dials.new
           when Request::Status
             Status.new
           else

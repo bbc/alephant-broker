@@ -9,7 +9,7 @@ module Alephant
         extend Logger
 
         def self.request_type_from(env)
-          env.path.split("/")[1]
+          env.path.split('/')[1]
         end
 
         def self.request_for(load_strategy, env)
@@ -18,13 +18,16 @@ module Alephant
           logger.increment('request_count')
 
           case request_type_from(env)
-          when "component"
+          when 'component'
             logger.increment('actionable_request_count')
             Asset.new(component_factory, env)
-          when "components"
+          when 'components'
             logger.increment('actionable_request_count')
             Batch.new(component_factory, env)
-          when "status"
+          when 'dials'
+            logger.increment('dials_request')
+            Dials.new
+          when 'status'
             logger.increment('status_request')
             Status.new
           else
